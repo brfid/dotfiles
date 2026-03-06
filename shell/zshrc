@@ -3,8 +3,6 @@ export PS1='%D{%H:%M:%S} %n@%m %1~ %# '
 alias l='ls -lhGA --color=always'
 alias zshrc='source ~/.zshrc'
 alias venv='source venv/bin/activate'
-# Obsidian vault - customize this path
-# alias vault='cd "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/YOUR_VAULT"'
 alias python='python3'
 alias pip='pip3'
 
