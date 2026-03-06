@@ -1,0 +1,199 @@
+{
+  // Workbench & UI
+  "workbench.startupEditor": "none",
+  "workbench.editor.titleScrollbarSizing": "large",
+  "workbench.editor.empty.hint": "hidden",
+  "workbench.editor.centeredLayoutAutoResize": false,
+  "workbench.list.smoothScrolling": true,
+  "workbench.settings.applyToAllProfiles": [
+    "editor.fontSize"
+  ],
+  "workbench.panel.alignment": "left",
+  "workbench.colorCustomizations": {
+    "terminal.foreground": "#FFA500"
+  },
+  "workbench.secondarySideBar.showLabels": false,
+  "workbench.iconTheme": "material-icon-theme",
+  "window.systemColorTheme": "auto",
+  "window.autoDetectColorScheme": true,
+  "breadcrumbs.filePath": "on",
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+
+  // Editor
+  "editor.fontSize": 14,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": true,
+  "editor.minimap.enabled": false,
+  "editor.cursorStyle": "block",
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorSurroundingLines": 3,
+  "editor.hover.enabled": "off",
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.stickyTabStops": true,
+  "editor.renderWhitespace": "all",
+  "editor.smoothScrolling": true,
+  "editor.wordWrap": "bounded",
+  "editor.wordWrapColumn": 80,
+  "editor.wrappingStrategy": "advanced",
+  "editor.rulers": [
+    80
+  ],
+
+  // Diff Editor
+  "diffEditor.renderSideBySide": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.codeLens": true,
+
+  // Terminal
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.smoothScrolling": true,
+  "terminal.integrated.suggest.enabled": true,
+  "terminal.integrated.shellIntegration.environmentReporting": true,
+  "terminal.integrated.stickyScroll.enabled": true,
+  "terminal.integrated.enableMultiLinePasteWarning": "never",
+
+  // Files
+  "files.autoSave": "afterDelay",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.associations": {
+    "*.plist": "xml",
+    "*.md": "markdown"
+  },
+
+  // Git
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.openRepositoryInParentFolders": "never",
+  "git.ignoreRebaseWarning": true,
+  "git.optimisticUpdate": false,
+  "git.blame.statusBarItem.enabled": false,
+  "github.gitAuthentication": false,
+
+  // Chat & AI
+  "chat.editor.wordWrap": "on",
+  "chat.commandCenter.enabled": true,
+  "chat.fontSize": 14,
+  "chat.editing.confirmEditRequestRetry": false,
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+  "inlineChat.lineEmptyHint": true,
+  "gitlab.duoChat.enabled": false,
+  "gitlab.duoCodeSuggestions.enabled": false,
+  "gitlab.duo.enabledWithoutGitlabProject": false,
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.chat.newWorkspace.useContext7": true,
+  "chat.mcp.gallery.enabled": true,
+
+  // Python
+  "python.analysis.autoFormatStrings": true,
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "standard",
+  "python.analysis.completeFunctionParens": true,
+  "python.terminal.focusAfterLaunch": true,
+  "[python]": {
+    "editor.wordWrapColumn": 88,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [
+      88
+    ]
+  },
+  "ruff.enable": true,
+  "ruff.lint.enable": true,
+  "ruff.importStrategy": "fromEnvironment",
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
+
+  // Language-Specific
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[git-commit]": {
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 72,
+    "editor.rulers": [
+      50,
+      72
+    ]
+  },
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "bounded",
+    "editor.wordWrapColumn": 80,
+    "editor.rulers": [
+      80
+    ],
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "editor.unicodeHighlight.invisibleCharacters": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+  "[yaml]": {
+    "editor.wordWrap": "off",
+    "editor.rulers": [
+      80
+    ]
+  },
+  "html.format.wrapLineLength": 80,
+  "yaml.completion": false,
+  "yaml.extension.recommendations": false,
+
+  // Extensions & Tools
+  "material-icon-theme.saturation": 1,
+  "material-icon-theme.activeIconPack": "angular",
+  "remote.autoForwardPortsSource": "hybrid",
+  "security.workspace.trust.untrustedFiles": "open",
+  "redhat.telemetry.enabled": false,
+
+  // Spell Checker
+  "cSpell.userWords": [
+    "APNIC",
+    "BGP",
+    "DNSSEC",
+    "DoH",
+    "DoT",
+    "ICANN",
+    "RPKI",
+    "WHOIS",
+    "abuseipdb",
+    "botnet",
+    "dnspython",
+    "infosec",
+    "metasploit",
+    "osint",
+    "pentest",
+    "shodan",
+    "suricata",
+    "tcpdump",
+    "virustotal",
+    "wireshark"
+  ],
+
+  // Misc
+  "terminal.integrated.initialHint": false,
+  "comments.openView": "never",
+  "update.showReleaseNotes": false,
+  "chat.viewSessions.orientation": "stacked",
+  "workbench.preferredLightColorTheme": "Default Dark Modern"
+}
