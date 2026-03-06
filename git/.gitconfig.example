@@ -1,0 +1,38 @@
+[user]
+  name = Brad Fidler
+  email = brfid@icloud.com
+
+[init]
+  defaultBranch = main
+
+[core]
+  editor = nvim
+  autocrlf = input
+
+[pull]
+  rebase = false
+
+[push]
+  default = current
+  autoSetupRemote = true
+
+[fetch]
+  prune = true
+
+[merge]
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default
+
+[color]
+  ui = auto
+
+[alias]
+  st = status
+  co = checkout
+  br = branch
+  ci = commit
+  unstage = reset HEAD --
+  last = log -1 HEAD
+  lg = log --oneline --graph --decorate
