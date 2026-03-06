@@ -16,6 +16,7 @@ link_path() {
 
 mkdir -p ~/.config
 link_path "$DOTFILES/nvim" ~/.config/nvim
+link_path "$DOTFILES/micro" ~/.config/micro
 link_path "$DOTFILES/shell/zshrc" ~/.zshrc
 link_path "$DOTFILES/bash/.bashrc" ~/.bashrc
 link_path "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf

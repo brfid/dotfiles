@@ -1,6 +1,7 @@
 # dotfiles
 
 - `nvim/` - Neovim (LazyVim)
+- `micro/` - Micro editor
 - `shell/` - Zsh, environment variables
 - `bash/` - Bash
 - `tmux/` - Tmux
