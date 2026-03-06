@@ -1,0 +1,24 @@
+# local-only secrets
+shell/env
+*.secret
+*.secrets
+.secrets
+.env
+.env.*
+*.key
+*.pem
+
+# shell/editor history
+.bash_history
+.lesshst
+
+# python/cache
+__pycache__/
+*.pyc
+
+# OS/editor
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
