@@ -7,7 +7,9 @@
 - `tmux/` - Tmux
 - `git/` - Git
 - `vscode/` - VS Code user settings
+- `x11/` - X11 session config (xprofile, xinitrc)
 - `scripts/` - Sync automation
+- `system/` - System configs (symlinked into `/etc/` via sudo)
 
 ### Scripts
 

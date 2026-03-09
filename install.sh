@@ -20,6 +20,14 @@ link_path "$DOTFILES/micro" ~/.config/micro
 link_path "$DOTFILES/shell/zshrc" ~/.zshrc
 link_path "$DOTFILES/bash/.bashrc" ~/.bashrc
 link_path "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf
+link_path "$DOTFILES/tmux/.tmux" ~/.tmux
+link_path "$DOTFILES/x11/.xprofile" ~/.xprofile
+link_path "$DOTFILES/x11/.xinitrc" ~/.xinitrc
+
+mkdir -p ~/.config/neomutt
+if [ ! -f ~/.config/neomutt/neomuttrc ]; then
+    cp "$DOTFILES/neomutt/neomuttrc.example" ~/.config/neomutt/neomuttrc
+fi
 
 mkdir -p ~/.config/Code/User/snippets
 if [ -f "$DOTFILES/vscode/settings.json" ]; then
@@ -43,3 +51,15 @@ if [ ! -f ~/.gitconfig ]; then
 fi
 
 chmod +x "$DOTFILES/scripts"/*.py
+
+# System configs (requires sudo)
+if sudo -n true 2>/dev/null; then
+    echo "Linking system configs..."
+    sudo mkdir -p /etc/unbound/unbound.conf.d
+    sudo ln -sfn "$DOTFILES/system/unbound/unbound.conf" /etc/unbound/unbound.conf
+    sudo ln -sfn "$DOTFILES/system/unbound/unbound.conf.d/pi-hole.conf" /etc/unbound/unbound.conf.d/pi-hole.conf
+    sudo ln -sfn "$DOTFILES/system/unbound/unbound.conf.d/remote-control.conf" /etc/unbound/unbound.conf.d/remote-control.conf
+    sudo ln -sfn "$DOTFILES/system/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf" /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
+else
+    echo "Skipping system configs (sudo required)"
+fi
