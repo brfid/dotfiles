@@ -71,3 +71,5 @@ mtvl_tmux() {
   tmux new-session -A -s "$session" "mtvl"
 }
 export PATH="$HOME/.npm-global/bin:$PATH"
+
+alias tmx='tmux new-session \; split-window -h -p 67 \; select-pane -t 0'

@@ -1,0 +1,48 @@
+# ===========================================================================
+# Account Information
+# ===========================================================================
+set realname = "Brad Fidler"
+set from = "toteslates@gmail.com"
+set envelope_from = "yes"
+
+# ===========================================================================
+# IMAP Settings (Receiving Mail)
+# ===========================================================================
+set imap_user = "toteslates@gmail.com"
+set imap_pass = "YOUR_GMAIL_APP_PASSWORD"
+
+set folder = "imaps://imap.gmail.com:993"
+set spoolfile = "+INBOX"
+set postponed = "+[Gmail]/Drafts"
+
+# Use SSL and TLS
+set ssl_force_tls = yes
+
+# ===========================================================================
+# SMTP Settings (Sending Mail)
+# ===========================================================================
+set smtp_url = "smtp://toteslates@gmail.com@smtp.gmail.com:587/"
+set smtp_pass = $imap_pass
+
+# ===========================================================================
+# Gmail Specific Folder Settings
+# ===========================================================================
+# Where to save sent messages, drafts, and trashed messages
+set record = "+[Gmail]/Sent Mail"
+set trash = "+[Gmail]/Trash"
+
+# ===========================================================================
+# Performance & UI
+# ===========================================================================
+# Store message headers locally to speed things up
+set header_cache = "~/.config/neomutt/cache/headers"
+set message_cachedir = "~/.config/neomutt/cache/bodies"
+set certificate_file = "~/.config/neomutt/certificates"
+
+# Check for new mail in all subscribed folders
+set imap_check_subscribed
+
+# Sort by threads
+set sort = 'reverse-date'
+set sort_aux = 'last-date-received'
+set editor = "nvim"
