@@ -6,7 +6,4 @@ alias venv='source venv/bin/activate'
 alias python='python3'
 alias pip='pip3'
 
-alias sync='launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.user.sync_all.plist 2>/dev/null; launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.sync_all.plist'
-alias unsync='launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.user.sync_all.plist'
-
-export PATH="$HOME/.config/scripts:$HOME/scripts:$(brew --prefix mtr)/sbin:$PATH"
+export PATH="$HOME/scripts:$(brew --prefix mtr)/sbin:$PATH"
