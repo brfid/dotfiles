@@ -22,3 +22,11 @@
 ```bash
 ./install.sh
 ```
+
+## Maintenance
+
+`edcloud` bootstrap depends on this repo exposing a working `install.sh` at
+`~/src/dotfiles/install.sh`.
+
+If the install entrypoint, its location, or its behavior changes, update
+`edcloud` in the same change or immediately after so rebuilds keep working.
