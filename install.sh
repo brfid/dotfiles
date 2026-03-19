@@ -16,7 +16,6 @@ link_path() {
 
 mkdir -p ~/.config
 link_path "$DOTFILES/nvim" ~/.config/nvim
-link_path "$DOTFILES/micro" ~/.config/micro
 link_path "$DOTFILES/shell/zshrc" ~/.zshrc
 link_path "$DOTFILES/bash/.bashrc" ~/.bashrc
 link_path "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf
@@ -26,15 +25,15 @@ link_path "$DOTFILES/x11/.xinitrc" ~/.xinitrc
 
 mkdir -p ~/.config/neomutt
 if [ ! -f ~/.config/neomutt/neomuttrc ]; then
-    cp "$DOTFILES/neomutt/neomuttrc.example" ~/.config/neomutt/neomuttrc
+    read -rp "Neomutt name: " mutt_name
+    read -rp "Neomutt email (Gmail): " mutt_email
+    sed "s/Your Name/$mutt_name/g;s/you@gmail.com/$mutt_email/g" \
+        "$DOTFILES/neomutt/neomuttrc.example" > ~/.config/neomutt/neomuttrc
 fi
 
 mkdir -p ~/.config/Code/User/snippets
 if [ -f "$DOTFILES/vscode/settings.json" ]; then
     link_path "$DOTFILES/vscode/settings.json" ~/.config/Code/User/settings.json
-fi
-if [ -f "$DOTFILES/vscode/keybindings.json" ]; then
-    link_path "$DOTFILES/vscode/keybindings.json" ~/.config/Code/User/keybindings.json
 fi
 for snippet in "$DOTFILES"/vscode/snippets/*.code-snippets; do
     [ -e "$snippet" ] || continue
@@ -47,7 +46,10 @@ if [ ! -f ~/.config/shell/env ]; then
 fi
 
 if [ ! -f ~/.gitconfig ]; then
-    cp "$DOTFILES/git/.gitconfig.example" ~/.gitconfig
+    read -rp "Git name: " git_name
+    read -rp "Git email: " git_email
+    sed "s/Your Name/$git_name/;s/you@example.com/$git_email/" \
+        "$DOTFILES/git/.gitconfig.example" > ~/.gitconfig
 fi
 
 chmod +x "$DOTFILES/scripts"/*.py
