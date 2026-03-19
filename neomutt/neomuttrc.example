@@ -1,14 +1,14 @@
 # ===========================================================================
 # Account Information
 # ===========================================================================
-set realname = "dotfiles contributors"
-set from = "toteslates@gmail.com"
+set realname = "Your Name"
+set from = "you@gmail.com"
 set envelope_from = "yes"
 
 # ===========================================================================
 # IMAP Settings (Receiving Mail)
 # ===========================================================================
-set imap_user = "toteslates@gmail.com"
+set imap_user = "you@gmail.com"
 set imap_pass = "YOUR_GMAIL_APP_PASSWORD"
 
 set folder = "imaps://imap.gmail.com:993"
@@ -21,7 +21,7 @@ set ssl_force_tls = yes
 # ===========================================================================
 # SMTP Settings (Sending Mail)
 # ===========================================================================
-set smtp_url = "smtp://toteslates@gmail.com@smtp.gmail.com:587/"
+set smtp_url = "smtp://you@gmail.com@smtp.gmail.com:587/"
 set smtp_pass = $imap_pass
 
 # ===========================================================================
