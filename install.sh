@@ -60,6 +60,13 @@ if sudo -n true 2>/dev/null; then
     sudo ln -sfn "$DOTFILES/system/unbound/unbound.conf.d/pi-hole.conf" /etc/unbound/unbound.conf.d/pi-hole.conf
     sudo ln -sfn "$DOTFILES/system/unbound/unbound.conf.d/remote-control.conf" /etc/unbound/unbound.conf.d/remote-control.conf
     sudo ln -sfn "$DOTFILES/system/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf" /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
+
+    # CPU frequency governor config
+    sudo ln -sfn "$DOTFILES/system/cpufreq/cpufrequtils" /etc/default/cpufrequtils
+    sudo ln -sfn "$DOTFILES/system/cpufreq/cpufreq-ondemand-tune.service" /etc/systemd/system/cpufreq-ondemand-tune.service
+    sudo ln -sfn "$DOTFILES/system/cpufreq/cpufreq-schedutil-tune.service" /etc/systemd/system/cpufreq-schedutil-tune.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable cpufreq-ondemand-tune.service cpufreq-schedutil-tune.service
 else
     echo "Skipping system configs (sudo required)"
 fi
