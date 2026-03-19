@@ -6,6 +6,8 @@ return {
   { "folke/noice.nvim", enabled = false },
   { "MunifTanjim/nui.nvim", enabled = false },
 
+  -- UI chrome: tab-style buffer bar, redundant with snacks picker
+  { "akinsho/bufferline.nvim", enabled = false },
 
   -- Redundant colorscheme (keeping tokyonight)
   { "catppuccin/nvim", enabled = false },
