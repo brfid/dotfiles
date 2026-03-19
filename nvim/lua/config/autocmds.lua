@@ -9,5 +9,9 @@
 
 vim.o.autoread = true
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
-  command = "checktime",
+  callback = function()
+    if vim.fn.getcmdwintype() == "" and vim.bo.buftype == "" then
+      vim.cmd("silent! checktime")
+    end
+  end,
 })
