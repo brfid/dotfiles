@@ -1,0 +1,12 @@
+[Unit]
+Description=Tune ondemand CPU frequency governor on boot
+After=cpufrequtils.service
+Wants=cpufrequtils.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 70 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold; echo 8000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate; echo 10 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor; echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
