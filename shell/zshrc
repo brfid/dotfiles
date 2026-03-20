@@ -6,4 +6,7 @@ alias venv='source venv/bin/activate'
 alias python='python3'
 alias pip='pip3'
 
-export PATH="$HOME/scripts:$(brew --prefix mtr)/sbin:$PATH"
+export PATH="$HOME/scripts:$PATH"
+command -v brew &>/dev/null && export PATH="$(brew --prefix mtr)/sbin:$PATH"
+
+[ -f ~/.config/shell/env ] && source ~/.config/shell/env
