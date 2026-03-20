@@ -29,9 +29,10 @@ for snippet in "$DOTFILES"/vscode/snippets/*.code-snippets; do
     link_path "$snippet" "$HOME/.config/Code/User/snippets/$(basename "$snippet")"
 done
 
-if [ ! -f ~/.config/shell/env ]; then
-    mkdir -p ~/.config/shell
-    cp "$DOTFILES/shell/env.example" ~/.config/shell/env
+if [ ! -f ~/.secrets ]; then
+    cp "$DOTFILES/secrets.example" ~/.secrets
+    chmod 600 ~/.secrets
+    echo "Created ~/.secrets from template — edit it with your real values."
 fi
 
 mkdir -p ~/.config/gh
@@ -41,17 +42,19 @@ chmod +x "$DOTFILES/scripts"/*.py
 
 # Interactive setup (skipped when non-interactive, e.g. cloud-init)
 if [ -t 0 ]; then
-    mkdir -p ~/.config/neomutt
-    if [ ! -f ~/.config/neomutt/neomuttrc ]; then
-        read -rp "Neomutt name: " mutt_name
-        read -rp "Neomutt email (Gmail): " mutt_email
-        sed "s/Your Name/$mutt_name/g;s/you@gmail.com/$mutt_email/g" \
-            "$DOTFILES/neomutt/neomuttrc.example" > ~/.config/neomutt/neomuttrc
-    fi
+    mkdir -p ~/.config/neomutt/cache/headers ~/.config/neomutt/cache/bodies
+    link_path "$DOTFILES/neomutt/neomuttrc" ~/.config/neomutt/neomuttrc
+    link_path "$DOTFILES/neomutt/mailcap" ~/.config/neomutt/mailcap
 
     if [ ! -f ~/.gitconfig ]; then
-        read -rp "Git name: " git_name
-        read -rp "Git email: " git_email
+        git_name="${GIT_NAME:-}"
+        git_email="${GIT_EMAIL:-}"
+        if [ -z "$git_name" ]; then
+            read -rp "Git name: " git_name
+        fi
+        if [ -z "$git_email" ]; then
+            read -rp "Git email: " git_email
+        fi
         sed "s/Your Name/$git_name/;s/you@example.com/$git_email/" \
             "$DOTFILES/git/.gitconfig.example" > ~/.gitconfig
     fi
@@ -81,6 +84,14 @@ if [[ "${1:-}" == "--pi" ]]; then
 
     link_path "$DOTFILES/x11/.xprofile" ~/.xprofile
     link_path "$DOTFILES/x11/.xinitrc" ~/.xinitrc
+
+    # Signal CLI — restore data from edcloud if available
+    if [ -d "$HOME/edcloud/signal-cli" ] && [ ! -d "$HOME/.local/share/signal-cli" ]; then
+        mkdir -p "$HOME/.local/share"
+        cp -a "$HOME/edcloud/signal-cli" "$HOME/.local/share/signal-cli"
+        echo "Restored signal-cli data from edcloud."
+    fi
+    link_path "$DOTFILES/scripts/scli" ~/.local/bin/scli
 
     # User systemd services
     mkdir -p ~/.config/systemd/user
