@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
-"""
-Sync a git repository bidirectionally.
+"""Bidirectional git sync engine.
+
+Syncs a local git repository with its remote on a schedule. Designed
+to run unattended as a macOS LaunchAgent for iCloud-hosted folders.
 
 Behavior:
-- force-download any iCloud-evicted files
-- commit + push local changes (if present)
-- pull (merge) when remote is ahead
-- on conflict: keep ours, save theirs as _conflicted files
-- push again if local is ahead after pull
-- send macOS notification on error
 
-Env vars (set via LaunchAgent plist):
-- REPO_DIR (default: ~/repo)
-- BRANCH (default: main)
-- LOGFILE (default: ~/Library/Logs/repo-sync.log)
+- Force-download any iCloud-evicted files via ``brctl``.
+- Commit and push local changes if present.
+- Pull (merge) when remote is ahead.
+- On conflict, keep ours and save theirs as ``_conflicted`` files.
+- Push again if local is ahead after pull.
+- Send a macOS notification on error.
+
+Environment variables (set via LaunchAgent plist):
+
+- ``REPO_DIR`` -- Path to the local git repo (default: ``~/repo``).
+- ``BRANCH`` -- Remote branch to sync (default: ``main``).
+- ``LOGFILE`` -- Log output path
+  (default: ``~/Library/Logs/repo-sync.log``).
 """
 
 from __future__ import annotations
@@ -27,33 +32,78 @@ from pathlib import Path
 
 REPO_DIR = Path(os.getenv("REPO_DIR", str(Path.home() / "repo")))
 BRANCH = os.getenv("BRANCH", "main")
-LOGFILE = Path(os.getenv("LOGFILE", str(Path.home() / "Library/Logs/repo-sync.log")))
+LOGFILE = Path(
+    os.getenv("LOGFILE", str(Path.home() / "Library/Logs/repo-sync.log"))
+)
 GIT_TIMEOUT = 120
 GIT_BIN = "/usr/bin/git" if Path("/usr/bin/git").exists() else "git"
+MAX_LOG_LINES = 2000
 
 
 def log(message: str) -> None:
+    """Append a timestamped message to the log file.
+
+    Args:
+        message: Text to log.
+    """
     timestamp = datetime.now().isoformat(timespec="seconds")
     LOGFILE.parent.mkdir(parents=True, exist_ok=True)
     with LOGFILE.open("a") as f:
         f.write(f"[{timestamp}] {message}\n")
 
 
+def truncate_log() -> None:
+    """Trim the log file to the most recent ``MAX_LOG_LINES`` lines."""
+    if not LOGFILE.exists():
+        return
+    lines = LOGFILE.read_text().splitlines()
+    if len(lines) > MAX_LOG_LINES:
+        LOGFILE.write_text("\n".join(lines[-MAX_LOG_LINES:]) + "\n")
+
+
 def notify_error(message: str) -> None:
+    """Send a macOS notification with an error sound.
+
+    No-op on non-Darwin platforms.
+
+    Args:
+        message: Notification body text.
+    """
     if platform.system() != "Darwin":
         return
     safe_message = message.replace("\\", "\\\\").replace('"', '\\"')
     safe_title = REPO_DIR.name.replace("\\", "\\\\").replace('"', '\\"')
     subprocess.run(
         [
-            "osascript", "-e",
-            f'display notification "{safe_message}" with title "{safe_title} sync error" sound name "Basso"',
+            "osascript",
+            "-e",
+            (
+                f'display notification "{safe_message}" '
+                f'with title "{safe_title} sync error" '
+                f'sound name "Basso"'
+            ),
         ],
         capture_output=True,
     )
 
 
-def run_git(args: list[str], allow_fail: bool = False) -> subprocess.CompletedProcess:
+def run_git(
+    args: list[str], allow_fail: bool = False
+) -> subprocess.CompletedProcess:
+    """Run a git command in ``REPO_DIR``.
+
+    Args:
+        args: Git subcommand and arguments (e.g. ``["fetch", "origin"]``).
+        allow_fail: When ``True``, don't raise on non-zero exit.
+
+    Returns:
+        The completed process result.
+
+    Raises:
+        SystemExit: On timeout (via ``fail``).
+        subprocess.CalledProcessError: On non-zero exit when
+            ``allow_fail`` is ``False``.
+    """
     try:
         return subprocess.run(
             [GIT_BIN] + args,
@@ -69,6 +119,16 @@ def run_git(args: list[str], allow_fail: bool = False) -> subprocess.CompletedPr
 
 
 def fail(message: str, code: int = 1, detail: str = "") -> None:
+    """Log an error, notify the user, and exit.
+
+    Args:
+        message: Error summary.
+        code: Process exit code.
+        detail: Additional context (e.g. git stderr).
+
+    Raises:
+        SystemExit: Always.
+    """
     log(f"[ERROR] {message}")
     if detail:
         log(f"[DETAIL] {detail}")
@@ -77,6 +137,16 @@ def fail(message: str, code: int = 1, detail: str = "") -> None:
 
 
 def acquire_lock() -> int:
+    """Acquire an exclusive file lock to prevent concurrent runs.
+
+    Uses a per-repo lockfile in ``/tmp``.
+
+    Returns:
+        The lock file descriptor.
+
+    Raises:
+        SystemExit: With code 0 if another instance holds the lock.
+    """
     lock_path = Path(f"/tmp/sync_repo_{REPO_DIR.name}.lock")
     fd = os.open(str(lock_path), os.O_CREAT | os.O_WRONLY)
     try:
@@ -89,6 +159,11 @@ def acquire_lock() -> int:
 
 
 def ensure_repo() -> None:
+    """Verify that ``REPO_DIR`` exists and is a git repository.
+
+    Raises:
+        SystemExit: If the directory or ``.git`` is missing.
+    """
     if not REPO_DIR.exists():
         fail(f"REPO_DIR does not exist: {REPO_DIR}")
     if not (REPO_DIR / ".git").exists():
@@ -96,6 +171,7 @@ def ensure_repo() -> None:
 
 
 def recover_dirty_state() -> None:
+    """Abort any interrupted merge or rebase from a previous run."""
     if (REPO_DIR / ".git" / "MERGE_HEAD").exists():
         log("Found interrupted merge. Aborting it to start fresh.")
         run_git(["merge", "--abort"], allow_fail=True)
@@ -107,6 +183,11 @@ def recover_dirty_state() -> None:
 
 
 def download_icloud_files() -> None:
+    """Force-download any iCloud-evicted files in ``REPO_DIR``.
+
+    Prevents ``git add`` from staging cloud-only placeholder stubs.
+    No-op on non-Darwin platforms or if ``brctl`` is unavailable.
+    """
     if platform.system() != "Darwin":
         return
     try:
@@ -117,22 +198,50 @@ def download_icloud_files() -> None:
         )
         log("iCloud download check completed.")
     except (FileNotFoundError, subprocess.TimeoutExpired):
-        log("brctl not available or timed out; skipping iCloud download check.")
+        log("brctl not available or timed out; skipping iCloud download.")
 
 
 def has_uncommitted_changes() -> bool:
+    """Check whether the working tree has uncommitted changes.
+
+    Returns:
+        ``True`` if ``git status --porcelain`` produces output.
+    """
     result = run_git(["status", "--porcelain"], allow_fail=True)
     return bool(result.stdout.strip())
 
 
 def get_commit_delta() -> tuple[int, int]:
-    ahead = int(run_git(["rev-list", "--count", f"origin/{BRANCH}..{BRANCH}"]).stdout.strip())
-    behind = int(run_git(["rev-list", "--count", f"{BRANCH}..origin/{BRANCH}"]).stdout.strip())
+    """Count commits ahead of and behind the remote tracking branch.
+
+    Assumes ``git fetch`` has already been called this run.
+
+    Returns:
+        A ``(ahead, behind)`` tuple.
+    """
+    ahead = int(
+        run_git(
+            ["rev-list", "--count", f"origin/{BRANCH}..{BRANCH}"]
+        ).stdout.strip()
+    )
+    behind = int(
+        run_git(
+            ["rev-list", "--count", f"{BRANCH}..origin/{BRANCH}"]
+        ).stdout.strip()
+    )
     return ahead, behind
 
 
 def handle_merge_conflicts() -> None:
-    result = run_git(["diff", "--name-only", "--diff-filter=U"], allow_fail=True)
+    """Resolve merge conflicts by keeping ours and saving theirs.
+
+    For each unmerged file, checks out the local ("ours") version and
+    writes the remote ("theirs") version to a ``_conflicted`` sibling.
+    Handles all conflict types (UU, AA, DU, UD, DD).
+    """
+    result = run_git(
+        ["diff", "--name-only", "--diff-filter=U"], allow_fail=True
+    )
     if not result.stdout.strip():
         return
     conflicted = result.stdout.strip().splitlines()
@@ -146,15 +255,29 @@ def handle_merge_conflicts() -> None:
             run_git(["add", str(dst)])
         run_git(["checkout", "--ours", file_path], allow_fail=True)
         run_git(["add", file_path])
-    log(f"Resolved {len(conflicted)} conflict(s) — theirs saved as _conflicted files.")
+    log(
+        f"Resolved {len(conflicted)} conflict(s) "
+        f"-- theirs saved as _conflicted files."
+    )
 
 
 def build_commit_message() -> str:
+    """Build a timestamped commit message for auto-sync commits.
+
+    Returns:
+        A message in the form ``sync [YYYY-MM-DDTHH:MM]``.
+    """
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M")
     return f"sync [{timestamp}]"
 
 
 def sync() -> None:
+    """Run a single bidirectional sync cycle.
+
+    Commits and pushes local changes, fetches and merges remote
+    changes, resolves any conflicts, and pushes the result. Acquires
+    an exclusive lock so concurrent runs are skipped.
+    """
     log("=== Starting sync ===")
     ensure_repo()
     lock_fd = acquire_lock()
@@ -194,9 +317,15 @@ def sync() -> None:
         log("=== Sync complete ===\n")
     finally:
         os.close(lock_fd)
+    truncate_log()
 
 
 def main() -> int:
+    """Entry point. Catches unhandled exceptions and routes to ``fail``.
+
+    Returns:
+        Exit code (0 on success).
+    """
     try:
         sync()
     except SystemExit:
