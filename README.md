@@ -12,6 +12,7 @@ Personal system configuration, symlinked into place by `install.sh`.
 - `vscode/` -- VS Code user settings
 - `x11/` -- X11 session config (Pi only)
 - `scripts/` -- Utility automation
+- `claude/` -- Claude Code settings (default: granular permissions; sandbox: wide-open for VMs)
 - `system/` -- System configs (symlinked into `/etc/` via sudo)
 
 ## Scripts
