@@ -15,6 +15,10 @@ Personal system configuration, symlinked into place by `install.sh`.
 - `claude/` -- Claude Code settings (default: granular permissions; sandbox: wide-open for VMs)
 - `system/` -- System configs (symlinked into `/etc/` via sudo)
 
+## Troubleshooting
+
+See [docs/troubleshooting.md](docs/troubleshooting.md) for known issues and workarounds (signal-cli linking, etc.).
+
 ## Scripts
 
 - `scripts/sync_repo.py` -- Bidirectional git sync engine used by macOS
