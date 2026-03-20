@@ -13,6 +13,12 @@ Behavior:
 - Push again if local is ahead after pull.
 - Send a macOS notification on error.
 
+Prerequisites (macOS):
+
+- ``/usr/bin/git`` must have **Full Disk Access** in System Settings →
+  Privacy & Security. Without it, ``git fetch`` intermittently fails with
+  "Unable to read current working directory: Operation not permitted".
+
 Environment variables (set via LaunchAgent plist):
 
 - ``REPO_DIR`` -- Path to the local git repo (default: ``~/homeschool``).
