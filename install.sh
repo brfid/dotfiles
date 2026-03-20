@@ -85,13 +85,11 @@ if [[ "${1:-}" == "--pi" ]]; then
     link_path "$DOTFILES/x11/.xprofile" ~/.xprofile
     link_path "$DOTFILES/x11/.xinitrc" ~/.xinitrc
 
-    # Signal CLI — restore data from edcloud if available
-    if [ -d "$HOME/edcloud/signal-cli" ] && [ ! -d "$HOME/.local/share/signal-cli" ]; then
-        mkdir -p "$HOME/.local/share"
-        cp -a "$HOME/edcloud/signal-cli" "$HOME/.local/share/signal-cli"
-        echo "Restored signal-cli data from edcloud."
-    fi
+    # Signal CLI
+    mkdir -p ~/.local/bin
     link_path "$DOTFILES/scripts/scli" ~/.local/bin/scli
+    link_path "$DOTFILES/scripts/signal-setup.sh" ~/.local/bin/signal-setup
+    chmod +x "$DOTFILES/scripts/signal-setup.sh"
 
     # User systemd services
     mkdir -p ~/.config/systemd/user
