@@ -55,6 +55,20 @@ if [ -t 0 ]; then
         sed "s/Your Name/$git_name/;s/you@example.com/$git_email/" \
             "$DOTFILES/git/.gitconfig.example" > ~/.gitconfig
     fi
+
+    # Claude Code settings
+    read -rp "Claude Code profile? [default/sandbox] (default): " claude_profile
+    claude_profile="${claude_profile:-default}"
+    mkdir -p ~/.claude
+    if [ "$claude_profile" = "sandbox" ]; then
+        link_path "$DOTFILES/claude/settings.sandbox.json" ~/.claude/settings.json
+    else
+        link_path "$DOTFILES/claude/settings.json" ~/.claude/settings.json
+    fi
+else
+    # Non-interactive: install default Claude Code config
+    mkdir -p ~/.claude
+    link_path "$DOTFILES/claude/settings.json" ~/.claude/settings.json
 fi
 
 # --- Pi 5 setup (opt-in: ./install.sh --pi) ---
