@@ -59,8 +59,10 @@ def run_git(args: list[str], allow_fail: bool = False) -> subprocess.CompletedPr
     )
 
 
-def fail(message: str, code: int = 1) -> None:
+def fail(message: str, code: int = 1, detail: str = "") -> None:
     log(f"[ERROR] {message}")
+    if detail:
+        log(f"[DETAIL] {detail}")
     notify_error(message)
     raise SystemExit(code)
 
@@ -140,6 +142,8 @@ def main() -> int:
         sync()
     except SystemExit:
         raise
+    except subprocess.CalledProcessError as exc:
+        fail(str(exc), detail=exc.stderr.strip())
     except Exception as exc:
         fail(str(exc))
     return 0
