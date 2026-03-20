@@ -29,6 +29,7 @@ REPO_DIR = Path(os.getenv("REPO_DIR", str(Path.home() / "homeschool")))
 BRANCH = os.getenv("BRANCH", "main")
 LOGFILE = Path(os.getenv("LOGFILE", str(Path.home() / "Library/Logs/homeschool-sync.log")))
 GIT_TIMEOUT = 120
+GIT_BIN = "/usr/bin/git" if Path("/usr/bin/git").exists() else "git"
 
 
 def log(message: str) -> None:
@@ -55,7 +56,7 @@ def notify_error(message: str) -> None:
 def run_git(args: list[str], allow_fail: bool = False) -> subprocess.CompletedProcess:
     try:
         return subprocess.run(
-            ["git"] + args,
+            [GIT_BIN] + args,
             cwd=REPO_DIR,
             check=not allow_fail,
             text=True,
