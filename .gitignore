@@ -22,3 +22,8 @@ __pycache__/
 # IDE
 .vscode/
 .idea/
+
+# Claude Code artifacts
+superpowers/
+plans/
+docs/
