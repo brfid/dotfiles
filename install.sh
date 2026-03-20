@@ -20,9 +20,6 @@ mkdir -p ~/.config
 link_path "$DOTFILES/nvim" ~/.config/nvim
 link_path "$DOTFILES/shell/zshrc" ~/.zshrc
 link_path "$DOTFILES/bash/.bashrc" ~/.bashrc
-link_path "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf
-link_path "$DOTFILES/tmux/.tmux" ~/.tmux
-
 mkdir -p ~/.config/Code/User/snippets
 if [ -f "$DOTFILES/vscode/settings.json" ]; then
     link_path "$DOTFILES/vscode/settings.json" ~/.config/Code/User/settings.json
@@ -64,6 +61,9 @@ fi
 
 if [[ "${1:-}" == "--pi" ]]; then
     echo "Installing Pi 5 configs..."
+
+    link_path "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf
+    link_path "$DOTFILES/tmux/.tmux" ~/.tmux
 
     link_path "$DOTFILES/x11/.xprofile" ~/.xprofile
     link_path "$DOTFILES/x11/.xinitrc" ~/.xinitrc
