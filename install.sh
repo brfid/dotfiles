@@ -117,6 +117,11 @@ if [[ "${1:-}" == "--mac" ]]; then
     echo "Installing macOS configs..."
 
     PYTHON3="$(which python3)"
+
+    # Each git-synced folder gets its own plist. Copy this block for additional
+    # folders — change the label, PLIST filename, REPO_DIR, and log paths.
+    # Folder names are not committed; they exist only in the generated plist.
+    # See README for full instructions and prerequisites.
     PLIST="$HOME/Library/LaunchAgents/com.brf.repo-sync.plist"
 
     mkdir -p "$HOME/Library/LaunchAgents"
