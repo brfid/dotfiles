@@ -116,7 +116,7 @@ fi
 if [[ "${1:-}" == "--mac" ]]; then
     echo "Installing macOS configs..."
 
-    PYTHON3="$(which python3)"
+    PYTHON3="$(command -v python3)"
 
     # Each git-synced folder gets its own plist. Copy this block for additional
     # folders — change the label, PLIST filename, REPO_DIR, and log paths.
@@ -158,8 +158,8 @@ if [[ "${1:-}" == "--mac" ]]; then
 </plist>
 EOF
 
-    launchctl unload "$PLIST" 2>/dev/null || true
-    launchctl load "$PLIST"
+    launchctl bootout "gui/$(id -u)" "$PLIST" 2>/dev/null || true
+    launchctl bootstrap "gui/$(id -u)" "$PLIST"
 
     echo "macOS profile installed. repo-sync will run every 15 minutes."
     echo "Logs: ~/Library/Logs/repo-sync.log"
