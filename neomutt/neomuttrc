@@ -1,0 +1,102 @@
+# ===========================================================================
+# Account Information
+# ===========================================================================
+set realname = `printf '"%s"' "$NEOMUTT_NAME"`
+set from = `printf '"%s"' "$NEOMUTT_EMAIL"`
+set envelope_from = "yes"
+
+# ===========================================================================
+# IMAP Settings (Receiving Mail)
+# ===========================================================================
+set imap_user = `printf '"%s"' "$NEOMUTT_EMAIL"`
+set imap_pass = `printf '"%s"' "$GMAIL_APP_PASSWORD"`
+
+set folder = "imaps://imap.gmail.com:993"
+set spoolfile = "+INBOX"
+set postponed = "+[Gmail]/Drafts"
+
+# Use SSL and TLS
+set ssl_force_tls = yes
+
+# ===========================================================================
+# SMTP Settings (Sending Mail)
+# ===========================================================================
+set smtp_url = `printf '"smtp://%s@smtp.gmail.com:587/"' "$NEOMUTT_EMAIL"`
+set smtp_pass = $imap_pass
+
+# ===========================================================================
+# Gmail Specific Folder Settings
+# ===========================================================================
+# Where to save sent messages, drafts, and trashed messages
+set record = "+[Gmail]/Sent Mail"
+set trash = "+[Gmail]/Trash"
+
+# ===========================================================================
+# Performance & UI
+# ===========================================================================
+# Store message headers locally to speed things up
+set header_cache = "~/.config/neomutt/cache/headers"
+set message_cachedir = "~/.config/neomutt/cache/bodies"
+set certificate_file = "~/.config/neomutt/certificates"
+
+# Check for new mail in all subscribed folders
+set imap_check_subscribed
+
+# Sort by threads
+set sort = threads
+set sort_aux = reverse-last-date-received
+set collapse_all = yes
+set editor = "nvim"
+
+# ===========================================================================
+# HTML Email Rendering
+# ===========================================================================
+set mailcap_path = "~/.config/neomutt/mailcap"
+auto_view text/html
+alternative_order text/plain text/enriched text/html
+
+# ===========================================================================
+# Gmail Server-Side Search (searches all mail, not just cached)
+# ===========================================================================
+# / in index uses Gmail's IMAP SEARCH — supports Gmail operators like:
+#   from:someone, to:someone, subject:thing, has:attachment, label:xyz
+# Bind \ to search All Mail (entire Gmail account)
+macro index \\ "<change-folder>+[Gmail]/All Mail<enter><limit>~B " \
+  "search all Gmail"
+
+# ===========================================================================
+# Light Theme — Oranges & Greens
+# ===========================================================================
+# General UI
+color normal      default        default
+color indicator   color255       color130      # white on burnt orange
+color status      color232       color178      # dark on golden orange
+color tree        color34        default       # green thread arrows
+color tilde       color244       default
+
+# Index
+color index       color28        default       ~N    # new — forest green
+color index       color166       default       ~F    # flagged — orange
+color index       color244       default       ~D    # deleted — grey
+color index       color130       default       ~T    # tagged — burnt orange
+color index       color240       default       ~R    # read — dimmed
+
+# Message headers
+color hdrdefault  color130       default              # orange headers
+color header      color28        default       "^From:"
+color header      color166       default       "^Subject:"
+color header      color34        default       "^Date:"
+color header      color28        default       "^To:"
+
+# Body
+color quoted      color34        default              # green quotes
+color quoted1     color130       default              # orange second level
+color quoted2     color28        default              # dark green third
+color signature   color244       default
+color attachment  color166       default
+color bold        color232       default
+color underline   color232       default
+
+# URL and email highlights
+color body        color166       default       "(https?|ftp)://[^ ]+"
+color body        color28        default       "[-a-z_0-9.]+@[-a-z_0-9.]+"

@@ -72,7 +72,8 @@
     "code-simplifier@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
-    "semgrep@claude-plugins-official": true
+    "semgrep@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high"
