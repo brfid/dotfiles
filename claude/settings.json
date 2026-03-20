@@ -1,17 +1,49 @@
 {
   "permissions": {
     "allow": [
-      "Bash(*)",
-      "Read(*)",
-      "Write(*)",
-      "Edit(*)",
-      "Glob(*)",
-      "Grep(*)",
-      "WebFetch(*)",
-      "WebSearch(*)"
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(pytest:*)",
+      "Bash(mkdocs:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(source:*)",
+      "Bash(env)",
+      "Bash(which:*)",
+      "Bash(playwright:*)",
+      "Bash(diff:*)",
+      "Bash(jq:*)",
+      "Bash(echo:*)",
+      "Bash(du:*)",
+      "Bash(file:*)",
+      "Bash(mkdir:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(cut:*)",
+      "Bash(awk:*)",
+      "Bash(sed:*)",
+      "Bash(basename:*)",
+      "Bash(dirname:*)",
+      "Bash(date:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "Bash(stat:*)"
     ]
   },
-  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -19,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_FILE_PATHS\" | grep -q '\\.py$'; then ruff format $CLAUDE_FILE_PATHS 2>/dev/null; ruff check --fix $CLAUDE_FILE_PATHS 2>/dev/null; fi"
+            "command": "if echo \"$CLAUDE_FILE_PATHS\" | grep -q '\\.py$'; then black --quiet $CLAUDE_FILE_PATHS 2>/dev/null; fi"
           }
         ]
       }
@@ -27,16 +59,21 @@
   },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true,
-    "context7@claude-plugins-official": false,
+    "context7@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "semgrep@claude-plugins-official": true
   },
-  "effortLevel": "medium",
-  "skipDangerousModePermissionPrompt": true
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high"
 }
