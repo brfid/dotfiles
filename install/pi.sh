@@ -35,12 +35,12 @@ link_path "$DOTFILES/systemd-user/edc-monthly-snapshot.timer" ~/.config/systemd/
 link_path "$DOTFILES/systemd-user/edc-weekly-snapshot.service" ~/.config/systemd/user/edc-weekly-snapshot.service
 link_path "$DOTFILES/systemd-user/edc-weekly-snapshot.timer" ~/.config/systemd/user/edc-weekly-snapshot.timer
 
-# OpenClaw (CLAWIAC) — full setup via dedicated script
-# Requires secrets to be loaded: source ~/.secrets && $DOTFILES/openclaw/setup.sh
+# Clawdiac (OpenClaw) — full setup via dedicated script
+# Requires secrets to be loaded: source ~/.secrets && ~/clawdiac/setup.sh
 if command -v openclaw &>/dev/null; then
     echo "OpenClaw already installed."
 else
-    echo "OpenClaw not installed — run: source ~/.secrets && $DOTFILES/openclaw/setup.sh"
+    echo "OpenClaw not installed — run: source ~/.secrets && ~/clawdiac/setup.sh"
 fi
 
 # Shell local additions
@@ -72,6 +72,9 @@ if sudo -n true 2>/dev/null; then
 
     # LightDM
     sudo ln -sfn "$DOTFILES/system/lightdm/lightdm.conf" /etc/lightdm/lightdm.conf
+
+    # Swap
+    sudo cp "$DOTFILES/system/swap/dphys-swapfile" /etc/dphys-swapfile
 
     sudo systemctl daemon-reload
     sudo systemctl enable cpufreq-ondemand-tune.service cpufreq-schedutil-tune.service
