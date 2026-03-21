@@ -7,16 +7,25 @@ Personal system configuration repo. See `AGENTS.md` for coding conventions.
 - `nvim/` — LazyVim config (symlinked to `~/.config/nvim`)
 - `python/` — Python tooling config templates (Black, Flake8, mypy)
 - `scripts/` — Python utilities (automation, sync)
-- `shell/` — Zsh config, machine-local env sourced from `~/.config/shell/env`
+- `shell/` — Zsh config and machine-local shell additions
+  - `shell/local.d/` — Per-profile shell snippets (`pi.sh`, `edcloud.sh`);
+    linked to `~/.config/shell/local` by the corresponding install profile
 - `tmux/` — tmux config
 - `system/` — Pi system configs (unbound, cpufreq, rsnapshot)
-- `install.sh` — Symlinks configs, platform-gated with `--pi` and `--mac`
+- `install.sh` — Entry point: auto-detects profile, sources `install/common.sh`
+  then `install/<profile>.sh`
+- `install/` — Profile install scripts
+  - `common.sh` — Applied on every system (nvim, zsh, bash, vscode, gh, claude)
+  - `pi.sh` — Pi 5 extras (tmux, X11, systemd timers, system configs)
+  - `edcloud.sh` — edcloud server extras (tmux, rclone service)
+  - `mac.sh` — macOS LaunchAgent plists for git sync
 
 ## Platforms
 
-- **Common** — Runs on all systems (nvim, zsh, bash, vscode, gh)
-- **Pi 5** (`--pi`) — Tmux, X11, systemd timers, system configs
-- **macOS** (`--mac`) — LaunchAgent plists for git sync
+- **Common** — Runs on all systems (nvim, zsh, bash, vscode, gh, claude)
+- **Pi 5** — Tmux, X11, systemd timers, system configs, minetest helpers
+- **edcloud** — Tmux, rclone-dropbox systemd service, server shell aliases
+- **macOS** — LaunchAgent plists for git sync
 
 ## Key details
 
