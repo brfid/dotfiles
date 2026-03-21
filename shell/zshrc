@@ -10,3 +10,6 @@ export PATH="$HOME/scripts:$PATH"
 command -v brew &>/dev/null && export PATH="$(brew --prefix mtr)/sbin:$PATH"
 
 [ -f ~/.secrets ] && source ~/.secrets
+
+# Machine-specific additions (linked by dotfiles install/<profile>.sh)
+[ -f ~/.config/shell/local ] && source ~/.config/shell/local

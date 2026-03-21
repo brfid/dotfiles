@@ -45,32 +45,7 @@ export PATH
 
 PS1='\e[0;32m\w\e[0m\n\$ '
 
-# -------------------------
-# Minetest / VoxeLibre server helpers
-# -------------------------
-mtvl() {
-  local world="${1:-$HOME/.minetest/worlds/default}"
-  local port="${2:-30000}"
-  mkdir -p "$HOME/.minetest/logs"
-  /usr/lib/minetest/minetestserver \
-    --terminal \
-    --config "$HOME/.minetest/voxelibre-server.conf" \
-    --world "$world" \
-    --gameid mineclone2 \
-    --port "$port" \
-    --logfile "$HOME/.minetest/logs/voxelibre-server.${port}.log"
-}
-
-mtvl_log() {
-  local port="${1:-30000}"
-  tail -n 200 -F "$HOME/.minetest/logs/voxelibre-server.${port}.log"
-}
-
-mtvl_tmux() {
-  local session="${1:-voxelibre}"
-  tmux new-session -A -s "$session" "mtvl"
-}
-export PATH="$HOME/.npm-global/bin:$PATH"
-
-alias t='tmux new-session -A -s main'
-alias tmx='tmux new-session \; split-window -h -p 67 \; select-pane -t 0'
+# Machine-specific additions (linked by dotfiles install/<profile>.sh)
+if [ -f ~/.config/shell/local ]; then
+    . ~/.config/shell/local
+fi

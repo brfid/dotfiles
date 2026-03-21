@@ -26,3 +26,4 @@ __pycache__/
 # Claude Code artifacts
 superpowers/
 plans/
+.claude/settings.local.json

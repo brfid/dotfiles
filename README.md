@@ -24,12 +24,46 @@ See [docs/troubleshooting.md](docs/troubleshooting.md) for known issues and work
 - `scripts/sync_repo.py` -- Bidirectional git sync engine used by macOS
   LaunchAgents. See [macOS git sync](#macos-git-sync).
 
-## Install
+## Platforms
+
+- **Common** — Runs on all systems (nvim, zsh, bash, vscode, gh, claude)
+- **Pi 5** — Tmux, X11, systemd timers, system configs, minetest helpers
+- **edcloud** — Tmux, rclone-dropbox systemd service, server shell aliases
+- **macOS** — LaunchAgent plists for git-synced folders
+
+## Quick start / Install
 
 ```bash
-./install.sh        # common (all platforms)
-./install.sh --pi   # + Pi 5 configs
-./install.sh --mac  # + macOS LaunchAgents for git-synced folders
+./install.sh   # auto-detects profile and installs
+```
+
+### Auto-detection order
+
+1. `DOTFILES_PROFILE` environment variable (highest priority)
+2. `~/.dotfiles-profile` marker file (contains the profile name as a single word)
+3. Hostname match (`edcloud` → edcloud profile)
+4. Hardware/OS detection (Raspberry Pi model string → pi; Darwin → mac)
+
+### Manual profile override
+
+Create a marker file to pin the profile permanently:
+
+```bash
+echo "pi" > ~/.dotfiles-profile
+./install.sh
+```
+
+Or use an environment variable for a one-shot override:
+
+```bash
+DOTFILES_PROFILE=pi ./install.sh
+```
+
+### Running tests
+
+```bash
+pip install -e '.[dev]'
+pytest
 ```
 
 ## macOS git sync
@@ -57,8 +91,8 @@ generated plist.
 
 ### Adding a new synced folder
 
-Add a plist generation block to the `--mac` section of `install.sh`
-and re-run `./install.sh --mac`. Copy the existing block and change:
+Add a plist generation block to `install/mac.sh`
+and re-run `./install.sh`. Copy the existing block and change:
 
 - `PLIST` filename: `com.brf.<name>-sync.plist`
 - `Label`: `com.brf.<name>-sync`
