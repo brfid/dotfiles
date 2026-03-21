@@ -26,9 +26,24 @@ install_openclaw() {
     fi
 }
 
+install_services() {
+    echo "Installing gateway daemon..."
+    if ! systemctl --user is-enabled openclaw-gateway.service &>/dev/null; then
+        openclaw onboard --non-interactive --accept-risk \
+            --anthropic-api-key "$ANTHROPIC_API_KEY" \
+            --skip-skills --skip-search --install-daemon
+    fi
+
+    echo "Installing node host service..."
+    if ! systemctl --user is-enabled openclaw-node.service &>/dev/null; then
+        openclaw node install
+    fi
+}
+
 configure_channels() {
     echo "Configuring Telegram..."
     openclaw channels add --channel telegram --token "$TELEGRAM_BOT_TOKEN"
+    openclaw config set channels.telegram.groupPolicy disabled
 }
 
 configure_model() {
@@ -46,39 +61,21 @@ Environment=BRAVE_API_KEY=${BRAVE_API_KEY}
 Environment=ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 EOF
     chmod 600 "$dropin_dir/secrets.conf"
-}
-
-install_services() {
-    echo "Installing gateway daemon..."
-    if ! systemctl --user is-enabled openclaw-gateway.service &>/dev/null; then
-        openclaw onboard --non-interactive --accept-risk \
-            --anthropic-api-key "$ANTHROPIC_API_KEY" \
-            --skip-skills --skip-search --install-daemon
-    fi
-
-    echo "Installing node host service..."
-    if ! systemctl --user is-enabled openclaw-node.service &>/dev/null; then
-        openclaw node install
-    fi
 
     systemctl --user daemon-reload
     systemctl --user enable --now openclaw-gateway.service
     systemctl --user enable --now openclaw-node.service
 }
 
-approve_self() {
-    echo ""
-    echo "Next: open Telegram, message @CLAWIAC_BOT, send /start"
-    echo "Then run: openclaw pairing list && openclaw pairing approve <CODE>"
-}
-
 check_secrets
 install_openclaw
+install_services
 configure_channels
 configure_model
 configure_gateway_secrets
-install_services
-approve_self
 
+echo ""
+echo "Next: open Telegram, message @CLAWIAC_BOT, send /start"
+echo "Then run: openclaw pairing list && openclaw pairing approve <CODE>"
 echo ""
 echo "CLAWIAC setup complete. Run 'openclaw status' to verify."
