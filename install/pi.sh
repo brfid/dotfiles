@@ -21,9 +21,11 @@ link_path "$DOTFILES/x11/.xinitrc" ~/.xinitrc
 
 # Signal CLI
 mkdir -p ~/.local/bin
-link_path "$DOTFILES/scripts/scli" ~/.local/bin/scli
-link_path "$DOTFILES/scripts/signal-setup.sh" ~/.local/bin/signal-setup
-chmod +x "$DOTFILES/scripts/signal-setup.sh"
+link_path "$DOTFILES/scripts/signal/scli" ~/.local/bin/scli
+link_path "$DOTFILES/scripts/signal/signal-setup.sh" ~/.local/bin/signal-setup
+chmod +x "$DOTFILES/scripts/signal/signal-setup.sh"
+link_path "$DOTFILES/scripts/signal/signal-backup.sh" ~/.local/bin/signal-backup
+chmod +x "$DOTFILES/scripts/signal/signal-backup.sh"
 
 # User systemd services
 mkdir -p ~/.config/systemd/user
@@ -36,7 +38,7 @@ link_path "$DOTFILES/systemd-user/edc-weekly-snapshot.timer" ~/.config/systemd/u
 # OpenClaw (CLAWIAC) — full setup via dedicated script
 # Requires secrets to be loaded: source ~/.secrets && $DOTFILES/openclaw/setup.sh
 if command -v openclaw &>/dev/null; then
-    echo "OpenClaw already installed — run: source ~/.secrets && $DOTFILES/openclaw/setup.sh"
+    echo "OpenClaw already installed."
 else
     echo "OpenClaw not installed — run: source ~/.secrets && $DOTFILES/openclaw/setup.sh"
 fi

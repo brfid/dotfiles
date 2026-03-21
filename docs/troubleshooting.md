@@ -24,7 +24,7 @@ The `sgnl://linkdevice?uuid=...&pub_key=...` URI format is still current (the ol
 
 ```bash
 # Generate QR and open it in a browser (better rendering than feh)
-~/dotfiles/scripts/signal-setup.sh
+~/dotfiles/scripts/signal/signal-setup.sh
 # or manually:
 rm -f /tmp/signal-link.log /tmp/signal-qr.png
 signal-cli link --name "rpi" > /tmp/signal-link.log 2>&1 &
