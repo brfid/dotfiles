@@ -41,8 +41,15 @@
       "Bash(date:*)",
       "Bash(rg:*)",
       "Bash(grep:*)",
-      "Bash(stat:*)"
-    ]
+      "Bash(stat:*)",
+      "Write",
+      "Edit",
+      "WebSearch",
+      "NotebookEdit",
+      "NotebookRead",
+      "TodoWrite"
+    ],
+    "defaultMode": "bypassPermissions"
   },
   "hooks": {
     "PostToolUse": [
@@ -72,9 +79,10 @@
     "code-simplifier@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
-    "semgrep@claude-plugins-official": true,
+    "semgrep@claude-plugins-official": false,
     "plugin-dev@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true
 }
