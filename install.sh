@@ -11,7 +11,14 @@ link_path() {
     fi
     ln -sfn "$src" "$dst"
 }
+render_template() {
+    local src="$1"
+    local dst="$2"
+    sed "s/__USER__/$USER/g" "$src" > "$dst"
+}
+
 export -f link_path
+export -f render_template
 export DOTFILES
 
 detect_profile() {
