@@ -64,14 +64,19 @@ if sudo -n true 2>/dev/null; then
     sudo ln -sfn "$DOTFILES/system/cpufreq/cpufreq-schedutil-tune.service" /etc/systemd/system/cpufreq-schedutil-tune.service
 
     # Rsnapshot backup
-    sudo ln -sfn "$DOTFILES/system/rsnapshot/rsnapshot.conf" /etc/rsnapshot.conf
+    render_template "$DOTFILES/system/rsnapshot/rsnapshot.conf" /tmp/rsnapshot.conf
+    sudo cp /tmp/rsnapshot.conf /etc/rsnapshot.conf
+    rm -f /tmp/rsnapshot.conf
 
     # Logrotate
     sudo ln -sfn "$DOTFILES/system/logrotate/rsnapshot" /etc/logrotate.d/rsnapshot
     sudo ln -sfn "$DOTFILES/system/logrotate/minetest-server" /etc/logrotate.d/minetest-server
 
-    # LightDM
-    sudo ln -sfn "$DOTFILES/system/lightdm/lightdm.conf" /etc/lightdm/lightdm.conf
+    # LightDM (drop-in survives apt upgrades)
+    sudo mkdir -p /etc/lightdm/lightdm.conf.d
+    render_template "$DOTFILES/system/lightdm/lightdm.conf.d/99-local.conf" /tmp/99-local.conf
+    sudo cp /tmp/99-local.conf /etc/lightdm/lightdm.conf.d/99-local.conf
+    rm -f /tmp/99-local.conf
 
     # Swap
     sudo cp "$DOTFILES/system/swap/dphys-swapfile" /etc/dphys-swapfile
