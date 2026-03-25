@@ -1,0 +1,44 @@
+# gdrive-backup configuration
+# Copy to ~/.config/gdrive-backup/config.toml and edit.
+
+[defaults]
+# Default rclone remote + path for archive-mode backup sets.
+remote = "gdrive:backups/pi"
+# Delete archive snapshots older than this many days.
+retain_days = 90
+# Email address for failure notifications (sent via neomutt).
+notify_email = "you@example.com"
+
+# --- Backup sets ---
+# Each [[backup]] block defines a directory to back up.
+#
+# Fields:
+#   name     (required) — Unique identifier for this set.
+#   mode     (required) — "archive" or "bisync".
+#   source   (required) — Local path (~ is expanded).
+#   remote   (optional) — Override [defaults].remote for this set.
+#   include  (optional) — Rclone glob patterns to include.
+#   exclude  (optional) — Rclone glob patterns to exclude.
+#
+# archive mode:
+#   rclone sync {source} {remote}/{name}/current
+#     --backup-dir {remote}/{name}/archive/{date}
+#   Changed/deleted files go to a dated archive folder.
+#
+# bisync mode:
+#   rclone bisync {source} {remote} --resilience
+#   Two-way sync. No archive snapshots.
+
+[[backup]]
+name = "minetest"
+mode = "archive"
+source = "~/.minetest"
+include = ["worlds/**", "minetest.conf"]
+exclude = ["cache/**", "debug.txt", "logs/**"]
+
+[[backup]]
+name = "repo"
+mode = "bisync"
+source = "~/repo"
+remote = "gdrive:repo"
+exclude = [".git/**"]
