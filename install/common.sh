@@ -58,3 +58,11 @@ else
     mkdir -p ~/.claude
     link_path "$DOTFILES/claude/settings.json" ~/.claude/settings.json
 fi
+
+# Claude Code local plugins
+mkdir -p ~/.claude/plugins/local
+for plugin_dir in "$DOTFILES"/claude/plugins/*/; do
+    [ -d "$plugin_dir/.claude-plugin" ] || continue
+    plugin_name="$(basename "$plugin_dir")"
+    link_path "$plugin_dir" "$HOME/.claude/plugins/local/$plugin_name"
+done
