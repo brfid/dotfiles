@@ -6,7 +6,8 @@ Personal system configuration repo. See `AGENTS.md` for coding conventions.
 
 - `nvim/` — LazyVim config (symlinked to `~/.config/nvim`)
 - `python/` — Python tooling config templates (Black, Flake8, mypy)
-- `scripts/` — Signal CLI tools (`scripts/signal/`) and macOS git sync engine (`sync_repo.py`)
+- `scripts/` — Signal CLI tools (`scripts/signal/`), macOS git sync engine (`sync_repo.py`),
+  and Google Drive backup wrapper (`gdrive_backup.py`)
 - `shell/` — Zsh config and machine-local shell additions
   - `shell/local.d/` — Per-profile shell snippets (`pi.sh`, `edcloud.sh`);
     linked to `~/.config/shell/local` by the corresponding install profile

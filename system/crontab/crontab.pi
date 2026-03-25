@@ -1,9 +1,13 @@
 # Pi user crontab (reference only — install with: crontab crontab.pi)
-# Minetest world backup: weekly Sunday 3am
-0 3 * * 0 /usr/bin/python3 /home/__USER__/dotfiles/minetest-backup/backup_minetest.py --config /home/__USER__/dotfiles/minetest-backup/config.toml >/dev/null 2>&1
+
+# gdrive-backup: bisync sets every 10 minutes
+*/10 * * * * /usr/bin/python3 /home/__USER__/dotfiles/scripts/gdrive_backup.py --mode bisync 2>&1 | logger -t gdrive-backup
+
+# gdrive-backup: archive sets weekly Sunday 3am
+0 3 * * 0 /usr/bin/python3 /home/__USER__/dotfiles/scripts/gdrive_backup.py --mode archive 2>&1 | logger -t gdrive-backup
 
 # Repo backup: daily git backup at 2am
 0 2 * * * cd /home/__USER__/repo && git add -A && git commit -m "daily backup $(date +\%F)" --allow-empty && git push 2>&1 | logger -t repo-backup
 
-# Bisync to Google Drive every 10 minutes
-*/10 * * * * rclone bisync /home/__USER__/repo gdrive:repo --exclude ".git/**" --resilience 2>&1 | logger -t rclone-repo
+# Sync Google Sheets to local markdown (every 12 hours)
+0 6,18 * * * /usr/bin/python3 /home/__USER__/jean-claude/scripts/sync_sheets.py 2>&1 | logger -t sheets-sync
