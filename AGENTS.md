@@ -4,8 +4,7 @@
 
 - Use bash for shell configuration, install scripts, and simple glue.
 - Use Python when there is a choice between languages.
-- Python scripts must work with the system Python (no external dependencies
-  unless unavoidable).
+- Python scripts must work with the system Python (no external dependencies unless unavoidable).
 
 ## Python
 
@@ -49,7 +48,7 @@ Reference configs live in `python/`. Copy `pyproject.toml` and `.flake8` into ne
 - Use ATX headers (`#`, `##`) instead of bold text for sections.
 - Leave a blank line before and after lists.
 - Use fenced code blocks with a language identifier.
-- Wrap prose at a reasonable line length (80-100 characters) in source.
+- Do not hard-wrap prose. Let the editor or viewer handle line wrapping.
 
 ## Shell scripts
 
