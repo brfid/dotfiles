@@ -1,0 +1,8 @@
+{
+  "name": "jean-claude",
+  "version": "1.0.0",
+  "description": "Load OpenClaw Jean-Claude identity into Claude Code sessions",
+  "author": {
+    "name": "Bradley"
+  }
+}
