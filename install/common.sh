@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Common setup — applied on all systems
+set -euo pipefail
 
 mkdir -p ~/.config
 link_path "$DOTFILES/nvim" ~/.config/nvim

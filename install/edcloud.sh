@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # edcloud profile — server-side dotfiles
+set -euo pipefail
 
 # tmux (useful on headless servers)
 link_path "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf

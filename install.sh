@@ -14,7 +14,10 @@ link_path() {
 render_template() {
     local src="$1"
     local dst="$2"
-    sed "s/__USER__/$USER/g" "$src" > "$dst"
+    sed -e "s/__USER__/$USER/g" \
+        -e "s/__SYNC_REPO__/${SYNC_REPO:-repo}/g" \
+        -e "s/__AGENT_REPO__/${AGENT_REPO:-agent}/g" \
+        "$src" > "$dst"
 }
 
 export -f link_path

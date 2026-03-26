@@ -37,8 +37,8 @@ include = ["worlds/**", "minetest.conf"]
 exclude = ["cache/**", "debug.txt", "logs/**"]
 
 [[backup]]
-name = "repo"
+name = "myproject"
 mode = "bisync"
-source = "~/repo"
-remote = "gdrive:repo"
+source = "~/myproject"
+remote = "gdrive:myproject"
 exclude = [".git/**"]

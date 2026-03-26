@@ -264,18 +264,18 @@ def test_build_archive_cmd_with_filters() -> None:
 def test_build_bisync_cmd() -> None:
     """Bisync command includes bisync, --resilient, and correct paths."""
     backup = _make_set(
-        name="repo", mode="bisync", remote="gdrive:repo"
+        name="myproject", mode="bisync", remote="gdrive:myproject"
     )
     cmd = gdrive_backup.build_bisync_cmd(backup, _DEFAULTS)
     assert cmd[0:3] == ["rclone", "bisync", "/tmp/test"]
-    assert cmd[3] == "gdrive:repo"
+    assert cmd[3] == "gdrive:myproject"
     assert "--resilient" in cmd
     assert "--dry-run" not in cmd
 
 
 def test_build_bisync_cmd_dry_run() -> None:
     """Bisync command includes --dry-run when requested."""
-    backup = _make_set(name="repo", mode="bisync")
+    backup = _make_set(name="myproject", mode="bisync")
     cmd = gdrive_backup.build_bisync_cmd(backup, _DEFAULTS, dry_run=True)
     assert "--dry-run" in cmd
 

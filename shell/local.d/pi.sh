@@ -12,7 +12,7 @@ alias tmx='tmux new-session \; split-window -h -p 67 \; select-pane -t 0'
 # Minetest / VoxeLibre server helpers
 # -------------------------
 mtvl() {
-  local world="${1:-$HOME/.minetest/worlds/default}"
+  local world="${1:-${MINETEST_WORLD:-$HOME/.minetest/worlds/default}}"
   local port="${2:-30000}"
   mkdir -p "$HOME/.minetest/logs"
   /usr/lib/minetest/minetestserver \
