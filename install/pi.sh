@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Pi 5 profile
+set -euo pipefail
 
 echo "Installing Pi 5 configs..."
 
 # browsh (text-based browser, requires Firefox)
+BROWSH_VERSION="1.8.2"
 if ! command -v browsh &>/dev/null; then
-    BROWSH_VERSION="1.8.2"
-    BROWSH_DEB="/tmp/browsh_${BROWSH_VERSION}_linux_arm64.deb"
+    BROWSH_DEB="$(mktemp /tmp/browsh-XXXXX.deb)"
+    trap 'rm -f "$BROWSH_DEB"' EXIT
     curl -fsSL "https://github.com/browsh-org/browsh/releases/download/v${BROWSH_VERSION}/browsh_${BROWSH_VERSION}_linux_arm64.deb" \
         -o "$BROWSH_DEB"
     sudo dpkg -i "$BROWSH_DEB"
-    rm -f "$BROWSH_DEB"
 fi
 
 link_path "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf
@@ -23,9 +24,7 @@ link_path "$DOTFILES/x11/.xinitrc" ~/.xinitrc
 mkdir -p ~/.local/bin
 link_path "$DOTFILES/scripts/signal/scli" ~/.local/bin/scli
 link_path "$DOTFILES/scripts/signal/signal-setup.sh" ~/.local/bin/signal-setup
-chmod +x "$DOTFILES/scripts/signal/signal-setup.sh"
 link_path "$DOTFILES/scripts/signal/signal-backup.sh" ~/.local/bin/signal-backup
-chmod +x "$DOTFILES/scripts/signal/signal-backup.sh"
 
 # User systemd services
 mkdir -p ~/.config/systemd/user

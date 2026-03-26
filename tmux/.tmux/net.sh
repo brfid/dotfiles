@@ -1,6 +1,6 @@
 #!/bin/bash
 cache=/tmp/.tmux_netstat
-threshold=102400  # 100KB/s
+IDLE_THRESHOLD=102400  # 100 KB/s — below this, show idle
 
 # Find active non-virtual interface
 iface=$(ip -br link show | awk '$2=="UP"{print $1; exit}')
@@ -26,7 +26,7 @@ if [ -f "$cache" ]; then
         fi
     }
 
-    if [ "$rxr" -lt "$threshold" ] && [ "$txr" -lt "$threshold" ]; then
+    if [ "$rxr" -lt "$IDLE_THRESHOLD" ] && [ "$txr" -lt "$IDLE_THRESHOLD" ]; then
         echo "↓ — ↑ —"
     else
         echo "↓ $(fmt_rate $rxr) ↑ $(fmt_rate $txr)"
