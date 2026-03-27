@@ -1,6 +1,33 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions"
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(*rm -rf*)",
+      "Bash(rm -r /*)",
+      "Bash(mkfs *)",
+      "Bash(dd if=*of=/dev/*)",
+      "Bash(*> /dev/sd*)",
+      "Bash(chmod -R 777*)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)"
+    ],
+    "allow": [
+      "Read(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Bash(git log*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git branch*)",
+      "Bash(ls *)",
+      "Bash(which *)",
+      "Bash(python3 -c *)",
+      "Bash(pip list*)",
+      "Write(/home/__USER__/dev/**)",
+      "Edit(/home/__USER__/dev/**)",
+      "Write(/home/__USER__/.claude/**)",
+      "Edit(/home/__USER__/.claude/**)"
+    ]
   },
   "model": "opus",
   "hooks": {
@@ -22,6 +49,5 @@
     "jean-claude@local": true
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true
+  "effortLevel": "high"
 }

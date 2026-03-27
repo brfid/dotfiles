@@ -24,6 +24,10 @@ fi
 mkdir -p ~/.config/gh
 link_path "$DOTFILES/gh/config.yml" ~/.config/gh/config.yml
 
+# Global git hooks (gitleaks pre-commit)
+mkdir -p ~/.config/git
+link_path "$DOTFILES/git/hooks" ~/.config/git/hooks
+
 chmod +x "$DOTFILES/scripts"/*.py
 
 # Interactive setup (skipped when non-interactive, e.g. cloud-init)
