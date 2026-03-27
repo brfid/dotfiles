@@ -3,7 +3,7 @@
 # Usage: ./signal-setup.sh [--name DEVICE_NAME]
 set -euo pipefail
 
-EDCLOUD_SRC="$HOME/edcloud/signal-cli"
+EDCLOUD_SRC="$HOME/dev/edcloud/signal-cli"
 DATA_DIR="$HOME/.local/share/signal-cli"
 ACCOUNTS_JSON="$DATA_DIR/data/accounts.json"
 DEVICE_NAME="${SIGNAL_DEVICE_NAME:-rpi}"

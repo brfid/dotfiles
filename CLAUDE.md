@@ -29,6 +29,6 @@ Personal system configuration repo. See `AGENTS.md` for coding conventions.
 
 ## Key details
 
-- `edcloud` depends on `~/src/dotfiles/install.sh` existing and working
+- `edcloud` depends on `~/dev/dotfiles/install.sh` existing and working (on Pi; on edcloud server itself, `~/src/dotfiles/`)
 - Machine-local secrets go in `~/.secrets` (created from `secrets.example` on first install; not committed)
 - `python/` configs are reference templates, not globally active — copy into project roots.

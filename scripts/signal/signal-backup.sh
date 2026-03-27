@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SRC="$HOME/.local/share/signal-cli"
-DST="$HOME/edcloud/signal-cli"
+DST="$HOME/dev/edcloud/signal-cli"
 
 if [ ! -d "$SRC" ]; then
     echo "No signal-cli data at $SRC — nothing to back up."
