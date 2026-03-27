@@ -64,6 +64,8 @@ else
     link_path "$DOTFILES/claude/settings.json" ~/.claude/settings.json
 fi
 
+link_path "$DOTFILES/claude/CLAUDE.md" ~/.claude/CLAUDE.md
+
 # Claude Code local plugins
 mkdir -p ~/.claude/plugins/local
 for plugin_dir in "$DOTFILES"/claude/plugins/*/; do
