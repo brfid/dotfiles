@@ -60,7 +60,6 @@ if sudo -n true 2>/dev/null; then
     # CPU frequency governor
     sudo ln -sfn "$DOTFILES/system/cpufreq/cpufrequtils" /etc/default/cpufrequtils
     sudo ln -sfn "$DOTFILES/system/cpufreq/cpufreq-ondemand-tune.service" /etc/systemd/system/cpufreq-ondemand-tune.service
-    sudo ln -sfn "$DOTFILES/system/cpufreq/cpufreq-schedutil-tune.service" /etc/systemd/system/cpufreq-schedutil-tune.service
 
     # Rsnapshot backup
     render_template "$DOTFILES/system/rsnapshot/rsnapshot.conf" /tmp/rsnapshot.conf
@@ -81,7 +80,7 @@ if sudo -n true 2>/dev/null; then
     sudo cp "$DOTFILES/system/swap/dphys-swapfile" /etc/dphys-swapfile
 
     sudo systemctl daemon-reload
-    sudo systemctl enable cpufreq-ondemand-tune.service cpufreq-schedutil-tune.service
+    sudo systemctl enable cpufreq-ondemand-tune.service
 else
     echo "Skipping system configs (sudo required)"
 fi

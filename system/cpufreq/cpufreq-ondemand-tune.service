@@ -5,7 +5,7 @@ Wants=cpufrequtils.service
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c 'echo 70 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold; echo 8000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate; echo 10 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor; echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy'
+ExecStart=/bin/sh -c 'echo 20 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold; echo 100 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor; echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/ignore_nice_load'
 RemainAfterExit=yes
 
 [Install]
