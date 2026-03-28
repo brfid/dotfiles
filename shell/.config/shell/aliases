@@ -11,3 +11,6 @@ alias grep='grep --color=auto'
 alias python='python3'
 alias pip='pip3'
 alias venv='source venv/bin/activate'
+
+# Claude Code
+alias claude='claude --allow-dangerously-skip-permissions'
