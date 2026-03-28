@@ -40,7 +40,9 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+# User PATH — single authoritative block.
+# Machine-local additions (e.g. ~/.npm-global/bin) go in ~/.config/shell/local
+PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 export PATH
 
 PS1='\e[0;32m\w\e[0m\n\$ '
