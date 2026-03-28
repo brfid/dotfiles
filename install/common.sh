@@ -2,7 +2,8 @@
 # Common setup — applied on all systems
 set -euo pipefail
 
-mkdir -p ~/.config
+mkdir -p ~/.config/shell
+link_path "$DOTFILES/shell/aliases" ~/.config/shell/aliases
 link_path "$DOTFILES/nvim" ~/.config/nvim
 link_path "$DOTFILES/shell/zshrc" ~/.zshrc
 link_path "$DOTFILES/bash/.bashrc" ~/.bashrc
@@ -66,10 +67,17 @@ fi
 
 link_path "$DOTFILES/claude/CLAUDE.md" ~/.claude/CLAUDE.md
 
-# Claude Code local plugins
-mkdir -p ~/.claude/plugins/local
+# Claude Code local plugin marketplace
+claude plugins marketplace add "$DOTFILES/claude/plugins" --scope user 2>/dev/null || true
 for plugin_dir in "$DOTFILES"/claude/plugins/*/; do
     [ -d "$plugin_dir/.claude-plugin" ] || continue
     plugin_name="$(basename "$plugin_dir")"
-    link_path "$plugin_dir" "$HOME/.claude/plugins/local/$plugin_name"
+    claude plugins install "${plugin_name}@local" --scope user 2>/dev/null || true
+done
+
+# Claude Code standalone commands
+mkdir -p ~/.claude/commands
+for cmd in "$DOTFILES"/claude/commands/*.md; do
+    [ -e "$cmd" ] || continue
+    link_path "$cmd" "$HOME/.claude/commands/$(basename "$cmd")"
 done

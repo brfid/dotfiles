@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "local",
+  "description": "Local plugins from dotfiles",
+  "owner": {
+    "name": "Bradley"
+  },
+  "plugins": [
+    {
+      "name": "jean-claude",
+      "description": "Jean-Claude family assistant identity from OpenClaw",
+      "source": "./jean-claude",
+      "category": "productivity"
+    }
+  ]
+}

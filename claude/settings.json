@@ -1,7 +1,53 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
+  },
   "permissions": {
-    "defaultMode": "auto",
+    "allow": [
+      "Read(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "Bash(git log*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git branch*)",
+      "Bash(ls*)",
+      "Bash(find *)",
+      "Bash(locate *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(file *)",
+      "Bash(stat *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "Bash(ps *)",
+      "Bash(df *)",
+      "Bash(du *)",
+      "Bash(free*)",
+      "Bash(uname*)",
+      "Bash(hostname*)",
+      "Bash(uptime*)",
+      "Bash(id*)",
+      "Bash(env*)",
+      "Bash(printenv*)",
+      "Bash(systemctl status*)",
+      "Bash(systemctl list*)",
+      "Bash(journalctl*)",
+      "Bash(ip *)",
+      "Bash(ss *)",
+      "Bash(ping *)",
+      "Bash(lsusb*)",
+      "Bash(lsblk*)",
+      "Bash(vcgencmd *)",
+      "Bash(python3 -c *)",
+      "Bash(pip list*)",
+      "Write(~/**)",
+      "Edit(~/**)"
+    ],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(*rm -rf*)",
@@ -13,30 +59,9 @@
       "Bash(git push --force*)",
       "Bash(git reset --hard*)"
     ],
-    "allow": [
-      "Read(*)",
-      "Glob(*)",
-      "Grep(*)",
-      "Bash(git log*)",
-      "Bash(git status*)",
-      "Bash(git diff*)",
-      "Bash(git branch*)",
-      "Bash(ls *)",
-      "Bash(which *)",
-      "Bash(python3 -c *)",
-      "Bash(pip list*)",
-"Write(~/src/**)",
-      "Edit(~/src/**)",
-      "Write(~/.claude/**)",
-      "Edit(~/.claude/**)",
-      "mcp__context7__resolve-library-id(*)",
-      "mcp__context7__query-docs(*)"
-    ]
+    "defaultMode": "acceptEdits"
   },
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
-  },
-  "model": "opus",
+  "model": "opus[1m]",
   "hooks": {
     "PostToolUse": [
       {
@@ -57,6 +82,15 @@
     "claude-md-management@claude-plugins-official": true,
     "jean-claude@local": true
   },
+  "extraKnownMarketplaces": {
+    "local": {
+      "source": {
+        "source": "directory",
+        "path": "/home/whf/src/dotfiles/claude/plugins"
+      }
+    }
+  },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true
 }
