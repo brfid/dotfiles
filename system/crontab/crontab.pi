@@ -2,10 +2,10 @@
 # Project-specific names use __PLACEHOLDER__ vars rendered by install.sh
 
 # gdrive-backup: bisync sets every 10 minutes
-*/10 * * * * /usr/bin/python3 /home/__USER__/dev/dotfiles/scripts/gdrive_backup.py --mode bisync 2>&1 | logger -t gdrive-backup
+*/10 * * * * /usr/bin/python3 /home/__USER__/src/dotfiles/scripts/gdrive_backup.py --mode bisync 2>&1 | logger -t gdrive-backup
 
 # gdrive-backup: archive sets weekly Sunday 3am
-0 3 * * 0 /usr/bin/python3 /home/__USER__/dev/dotfiles/scripts/gdrive_backup.py --mode archive 2>&1 | logger -t gdrive-backup
+0 3 * * 0 /usr/bin/python3 /home/__USER__/src/dotfiles/scripts/gdrive_backup.py --mode archive 2>&1 | logger -t gdrive-backup
 
 # Repo backup: daily git backup at 2am
 0 2 * * * cd /home/__USER__/__SYNC_REPO__ && git add -A && git commit -m "daily backup $(date +\%F)" --allow-empty && git push 2>&1 | logger -t repo-backup
