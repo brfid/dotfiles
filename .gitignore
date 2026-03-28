@@ -16,6 +16,9 @@ shell/env
 __pycache__/
 *.pyc
 
+# tmux plugin manager (installed at runtime)
+tmux/.tmux/plugins/
+
 # OS/editor
 .DS_Store
 
