@@ -13,9 +13,9 @@ HISTFILESIZE=2000
 # Update window size after each command
 shopt -s checkwinsize
 
-# Source personal aliases and secrets if the files exist
-if [ -f ~/.aliases ]; then
-    . ~/.aliases
+# Source shared aliases and secrets
+if [ -f ~/.config/shell/aliases ]; then
+    . ~/.config/shell/aliases
 fi
 
 if [ -f ~/.secrets ]; then
