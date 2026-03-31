@@ -233,6 +233,7 @@ def build_bisync_cmd(
         str(backup.source),
         remote,
         "--resilient",
+        "--recover",
         "--log-level",
         "INFO",
     ]

@@ -1,6 +1,30 @@
 #!/usr/bin/env bash
 # Set up signal-cli: restore from edcloud backup or link as a new device.
 # Usage: ./signal-setup.sh [--name DEVICE_NAME]
+#
+# STATUS: never successfully linked as of March 2026.
+#
+# KNOWN ISSUES
+#   Signal's provisioning WebSocket closes after 60 seconds. The phone must
+#   scan *and* complete the handshake within that window. Repeated failures
+#   trigger server-side rate limiting — wait 30–60 minutes before retrying.
+#
+#   URI format: sgnl://linkdevice?uuid=...&pub_key=... (correct as of 0.14.1)
+#   The old tsdevice:/ format is deprecated.
+#
+# BEFORE ATTEMPTING
+#   1. Settings > Linked Devices on your phone — max 5 linked devices allowed.
+#   2. Pre-navigate to Settings > Linked Devices > + before running this script.
+#   3. Open the QR in a browser (chromium/firefox) rather than feh — better rendering.
+#      Use DISPLAY=:0 if running from tmux without a display.
+#   4. Try a non-default device name (--name mypi) if the default fails.
+#   5. If still failing, wait until the next day — provisioning endpoint has known
+#      flakiness with third-party clients.
+#
+# REFERENCES
+#   signal-cli-rest-api #651  — "QR code not valid" on Android, Jan 2025+
+#   AsamK/signal-cli #1567    — "Connection closed" during provisioning
+#   AsamK/signal-cli #190     — "Linking Device Failed" history
 set -euo pipefail
 
 EDCLOUD_SRC="$HOME/dev/edcloud/signal-cli"

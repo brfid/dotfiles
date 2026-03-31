@@ -38,11 +38,11 @@
     "local": {
       "source": {
         "source": "directory",
-        "path": "/home/whf/src/dotfiles/claude/.claude/plugins"
+        "path": "~/src/dotfiles/claude/.claude/plugins"
       }
     }
   },
-"alwaysThinkingEnabled": true,
+  "alwaysThinkingEnabled": true,
   "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true
 }

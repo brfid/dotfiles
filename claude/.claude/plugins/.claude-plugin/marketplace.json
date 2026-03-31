@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "jean-claude",
-      "description": "Jean-Claude family assistant identity from OpenClaw",
+      "description": "Family assistant: homeschool planning, compliance, scheduling, and household logistics",
       "source": "./jean-claude",
       "category": "productivity"
     }

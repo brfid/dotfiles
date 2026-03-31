@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # OpenClaw setup — idempotent, run after dotfiles install
 # Requires: ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, BRAVE_API_KEY in environment
-# Usage: source ~/.secrets && ~/dotfiles/openclaw/setup.sh
+# Usage: source ~/.secrets && ~/src/dotfiles/openclaw/setup.sh
 
 set -euo pipefail
 

@@ -14,7 +14,8 @@ Each directory is a stow package. Its contents mirror the target path under `$HO
 | `tmux/` | `~/.tmux.conf`, `~/.tmux/` | Tmux |
 | `git/` | `~/.config/git/` | Git hooks, gitleaks config |
 | `gh/` | `~/.config/gh/` | GitHub CLI |
-| `claude/` | `~/.claude/` | Claude Code settings, commands, plugins |
+| `claude/` | `~/.claude/` | Claude Code settings, commands, plugins, and the local Jean-Claude plugin mirror |
+| `copilot/` | `~/.copilot/copilot-instructions.md`, `~/.copilot/mcp-config.json` | GitHub Copilot CLI config (manual symlinks; `~/.copilot/` is not stow-managed) |
 | `vscode/` | `~/.config/Code/User/` | VS Code settings and snippets |
 | `neomutt/` | `~/.config/neomutt/` | Neomutt |
 | `systemd-user/` | `~/.config/systemd/user/` | User systemd services and timers |
@@ -26,12 +27,20 @@ Not stow-managed:
 - `templates/.gitconfig.example` — Template; copy to `~/.gitconfig` and fill in name/email.
 - `secrets.example` — Template; copy to `~/.secrets` and fill in values.
 - `scripts/` — Utility scripts (Google Drive backup, Signal CLI tools).
+- `openclaw/` — OpenClaw bootstrap wrapper. The real project logic lives in `~/src/jean-claude`; this package captures how the machine-level runtime is restored.
+
+Project-specific AI repos intentionally stay outside dotfiles:
+
+- `~/src/homeschool` — canonical homeschool information store
+- `~/src/jean-claude` — Claude-facing skills, persona, helper scripts, and OpenClaw runtime docs
 
 ## Usage
 
+`.stowrc` sets `--target=~` automatically, so you can run stow without the flag:
+
 ```bash
 cd ~/src/dotfiles
-stow --target="$HOME" <package> [<package> ...]
+stow <package> [<package> ...]
 ```
 
 To adopt an existing config file into the repo:
@@ -53,6 +62,20 @@ stow --target="$HOME" bash shell nvim gh claude vscode git
 # One-time manual steps:
 cp secrets.example ~/.secrets && chmod 600 ~/.secrets  # edit with real values
 cp templates/.gitconfig.example ~/.gitconfig             # edit name/email
+ln -s ~/src/dotfiles/copilot/.copilot/copilot-instructions.md ~/.copilot/copilot-instructions.md
+ln -s ~/src/dotfiles/copilot/.copilot/mcp-config.json ~/.copilot/mcp-config.json
+
+# Claude-local project plugin:
+claude plugin install ~/src/jean-claude
+
+# Copilot CLI plugins (one-time; not stow-managed):
+copilot plugin marketplace add anthropics/skills
+copilot plugin install document-skills@anthropic-agent-skills
+copilot plugin install example-skills@anthropic-agent-skills
+copilot plugin install security-best-practices@awesome-copilot
+copilot plugin install testing-automation@awesome-copilot
+copilot plugin install context-engineering@awesome-copilot
+# Note: Context7 MCP server (live doc lookups) — mcp-config.json handles this (stow-managed)
 ```
 
 ### Pi
@@ -62,6 +85,9 @@ stow --target="$HOME" bash shell nvim gh claude vscode git tmux x11 neomutt syst
 
 # Profile-specific shell config:
 ln -sfn ~/src/dotfiles/shell/.config/shell/local.d/pi.sh ~/.config/shell/local
+
+# Optional Telegram runtime for the Jean-Claude project:
+source ~/.secrets && ~/src/dotfiles/openclaw/setup.sh
 
 # System configs (review before copying):
 sudo cp system/unbound/unbound.conf /etc/unbound/unbound.conf
@@ -83,6 +109,16 @@ See `edcloud` repo — `scripts/setup-dotfiles.sh` handles stow and shell linkin
 ```bash
 stow --target="$HOME" bash shell nvim gh claude vscode git
 ```
+
+## Claude / OpenClaw project note
+
+The Jean-Claude homeschool assistant is intentionally split:
+
+- project logic in `~/src/jean-claude`
+- canonical family data in `~/src/homeschool`
+- durable user-level setup in this repo
+
+That split is a feature: the project repos stay inspectable and portable, while dotfiles preserves the machine shell around them.
 
 ## Troubleshooting
 
