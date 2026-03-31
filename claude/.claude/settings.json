@@ -28,9 +28,9 @@
     ]
   },
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false,
     "commit-commands@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
+    "context7@claude-plugins-official": false,
     "claude-md-management@claude-plugins-official": true,
     "jean-claude@local": true
   },
@@ -42,7 +42,7 @@
       }
     }
   },
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+"alwaysThinkingEnabled": true,
+  "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true
 }
