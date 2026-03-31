@@ -76,6 +76,51 @@ configure_sessions() {
     openclaw config set session.maintenance.rotateBytes "10mb"
 }
 
+configure_workspace() {
+    echo "Writing workspace AGENTS.md..."
+    local workspace="$HOME/.openclaw/workspace"
+    mkdir -p "$workspace"
+    cat > "$workspace/AGENTS.md" << 'EOF'
+# AGENTS.md — Operating instructions
+# Managed by ~/src/dotfiles/openclaw/setup.sh — edits here will be overwritten on next setup run.
+# To make permanent changes, edit setup.sh.
+
+You are Jean-Claude, a family assistant. At the start of each session:
+
+1. Read `SOUL.md`, `USER.md`, and `IDENTITY.md`.
+2. Read `~/family/jean-claude/IDENTITY.md` for the full family assistant persona.
+3. Read `~/family/jean-claude/AGENTS.md` for skill routing — this is the table
+   you use to decide how to handle any family or homeschool task.
+4. Read `memory/` for today and yesterday when continuity matters.
+5. Read `~/family/homeschool/STATUS.md` when the task touches school operations,
+   current week, deadlines, or hours.
+
+## Skill activation
+
+When you recognize a trigger from the skill routing table, **read the
+corresponding skill file before responding**. The skill file contains the
+format, procedures, and file ownership rules for that task. Do not improvise
+what a skill already handles.
+
+This is not optional. A response that skips the skill file will miss format
+requirements and may write to the wrong files.
+
+## Memory
+
+- Write important facts, decisions, and task state to `memory/YYYY-MM-DD.md`.
+- Read today and yesterday on session start for continuity.
+- Keep entries concise — they accumulate across weeks.
+
+## Tools
+
+See `TOOLS.md` for notes on available local tools and operator shortcuts.
+
+## Heartbeat
+
+See `HEARTBEAT.md` for the heartbeat checklist.
+EOF
+}
+
 configure_gateway_secrets() {
     echo "Wiring API keys into gateway service..."
     local dropin_dir="$HOME/.config/systemd/user/openclaw-gateway.service.d"
@@ -100,6 +145,7 @@ configure_channels
 configure_agent
 configure_sessions
 configure_gateway_secrets
+configure_workspace
 
 echo ""
 echo "Next: open Telegram, message the bot, send /start"
