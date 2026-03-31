@@ -21,6 +21,8 @@ Each directory is a stow package. Its contents mirror the target path under `$HO
 | `systemd-user/` | `~/.config/systemd/user/` | User systemd services and timers |
 | `x11/` | `~/.xprofile`, `~/.xinitrc` | X11 session config |
 
+| `jean-claude/` | — | System overview for the Jean-Claude family assistant ([README](jean-claude/README.md)) |
+
 Not stow-managed:
 
 - `system/` — Reference copies of `/etc/` configs (unbound, lightdm, cpufreq, rsnapshot, etc.). Copy manually with `sudo`.
