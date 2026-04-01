@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # OpenClaw setup — idempotent, run after dotfiles install
-# Requires: ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, BRAVE_API_KEY in environment
+# Requires: ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, BRAVE_API_KEY, TELEGRAM_FAMILY_GROUP_ID in environment
 # Usage: source ~/.secrets && ~/src/dotfiles/openclaw/setup.sh
 
 set -euo pipefail
 
-REQUIRED_SECRETS=(ANTHROPIC_API_KEY TELEGRAM_BOT_TOKEN BRAVE_API_KEY)
+REQUIRED_SECRETS=(ANTHROPIC_API_KEY TELEGRAM_BOT_TOKEN BRAVE_API_KEY TELEGRAM_FAMILY_GROUP_ID)
 
 check_secrets() {
     local missing=()
@@ -45,7 +45,7 @@ install_services() {
 configure_channels() {
     echo "Configuring Telegram..."
     openclaw channels add --channel telegram --token "$TELEGRAM_BOT_TOKEN"
-    openclaw config set channels.telegram.groupPolicy disabled
+    openclaw config set channels.telegram.groupPolicy open
     openclaw config set channels.telegram.streaming partial
     openclaw config set channels.telegram.retry.attempts 3
     openclaw config set channels.telegram.retry.minDelayMs 5000
@@ -69,7 +69,7 @@ configure_sessions() {
     openclaw config set session.dmScope "per-channel-peer"
     openclaw config set session.reset.mode "daily"
     openclaw config set session.reset.atHour 4
-    openclaw config set session.reset.idleMinutes 30
+    openclaw config set session.reset.idleMinutes 120
     openclaw config set session.maintenance.mode "enforce"
     openclaw config set session.maintenance.pruneAfter "14d"
     openclaw config set session.maintenance.maxEntries 100
@@ -77,9 +77,14 @@ configure_sessions() {
 }
 
 configure_workspace() {
-    echo "Writing workspace AGENTS.md..."
+    echo "Writing workspace AGENTS.md and symlinking SOUL.md..."
     local workspace="$HOME/.openclaw/workspace"
     mkdir -p "$workspace"
+
+    # SOUL.md is a symlink to ~/family/jean-claude/IDENTITY.md — the canonical persona.
+    # Edit IDENTITY.md there; do not edit SOUL.md directly.
+    ln -sf "$HOME/family/jean-claude/IDENTITY.md" "$workspace/SOUL.md"
+
     cat > "$workspace/AGENTS.md" << 'EOF'
 # AGENTS.md — Operating instructions
 # Managed by ~/src/dotfiles/openclaw/setup.sh — edits here will be overwritten on next setup run.
@@ -88,11 +93,11 @@ configure_workspace() {
 You are Jean-Claude, a family assistant. At the start of each session:
 
 1. Read `SOUL.md`, `USER.md`, and `IDENTITY.md`.
-2. Read `~/family/jean-claude/IDENTITY.md` for the full family assistant persona.
-3. Read `~/family/jean-claude/AGENTS.md` for skill routing — this is the table
+   (SOUL.md is a symlink to ~/family/jean-claude/IDENTITY.md — the canonical persona.)
+2. Read `~/family/jean-claude/AGENTS.md` for skill routing — this is the table
    you use to decide how to handle any family or homeschool task.
-4. Read `memory/` for today and yesterday when continuity matters.
-5. Read `~/family/homeschool/STATUS.md` when the task touches school operations,
+3. Read `memory/` for today and yesterday when continuity matters.
+4. Read `~/family/homeschool/STATUS.md` when the task touches school operations,
    current week, deadlines, or hours.
 
 ## Skill activation
@@ -138,6 +143,46 @@ EOF
     systemctl --user enable --now openclaw-node.service
 }
 
+configure_cron() {
+    echo "Configuring cron jobs..."
+    # Family group chat ID — stored in ~/.secrets as TELEGRAM_FAMILY_GROUP_ID, not hardcoded here.
+    local GROUP="$TELEGRAM_FAMILY_GROUP_ID"
+    local HAIKU="anthropic/claude-haiku-4-5-20251001"
+    local SKILL_MSG_PREFIX="Read ~/family/jean-claude/skills/brief/SKILL.md and follow the"
+
+    # Helper: add job only if it doesn't already exist by name
+    cron_add_if_missing() {
+        local name="$1"; shift
+        if openclaw cron list --json 2>/dev/null | python3 -c \
+            "import json,sys; exit(0 if any(j.get('name')=='$name' for j in json.load(sys.stdin)) else 1)" 2>/dev/null; then
+            echo "  Cron job '$name' already exists, skipping."
+        else
+            openclaw cron add --name "$name" "$@"
+        fi
+    }
+
+    # Briefs fire a few minutes off the hour to avoid API load spikes at :00/:30.
+    # Content format is defined in ~/family/jean-claude/skills/brief/SKILL.md — edit there.
+
+    cron_add_if_missing "brief-am" \
+        --cron "3 7 * * 1-5" --tz "America/New_York" \
+        --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
+        --description "Morning teacher brief" \
+        --message "$SKILL_MSG_PREFIX morning brief format. Post the result."
+
+    cron_add_if_missing "brief-pm" \
+        --cron "7 11 * * 1-5" --tz "America/New_York" \
+        --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
+        --description "Afternoon teacher brief" \
+        --message "$SKILL_MSG_PREFIX noon brief format. Post the result."
+
+    cron_add_if_missing "evening-check" \
+        --cron "7 18 * * 1-5" --tz "America/New_York" \
+        --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
+        --description "Evening log check" \
+        --message "$SKILL_MSG_PREFIX evening check format. Post the result."
+}
+
 check_secrets
 install_openclaw
 install_services
@@ -146,6 +191,7 @@ configure_agent
 configure_sessions
 configure_gateway_secrets
 configure_workspace
+configure_cron
 
 echo ""
 echo "Next: open Telegram, message the bot, send /start"
