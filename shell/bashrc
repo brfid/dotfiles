@@ -47,7 +47,7 @@ export PATH
 
 PS1='\e[0;32m\w\e[0m\n\$ '
 
-# Machine-specific additions (symlink from shell/.config/shell/local.d/)
+# Machine-specific additions (from shell/local/{machine}.sh → ~/.config/shell/local)
 if [ -f ~/.config/shell/local ]; then
     . ~/.config/shell/local
 fi
