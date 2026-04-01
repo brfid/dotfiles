@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal system configuration, deployed with [GNU Stow](https://www.gnu.org/software/stow/).
+Personal system configuration for a Raspberry Pi 5, an edcloud server, and macOS, deployed with [GNU Stow](https://www.gnu.org/software/stow/). Includes automated Google Drive backups, Pi-hole + Unbound recursive DNS, an OpenClaw-based AI family assistant on Telegram, and opinionated editor and shell setups.
 
 ## Packages
 
@@ -20,7 +20,7 @@ Each directory is a stow package. Its contents mirror the target path under `$HO
 | `neomutt/` | `~/.config/neomutt/` | Neomutt |
 | `systemd-user/` | `~/.config/systemd/user/` | User systemd services and timers |
 | `x11/` | `~/.xprofile`, `~/.xinitrc` | X11 session config |
-
+| `yazi/` | `~/.config/yazi/` | Yazi file manager keybindings |
 | `jean-claude/` | — | System overview for the Jean-Claude family assistant ([README](jean-claude/README.md)) |
 
 Not stow-managed:
@@ -122,16 +122,18 @@ The Jean-Claude homeschool assistant is intentionally split:
 
 That split is a feature: the project repos stay inspectable and portable, while dotfiles preserves the machine shell around them.
 
-## Troubleshooting
-
-See [docs/troubleshooting.md](docs/troubleshooting.md).
-
 ## Scripts
 
 - `scripts/gdrive_backup.py` — Google Drive backup wrapper (archive + bisync modes)
-- `scripts/signal/` — Signal CLI setup, backup, and scli wrapper
+- `scripts/signal/signal-setup.sh` — Signal CLI device linking (restore from edcloud or fresh link)
+
+## Coding conventions
+
+See [`AGENTS.md`](AGENTS.md) — covers Python style (Black + Flake8 + strict mypy), shell conventions, and design decisions.
 
 ## Running tests
+
+Tests validate bash syntax across all shell scripts, stow package structure, and `gdrive_backup.py` config/command assembly.
 
 ```bash
 pip install -e '.[dev]'

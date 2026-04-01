@@ -98,7 +98,7 @@
   "python.terminal.focusAfterLaunch": true,
   "[python]": {
     "editor.wordWrapColumn": 88,
-    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
@@ -108,12 +108,6 @@
       88
     ]
   },
-  "ruff.enable": true,
-  "ruff.lint.enable": true,
-  "ruff.importStrategy": "fromEnvironment",
-  "ruff.organizeImports": true,
-  "ruff.fixAll": true,
-
   // Language-Specific
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features",

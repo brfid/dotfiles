@@ -17,11 +17,18 @@ Each top-level directory is a stow package — its contents mirror the target pa
 - `neomutt/` — Neomutt config
 - `systemd-user/` — User systemd services and timers
 - `x11/` — X11 session config
+- `copilot/` — GitHub Copilot CLI config
+- `yazi/` — Yazi file manager keybindings
 
 Not stow-managed:
+
 - `system/` — Reference copies of `/etc/` configs (unbound, cpufreq, rsnapshot, lightdm, logrotate)
-- `scripts/` — Signal CLI tools, Google Drive backup wrapper
+- `scripts/` — Google Drive backup wrapper, Signal CLI setup
 - `python/` — Python tooling config templates (Black, Flake8, mypy) — copy into project roots
+- `openclaw/` — OpenClaw bootstrap script for the Jean-Claude Telegram agent
+- `jean-claude/` — System overview for the Jean-Claude family assistant
+- `templates/` — `.gitconfig.example` template
+- `tests/` — pytest suite (bash syntax, stow structure, gdrive_backup)
 
 ## Key details
 
