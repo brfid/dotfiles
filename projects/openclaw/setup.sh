@@ -62,6 +62,8 @@ configure_agent() {
     openclaw config set agents.defaults.contextPruning.keepLastAssistants 3
     openclaw config set agents.defaults.contextPruning.hardClear.enabled true
     openclaw config set agents.defaults.contextPruning.hardClear.placeholder "[cleared]"
+    openclaw config set agents.defaults.memorySearch.extraPaths '["~/family"]'
+    openclaw config set skills.load.extraDirs '["~/family/jean-claude/skills"]'
 }
 
 configure_sessions() {
@@ -77,13 +79,14 @@ configure_sessions() {
 }
 
 configure_workspace() {
-    echo "Writing workspace AGENTS.md and symlinking SOUL.md..."
+    echo "Writing workspace AGENTS.md and symlinking SOUL.md and IDENTITY.md..."
     local workspace="$HOME/.openclaw/workspace"
     mkdir -p "$workspace"
 
-    # SOUL.md is a symlink to ~/family/jean-claude/IDENTITY.md — the canonical persona.
-    # Edit IDENTITY.md there; do not edit SOUL.md directly.
+    # Both SOUL.md and IDENTITY.md are symlinks to ~/family/jean-claude/IDENTITY.md — the canonical persona.
+    # Edit that file; do not edit SOUL.md or IDENTITY.md in this workspace directly.
     ln -sf "$HOME/family/jean-claude/IDENTITY.md" "$workspace/SOUL.md"
+    ln -sf "$HOME/family/jean-claude/IDENTITY.md" "$workspace/IDENTITY.md"
 
     cat > "$workspace/AGENTS.md" << 'EOF'
 # AGENTS.md — Operating instructions
@@ -92,8 +95,13 @@ configure_workspace() {
 
 You are Jean-Claude, a family assistant. At the start of each session:
 
-1. Read `SOUL.md`, `USER.md`, and `IDENTITY.md`.
-   (SOUL.md is a symlink to ~/family/jean-claude/IDENTITY.md — the canonical persona.)
+1. Read `SOUL.md` (the canonical persona — symlink to `~/family/jean-claude/IDENTITY.md`).
+   (`IDENTITY.md` in this workspace is also a symlink to the same file.)
+2. Read `~/family/jean-claude/AGENTS.md` for skill routing — this is the table
+   you use to decide how to handle any family or homeschool task.
+3. Read `memory/` for today and yesterday when continuity matters.
+4. Read `~/family/homeschool/STATUS.md` when the task touches school operations,
+   current week, deadlines, or hours.
 2. Read `~/family/jean-claude/AGENTS.md` for skill routing — this is the table
    you use to decide how to handle any family or homeschool task.
 3. Read `memory/` for today and yesterday when continuity matters.
