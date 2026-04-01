@@ -40,7 +40,7 @@ def sync(repo_dir: Path, branch: str = "main") -> None:
 - **LSP**: pyright (strict type checking)
 - **No ruff/Astral** — see Design Decisions below
 
-Reference configs live in `python/`. Copy `pyproject.toml` and `.flake8` into new project roots.
+Reference configs live in `reference/python/`. Copy `pyproject.toml` and `.flake8` into new project roots.
 
 ## Markdown
 
