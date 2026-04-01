@@ -75,6 +75,11 @@ class Config:
     backups: list[BackupSet]
 
 
+def expand(value: str) -> str:
+    """Expand environment variables and ``~`` in a string value."""
+    return os.path.expandvars(os.path.expanduser(value))
+
+
 def load_config(path: Path) -> Config:
     """Parse the TOML config file.
 
@@ -97,9 +102,9 @@ def load_config(path: Path) -> Config:
         raise SystemExit("Config missing [defaults].remote")
 
     defaults = Defaults(
-        remote=defaults_raw["remote"],
+        remote=expand(defaults_raw["remote"]),
         retain_days=defaults_raw.get("retain_days", 90),
-        notify_email=defaults_raw.get("notify_email", ""),
+        notify_email=expand(defaults_raw.get("notify_email", "")),
     )
 
     backups: list[BackupSet] = []
@@ -116,8 +121,8 @@ def load_config(path: Path) -> Config:
             BackupSet(
                 name=entry["name"],
                 mode=entry["mode"],
-                source=Path(entry["source"]).expanduser(),
-                remote=entry.get("remote", ""),
+                source=Path(expand(entry["source"])),
+                remote=expand(entry.get("remote", "")),
                 include=entry.get("include", []),
                 exclude=entry.get("exclude", []),
             )
