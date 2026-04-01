@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 DOTFILES = Path(__file__).parent.parent
+PACKAGES = DOTFILES / "packages"
 
 # Directories that are stow packages (contents mirror $HOME)
 STOW_PACKAGES = [
@@ -29,10 +30,6 @@ STOW_PACKAGES = [
     "yazi",
 ]
 
-# Not stow-managed
-NON_STOW = ["system", "scripts", "python", "openclaw", "templates", "tests",
-             "jean-claude", "docs"]
-
 
 def all_shell_scripts() -> list[Path]:
     """Return all .sh files in the repo (excluding .git)."""
@@ -45,11 +42,11 @@ def all_shell_scripts() -> list[Path]:
 def all_bash_configs() -> list[Path]:
     """Return bash config files that should pass syntax check."""
     candidates = [
-        DOTFILES / "bash" / ".bashrc",
-        DOTFILES / "shell" / ".config" / "shell" / "aliases",
+        PACKAGES / "bash" / ".bashrc",
+        PACKAGES / "shell" / ".config" / "shell" / "aliases",
     ]
     candidates.extend(
-        (DOTFILES / "shell" / ".config" / "shell" / "local.d").glob("*.sh")
+        (PACKAGES / "shell" / ".config" / "shell" / "local.d").glob("*.sh")
     )
     return [p for p in candidates if p.exists()]
 
@@ -86,7 +83,7 @@ def test_bash_config_syntax(config: Path) -> None:
 
 def test_stow_packages_exist() -> None:
     """All declared stow packages must exist as directories."""
-    missing = [p for p in STOW_PACKAGES if not (DOTFILES / p).is_dir()]
+    missing = [p for p in STOW_PACKAGES if not (PACKAGES / p).is_dir()]
     assert not missing, f"Missing stow packages: {missing}"
 
 
