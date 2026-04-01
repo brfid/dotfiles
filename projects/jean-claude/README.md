@@ -36,9 +36,9 @@ Jean-Claude skills (Claude Code plugin, this repo)
    │  district-writer, lesson-planner, week-logger, mail-intake
    ▼
 Private family repo  ←──  Google Drive (rclone bisync, 10min)
-<private-family-repo>/                  └─ mail images, curriculum sheets
-  homeschool/              Google Sheets (sync script, 12hr)
-  jean-claude/             └─ curriculum tracker → Markdown
+<private-family-repo>/                  └─ mail images, files
+  homeschool/              Google Drive files folder (sync_all.py, 10min)
+  jean-claude/             └─ docs/sheets → Markdown in resources/gdrive/
 ```
 
 Claude Code on the Pi is also used directly (interactive sessions) with the same
@@ -92,8 +92,7 @@ Canonical information store. Not public. Contains:
 - Mail intake folder (images excluded from git, summaries committed)
 - STATUS.md — current week, hours, open deadlines
 
-Backed up daily via git push (cron, 02:00). Google Drive syncs bidirectionally
-via rclone every 10 minutes.
+Backed up via Google Drive (rclone bisync, 10 min) and GitHub (`https://github.com/brfid/family.git`).
 
 ---
 
@@ -107,8 +106,9 @@ Phone photo → Google Drive → rclone sync → `<private-family-repo>/homescho
 mail-intake skill → `summary.md` committed to family repo
 
 **Curriculum tracking:**
-Google Sheets → sync script (06:00, 18:00) → Markdown files in family repo →
-available for lesson planning context
+Google Drive files folder → sync_all.py (every 10 min) → Markdown files in
+`resources/gdrive/` → available for lesson planning context. Write access to
+Google Sheets only via `gog sheets update` in OpenClaw.
 
 **Logging:**
 Week-logger skill → `<private-family-repo>/homeschool/weeks/week-NN.md` + STATUS.md →
