@@ -149,12 +149,13 @@ configure_cron() {
     local GROUP="$TELEGRAM_FAMILY_GROUP_ID"
     local HAIKU="anthropic/claude-haiku-4-5-20251001"
     local SKILL_MSG_PREFIX="Read ~/family/jean-claude/skills/brief/SKILL.md and follow the"
+    local SKILL_MSG_SUFFIX="Output only the brief, no narration."
 
     # Helper: add job only if it doesn't already exist by name
     cron_add_if_missing() {
         local name="$1"; shift
         if openclaw cron list --json 2>/dev/null | python3 -c \
-            "import json,sys; exit(0 if any(j.get('name')=='$name' for j in json.load(sys.stdin)) else 1)" 2>/dev/null; then
+            "import json,sys; data=json.load(sys.stdin); exit(0 if any(j.get('name')=='$name' for j in data.get('jobs',data)) else 1)" 2>/dev/null; then
             echo "  Cron job '$name' already exists, skipping."
         else
             openclaw cron add --name "$name" "$@"
@@ -168,19 +169,19 @@ configure_cron() {
         --cron "3 7 * * 1-5" --tz "America/New_York" \
         --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
         --description "Morning teacher brief" \
-        --message "$SKILL_MSG_PREFIX morning brief format. Post the result."
+        --message "$SKILL_MSG_PREFIX morning brief format. $SKILL_MSG_SUFFIX"
 
     cron_add_if_missing "brief-pm" \
         --cron "7 11 * * 1-5" --tz "America/New_York" \
         --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
         --description "Afternoon teacher brief" \
-        --message "$SKILL_MSG_PREFIX noon brief format. Post the result."
+        --message "$SKILL_MSG_PREFIX noon brief format. $SKILL_MSG_SUFFIX"
 
     cron_add_if_missing "evening-check" \
         --cron "7 18 * * 1-5" --tz "America/New_York" \
         --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
         --description "Evening log check" \
-        --message "$SKILL_MSG_PREFIX evening check format. Post the result."
+        --message "$SKILL_MSG_PREFIX evening check format. $SKILL_MSG_SUFFIX"
 }
 
 check_secrets
