@@ -5,5 +5,5 @@ alias zshrc='source ~/.zshrc'
 [ -f ~/.config/shell/aliases ] && source ~/.config/shell/aliases
 [ -f ~/.secrets ] && source ~/.secrets
 
-# Machine-specific additions (symlink from shell/.config/shell/local.d/)
+# Machine-specific additions (from shell/local/{machine}.sh → ~/.config/shell/local)
 [ -f ~/.config/shell/local ] && source ~/.config/shell/local

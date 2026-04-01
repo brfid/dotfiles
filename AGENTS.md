@@ -1,3 +1,68 @@
+# Deployment
+
+This repo is deployed by an LLM agent. See `mapping.yaml` for the full
+source-to-target symlink map. This section covers everything else the agent
+needs to know.
+
+## How to deploy
+
+1. Read `mapping.yaml`. It has `common`, `pi`, and `macos` profiles.
+2. Run `uname -s` (Darwin = macOS, Linux = Pi) and `uname -m` (aarch64 = Pi).
+3. Create symlinks for `common` + the matching machine profile.
+   - Use `ln -sfn <abs-source> <abs-target>`. Create parent dirs as needed.
+   - Check existing symlinks first — only update if wrong or missing.
+   - Report what you changed.
+4. Remove `~/.config/shell/local.d` symlink if present (stow migration artifact).
+
+Skip everything if hostname contains `edcloud` — it manages its own dotfiles.
+
+## Package installation
+
+Verify current package names before installing — they drift between OS versions.
+
+### Pi (Debian/Raspberry Pi OS)
+
+```
+apt: zsh tmux eza bat yazi nodejs npm git neovim neomutt
+npm (global, ~/.npm-global): @githubnext/github-copilot-cli
+```
+
+Set npm prefix before installing: `npm config set prefix ~/.npm-global`
+
+### macOS
+
+```
+brew: zsh tmux eza bat yazi node git neovim
+npm (global, ~/.npm-global): @githubnext/github-copilot-cli
+```
+
+## reference/ — system configs requiring sudo
+
+Do not apply automatically. For each file:
+
+1. Show a diff between the repo file and the current `/etc/` version.
+2. Explain what the change does.
+3. Ask for confirmation before `sudo cp`.
+4. Run `sudo systemctl daemon-reload` after applying systemd-related changes.
+
+## One-time manual steps
+
+These are intentionally not automated:
+
+```bash
+cp secrets.example ~/.secrets && chmod 600 ~/.secrets   # fill in real values
+cp reference/templates/.gitconfig.example ~/.gitconfig  # set name/email
+```
+
+## tmux status scripts
+
+Scripts in `tmux/scripts/` (cpu.sh, ram.sh, etc.) are symlinked individually into
+`~/.tmux/` (e.g. `~/.tmux/cpu.sh`). Do not symlink the whole directory — `~/.tmux/`
+must remain a real directory because tpm installs plugins into `~/.tmux/plugins/` at
+runtime.
+
+---
+
 # Coding conventions
 
 ## Language choice

@@ -11,7 +11,10 @@
       "WebFetch(*)",
       "WebSearch(*)"
     ],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "/home/whf/family"
+    ]
   },
   "hooks": {
     "PostToolUse": [
@@ -37,11 +40,11 @@
     "local": {
       "source": {
         "source": "directory",
-        "path": "~/src/dotfiles/claude/.claude/plugins"
+        "path": "~/src/dotfiles/packages/claude/.claude/plugins"
       }
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true
 }
