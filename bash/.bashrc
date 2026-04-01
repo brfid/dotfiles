@@ -47,7 +47,7 @@ export PATH
 
 PS1='\e[0;32m\w\e[0m\n\$ '
 
-# Machine-specific additions (linked by dotfiles install/<profile>.sh)
+# Machine-specific additions (symlink from shell/.config/shell/local.d/)
 if [ -f ~/.config/shell/local ]; then
     . ~/.config/shell/local
 fi
