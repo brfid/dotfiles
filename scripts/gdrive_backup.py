@@ -393,7 +393,7 @@ def prune_archives(
             )
 
 
-def notify_failure(email: str, failures: list[str]) -> None:
+def sudden_death(email: str, failures: list[str]) -> None:
     """Send a failure notification via neomutt.
 
     Args:
@@ -552,7 +552,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         if failures:
             log.error("Failed sets: %s", ", ".join(failures))
-            notify_failure(config.defaults.notify_email, failures)
+            sudden_death(config.defaults.notify_email, failures)
             return 1
         return 0
     finally:
