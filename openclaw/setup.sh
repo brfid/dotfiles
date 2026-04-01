@@ -166,19 +166,19 @@ configure_cron() {
     # Content format is defined in ~/family/jean-claude/skills/brief/SKILL.md — edit there.
 
     cron_add_if_missing "brief-am" \
-        --cron "3 7 * * 1-5" --tz "America/New_York" \
+        --cron "0 7 * * 1-5" --tz "America/New_York" \
         --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
         --description "Morning teacher brief" \
         --message "$SKILL_MSG_PREFIX morning brief format. $SKILL_MSG_SUFFIX"
 
     cron_add_if_missing "brief-pm" \
-        --cron "7 11 * * 1-5" --tz "America/New_York" \
+        --cron "0 11 * * 1-5" --tz "America/New_York" \
         --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
         --description "Afternoon teacher brief" \
         --message "$SKILL_MSG_PREFIX noon brief format. $SKILL_MSG_SUFFIX"
 
     cron_add_if_missing "evening-check" \
-        --cron "7 18 * * 1-5" --tz "America/New_York" \
+        --cron "0 18 * * 1-5" --tz "America/New_York" \
         --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
         --description "Evening log check" \
         --message "$SKILL_MSG_PREFIX evening check format. $SKILL_MSG_SUFFIX"
