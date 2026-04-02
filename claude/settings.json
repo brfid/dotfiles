@@ -13,7 +13,7 @@
     ],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [
-      "/home/whf/family"
+      "~/family"
     ]
   },
   "hooks": {

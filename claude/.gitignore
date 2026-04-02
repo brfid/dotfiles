@@ -1,0 +1,5 @@
+# Runtime-generated plugin state — not portable, not committed
+plugins/cache/
+plugins/installed_plugins.json
+plugins/known_marketplaces.json
+plugins/marketplaces/
