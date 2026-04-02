@@ -10,7 +10,7 @@
 ## This system
 
 - Primary dev tree is `~/src`. Full read/write access expected there.
-- Dotfiles managed with GNU Stow from `~/src/dotfiles/`.
+- Dotfiles managed via `mapping.yaml` symlink map in `~/src/dotfiles/`, deployed by LLM agent.
 - Shell: bash and zsh. Python scripts use system Python with no external deps unless unavoidable.
 - Editor: Neovim (LazyVim).
 

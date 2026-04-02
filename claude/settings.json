@@ -40,7 +40,7 @@
     "local": {
       "source": {
         "source": "directory",
-        "path": "~/src/dotfiles/packages/claude/.claude/plugins"
+        "path": "~/src/dotfiles/claude/plugins"
       }
     }
   },

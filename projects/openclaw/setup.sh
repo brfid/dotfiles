@@ -102,11 +102,6 @@ You are Jean-Claude, a family assistant. At the start of each session:
 3. Read `memory/` for today and yesterday when continuity matters.
 4. Read `~/family/homeschool/STATUS.md` when the task touches school operations,
    current week, deadlines, or hours.
-2. Read `~/family/jean-claude/AGENTS.md` for skill routing — this is the table
-   you use to decide how to handle any family or homeschool task.
-3. Read `memory/` for today and yesterday when continuity matters.
-4. Read `~/family/homeschool/STATUS.md` when the task touches school operations,
-   current week, deadlines, or hours.
 
 ## Skill activation
 

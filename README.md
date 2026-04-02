@@ -38,6 +38,7 @@ neomutt/        Neomutt (Pi only)
 x11/            X11 session config (Pi only)
 systemd/        User systemd services and timers (Pi only)
 yazi/           Yazi file manager keybindings
+gdrive-backup/  rclone backup config (Pi only)
 
 reference/      System configs requiring sudo — reviewed and applied manually
   linux/          /etc/: unbound, cpufreq, lightdm, rsnapshot, etc.
