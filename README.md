@@ -52,10 +52,11 @@ tests/          pytest: mapping.yaml coverage, bash syntax
 
 ## edcloud
 
-Managed separately — `scripts/setup-dotfiles.sh` in the edcloud repo handles linking.
-During a rebuild it also pulls environment-specific variables from the edcloud environment
-into the shell config, so a fresh instance is fully configured in one pass: dotfiles linked,
-credentials injected, shell ready.
+A second use case alongside Pi/macOS. During provisioning, cloud-init clones this repo and
+fetches secrets from AWS SSM (Tailscale auth key, GitHub token, rclone config) to configure
+tools directly. `scripts/setup-dotfiles.sh` in the edcloud repo then symlinks these configs
+manually after the instance is up. On each login, `~/.bashrc` sources `~/.secrets`
+(user-maintained from `secrets.example`) and `shell/local/edcloud.sh`.
 
 ## Conventions
 
