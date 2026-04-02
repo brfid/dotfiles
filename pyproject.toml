@@ -15,6 +15,7 @@ dev = [
     "black",
     "flake8",
     "flake8-bugbear",
+    "pyyaml",
 ]
 
 [tool.pytest.ini_options]

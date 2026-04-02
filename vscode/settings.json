@@ -93,7 +93,7 @@
   // Python
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.typeCheckingMode": "standard",
+  "python.analysis.typeCheckingMode": "strict",
   "python.analysis.completeFunctionParens": true,
   "python.terminal.focusAfterLaunch": true,
   "[python]": {
