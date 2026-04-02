@@ -165,25 +165,13 @@ configure_cron() {
         fi
     }
 
-    # Briefs fire a few minutes off the hour to avoid API load spikes at :00/:30.
+    # Single end-of-day log check at 6pm weekdays.
     # Content format is defined in ~/family/jean-claude/skills/brief/SKILL.md — edit there.
 
-    cron_add_if_missing "brief-am" \
-        --cron "0 7 * * 1-5" --tz "America/New_York" \
-        --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
-        --description "Morning teacher brief" \
-        --message "$SKILL_MSG_PREFIX morning brief format. $SKILL_MSG_SUFFIX"
-
-    cron_add_if_missing "brief-pm" \
-        --cron "0 11 * * 1-5" --tz "America/New_York" \
-        --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
-        --description "Afternoon teacher brief" \
-        --message "$SKILL_MSG_PREFIX noon brief format. $SKILL_MSG_SUFFIX"
-
-    cron_add_if_missing "evening-check" \
+    cron_add_if_missing "log-check-6pm" \
         --cron "0 18 * * 1-5" --tz "America/New_York" \
         --model "$HAIKU" --session isolated --announce --to "$GROUP" --light-context \
-        --description "Evening log check" \
+        --description "6pm daily log summary" \
         --message "$SKILL_MSG_PREFIX evening check format. $SKILL_MSG_SUFFIX"
 }
 
