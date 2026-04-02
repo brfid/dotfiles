@@ -30,3 +30,7 @@ tmux/.tmux/plugins/
 superpowers/
 plans/
 .claude/settings.local.json
+
+# nvim runtime files
+nvim/lazy-lock.json
+nvim/lazyvim.json
