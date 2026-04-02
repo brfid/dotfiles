@@ -13,7 +13,7 @@
     ],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [
-      "/home/__USER__/family"
+      "<private-family-repo>"
     ]
   },
   "hooks": {

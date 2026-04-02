@@ -14,6 +14,3 @@
 - Shell: bash and zsh. Python scripts use system Python with no external deps unless unavoidable.
 - Editor: Neovim (LazyVim).
 
-## Code conventions
-
-Follow the conventions in `~/src/dotfiles/AGENTS.md` for any code changes.
