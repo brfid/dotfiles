@@ -53,6 +53,9 @@ tests/          pytest: mapping.yaml coverage, bash syntax
 ## edcloud
 
 Managed separately — `scripts/setup-dotfiles.sh` in the edcloud repo handles linking.
+During a rebuild it also pulls environment-specific variables from the edcloud environment
+into the shell config, so a fresh instance is fully configured in one pass: dotfiles linked,
+credentials injected, shell ready.
 
 ## Conventions
 
