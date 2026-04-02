@@ -1,0 +1,20 @@
+# gdrive-backup configuration
+
+[defaults]
+remote = "gdrive:backups/pi"
+retain_days = 90
+notify_email = "$GOG_ACCOUNT"
+
+# [[backup]]
+# name = "minetest"
+# mode = "archive"
+# source = "~/.minetest"
+# include = ["worlds/**", "minetest.conf"]
+# exclude = ["cache/**", "debug.txt", "logs/**"]
+
+[[backup]]
+name = "family"
+mode = "bisync"
+source = "<private-family-repo>"
+remote = "gdrive:family"
+exclude = [".git/**", "__pycache__/**", ".pytest_cache/**", "*.xlsx", "*.docx"]

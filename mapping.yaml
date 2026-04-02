@@ -42,6 +42,7 @@ common:
 
 pi:
   shell/bashrc:            ~/.bashrc
+  gdrive-backup/config.toml: ~/.config/gdrive-backup/config.toml
   shell/local/pi.sh:       ~/.config/shell/local
   neomutt:                 ~/.config/neomutt
   x11/xinitrc:             ~/.xinitrc
