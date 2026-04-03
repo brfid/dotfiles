@@ -49,6 +49,10 @@ pi:
   x11/xprofile:            ~/.xprofile
   systemd:                 ~/.config/systemd/user
 
+  # keyboard: hwdb files require sudo — see keyboard/README.md
+  #   keyboard/90-leopold-fc900rw.hwdb:  /etc/udev/hwdb.d/90-leopold-fc900rw.hwdb
+  #   keyboard/90-leopold-fc660mbt.hwdb: /etc/udev/hwdb.d/90-leopold-fc660mbt.hwdb
+
 macos:
   shell/zshrc:              ~/.zshrc
   shell/local/macos.sh:     ~/.config/shell/local
