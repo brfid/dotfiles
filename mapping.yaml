@@ -56,3 +56,4 @@ pi:
 macos:
   shell/zshrc:              ~/.zshrc
   shell/local/macos.sh:     ~/.config/shell/local
+  iterm2/profiles.json:     ~/Library/Application Support/iTerm2/DynamicProfiles/profiles.json

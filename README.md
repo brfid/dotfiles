@@ -38,6 +38,7 @@ neomutt/        Neomutt (Pi only)
 x11/            X11 session config (Pi only)
 systemd/        User systemd services and timers (Pi only)
 yazi/           Yazi file manager keybindings
+iterm2/         iTerm2 profiles with light/dark colors (macOS only)
 gdrive-backup/  rclone backup config (Pi only)
 
 reference/      System configs requiring sudo — reviewed and applied manually
@@ -46,7 +47,7 @@ reference/      System configs requiring sudo — reviewed and applied manually
   templates/      .gitconfig.example
 
 mapping.yaml    Symlink map (source → target) with common/pi/macos profiles
-scripts/        Google Drive backup, Signal CLI setup
+scripts/        Google Drive backup
 projects/       Bootstrap docs for jean-claude and openclaw
 tests/          pytest: mapping.yaml coverage, bash syntax
 ```
