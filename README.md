@@ -119,6 +119,7 @@ neomutt/        Neomutt (Pi only)
 x11/            X11 session config (Pi only)
 systemd/        User systemd services and timers (Pi only)
 yazi/           Yazi file manager keybindings
+iterm2/         iTerm2 profiles with light/dark colors (macOS only)
 gdrive-backup/  rclone backup config (Pi only)
 keyboard/       udev hwdb key remaps (Pi only, requires sudo)
 
@@ -127,7 +128,8 @@ reference/      System configs requiring sudo — reviewed and applied manually
   python/         Python tooling templates: Black, Flake8, mypy
   templates/      .gitconfig.example
 
-scripts/        Google Drive backup, Signal CLI setup
+<<<<<<< HEAD
+scripts/        Google Drive backup
 projects/       Bootstrap docs for jean-claude
 tests/          pytest: profile table coverage, bash syntax
 ```
