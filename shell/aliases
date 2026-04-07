@@ -19,14 +19,13 @@ alias venv='source venv/bin/activate'
 # File manager
 y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
 
 # Claude Code / Copilot CLI
-alias claude='claude-anth'
+alias claude="$HOME/bin/claude"
 # Make Copilot CLI pick up ~/.claude/CLAUDE.md (user prefs, style, Context7 rule)
 export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="$HOME/.claude"

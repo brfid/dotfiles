@@ -2,13 +2,9 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
-    "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
     "API_TIMEOUT_MS": "3000000",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
-    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.5-air",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-4.7",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5"
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1"
   },
   "permissions": {
     "allow": [
@@ -23,7 +19,6 @@
       "<private-family-repo>"
     ]
   },
-  "model": "opus",
   "availableModels": [
     "haiku",
     "sonnet",
@@ -46,8 +41,7 @@
     "superpowers@claude-plugins-official": false,
     "commit-commands@claude-plugins-official": false,
     "context7@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false,
-    "jean-claude@local": true
+    "claude-md-management@claude-plugins-official": false
   },
   "extraKnownMarketplaces": {
     "local": {
@@ -58,6 +52,5 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true
 }

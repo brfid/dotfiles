@@ -1,20 +1,17 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "sonnet",
+  "effortLevel": "medium",
   "env": {
-    "ANTHROPIC_BASE_URL": "",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "API_TIMEOUT_MS": "3000000",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+    "ANTHROPIC_BASE_URL": "",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5-20251001",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6"
   },
-  "availableModels": [
-    "haiku",
-    "sonnet",
-    "opus"
-  ],
   "permissions": {
     "allow": [
       "Read(*)",
@@ -28,6 +25,11 @@
       "<private-family-repo>"
     ]
   },
+  "availableModels": [
+    "haiku",
+    "sonnet",
+    "opus"
+  ],
   "hooks": {
     "PostToolUse": [
       {
@@ -57,7 +59,5 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "medium",
-  "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet"
+  "skipDangerousModePermissionPrompt": true
 }
