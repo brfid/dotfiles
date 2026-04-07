@@ -1,15 +1,20 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
+    "ANTHROPIC_BASE_URL": "",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
-    "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
     "API_TIMEOUT_MS": "3000000",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.5-air",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-4.7",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5"
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5-20251001",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6"
   },
+  "availableModels": [
+    "haiku",
+    "sonnet",
+    "opus"
+  ],
   "permissions": {
     "allow": [
       "Read(*)",
@@ -23,12 +28,6 @@
       "<private-family-repo>"
     ]
   },
-  "model": "opus",
-  "availableModels": [
-    "haiku",
-    "sonnet",
-    "opus"
-  ],
   "hooks": {
     "PostToolUse": [
       {
@@ -44,9 +43,9 @@
   },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": false,
-    "commit-commands@claude-plugins-official": false,
+    "commit-commands@claude-plugins-official": true,
     "context7@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false,
+    "claude-md-management@claude-plugins-official": true,
     "jean-claude@local": true
   },
   "extraKnownMarketplaces": {
@@ -59,5 +58,6 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "medium",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "model": "sonnet"
 }

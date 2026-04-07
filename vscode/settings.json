@@ -13,7 +13,6 @@
     "terminal.foreground": "#FFA500"
   },
   "workbench.secondarySideBar.showLabels": false,
-  "workbench.iconTheme": "material-icon-theme",
   "window.systemColorTheme": "auto",
   "window.autoDetectColorScheme": true,
   "breadcrumbs.filePath": "on",
@@ -54,7 +53,6 @@
   "terminal.integrated.shellIntegration.environmentReporting": true,
   "terminal.integrated.stickyScroll.enabled": true,
   "terminal.integrated.enableMultiLinePasteWarning": "never",
-
   // Files
   "files.autoSave": "afterDelay",
   "files.trimTrailingWhitespace": true,
@@ -93,12 +91,12 @@
   // Python
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.typeCheckingMode": "standard",
   "python.analysis.completeFunctionParens": true,
   "python.terminal.focusAfterLaunch": true,
   "[python]": {
     "editor.wordWrapColumn": 88,
-    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
@@ -108,6 +106,12 @@
       88
     ]
   },
+  "ruff.enable": true,
+  "ruff.lint.enable": true,
+  "ruff.importStrategy": "fromEnvironment",
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
+
   // Language-Specific
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features",
@@ -189,5 +193,7 @@
   "comments.openView": "never",
   "update.showReleaseNotes": false,
   "chat.viewSessions.orientation": "stacked",
-  "workbench.preferredLightColorTheme": "Default Dark Modern"
+  "claudeCode.useTerminal": true,
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.preferredDarkColorTheme": "Dark Modern"
 }

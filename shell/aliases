@@ -27,6 +27,6 @@ y() {
 }
 
 # Claude Code / Copilot CLI
-alias claude='claude --allow-dangerously-skip-permissions'
+alias claude='claude-anth'
 # Make Copilot CLI pick up ~/.claude/CLAUDE.md (user prefs, style, Context7 rule)
 export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="$HOME/.claude"

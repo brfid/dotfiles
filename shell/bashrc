@@ -51,3 +51,11 @@ PS1='\e[0;32m\w\e[0m\n\$ '
 if [ -f ~/.config/shell/local ]; then
     . ~/.config/shell/local
 fi
+
+# Old tmux panes can keep an SSH-originated environment without X11 vars.
+# Import the GUI display/auth vars from tmux's global environment when needed.
+if [ -n "${TMUX-}" ] && { [ -z "${DISPLAY-}" ] || [ -z "${XAUTHORITY-}" ]; }; then
+    while IFS= read -r line; do
+        eval "$line"
+    done < <(tmux show-environment -g -s 2>/dev/null | grep -E '^(DISPLAY|XAUTHORITY)=')
+fi

@@ -239,6 +239,8 @@ def build_bisync_cmd(
         remote,
         "--resilient",
         "--recover",
+        "--fast-list",
+        "--conflict-resolve", "newer",
         "--log-level",
         "INFO",
     ]

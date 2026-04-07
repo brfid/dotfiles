@@ -10,6 +10,12 @@
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-4.7",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5"
   },
+  "model": "haiku",
+  "availableModels": [
+    "haiku",
+    "sonnet",
+    "opus"
+  ],
   "permissions": {
     "allow": [
       "Read(*)",
@@ -23,12 +29,6 @@
       "<private-family-repo>"
     ]
   },
-  "model": "opus",
-  "availableModels": [
-    "haiku",
-    "sonnet",
-    "opus"
-  ],
   "hooks": {
     "PostToolUse": [
       {

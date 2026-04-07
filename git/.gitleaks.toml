@@ -65,3 +65,25 @@ id = "brave-api-key"
 description = "Brave Search API key"
 regex = '''BSA[A-Za-z0-9]{20,}'''
 tags = ["key"]
+
+# ── PII rules ──────────────────────────────────────────
+
+[[rules]]
+id = "phone-number"
+description = "Phone number (US format)"
+regex = '''(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}'''
+tags = ["pii"]
+[rules.allowlist]
+paths = ['''secrets\.example$''']
+
+[[rules]]
+id = "street-address"
+description = "Possible street address"
+regex = '''\d{1,5}\s+[A-Z][a-z]+\s+(St|Ave|Blvd|Dr|Ln|Rd|Way|Ct|Pl|Cir)\b'''
+tags = ["pii"]
+
+[[rules]]
+id = "ssn"
+description = "Social Security Number"
+regex = '''\b\d{3}-\d{2}-\d{4}\b'''
+tags = ["pii"]

@@ -12,9 +12,9 @@ notify_email = "$GOG_ACCOUNT"
 # include = ["worlds/**", "minetest.conf"]
 # exclude = ["cache/**", "debug.txt", "logs/**"]
 
-[[backup]]
-name = "family"
-mode = "bisync"
-source = "<private-family-repo>"
-remote = "gdrive:family"
-exclude = [".git/**", "__pycache__/**", ".pytest_cache/**", "*.xlsx", "*.docx"]
+# DISABLED 2026-04-07: file sync moved to Syncthing
+# [[backup]]
+# name = "family"
+# mode = "bisync"
+# source = "<private-family-repo>"
+# remote = "gdrive:family"

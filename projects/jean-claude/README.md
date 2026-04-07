@@ -1,8 +1,8 @@
 # Jean-Claude
 
 Jean-Claude is a personal AI assistant built for a homeschooling family. It runs
-on a Raspberry Pi, reaches the family through Telegram, and is managed day-to-day
-through Claude Code on the same machine.
+on a Raspberry Pi, reaches the family through a browser app, and is managed
+day-to-day through Claude Code and Claude Desktop on the same machine.
 
 This document describes the overall system. It is intended to be read by humans
 and loaded as context by LLMs working within the setup.
@@ -11,7 +11,7 @@ and loaded as context by LLMs working within the setup.
 
 ## What it does
 
-- Answers questions and handles tasks over Telegram (voice and text)
+- Answers questions and handles tasks via a browser chat app
 - Manages a structured homeschool: lesson planning, daily logging, compliance
   reporting, and hour tracking
 - Processes physical mail (photographed → Drive → summarised with deadlines)
@@ -23,17 +23,20 @@ and loaded as context by LLMs working within the setup.
 ## Architecture
 
 ```
-Telegram
+Browser (Cloudflare Access)
    │
    ▼
-OpenClaw gateway (systemd daemon, Raspberry Pi)
-   │  session management, context pruning, retry logic
+Web app (NiceGUI, Pi, 127.0.0.1:8000)
+   │
+   ▼
+MCP server (FastMCP, Pi, Tailscale-only)
+   │  skill routing, context loading, file tools
    ▼
 Claude API (Anthropic)
-   │  model: claude-sonnet-4-6
+   │  model: claude-haiku-4-5 (chat), claude-sonnet-4-6 (MCP clients)
    ▼
-Jean-Claude skills (Claude Code plugin, this repo)
-   │  district-writer, lesson-planner, week-logger, mail-intake
+Jean-Claude skills (homeschool/skills/*.md)
+   │  district-writer, lesson-planner, week-logger, mail-intake, etc.
    ▼
 Private family repo  ←──  Google Drive (rclone bisync, 10min)
 <private-family-repo>/                  └─ mail images, files
@@ -41,65 +44,50 @@ Private family repo  ←──  Google Drive (rclone bisync, 10min)
   jean-claude/             └─ docs/sheets → Markdown in resources/gdrive/
 ```
 
-Claude Code on the Pi is also used directly (interactive sessions) with the same
-jean-claude plugin active — so the same skills work both from Telegram and from
-the terminal.
+Claude Code and Claude Desktop also connect via MCP, using the same skill
+files and data store.
 
 ---
 
 ## Components
 
-### OpenClaw
-Runtime daemon that connects Claude API to messaging channels. Handles session
-lifecycle, context pruning, and retry/backoff. Configured via
-`~/src/dotfiles/openclaw/setup.sh`.
+### Web app
+NiceGUI chat client behind Cloudflare Access. Stateless — sends full
+transcript each turn. Family-facing primary interface.
 
-Channels: Telegram (primary). Session resets daily at 04:00 and after 30 minutes
-idle. Context pruned on a cache-TTL strategy, keeping the last 3 assistant turns.
+### MCP server
+FastMCP server on the Pi, Tailscale-only. Provides tools (chat_turn,
+read_file, write_file, search_homeschool, run_validation) and resources
+(status, skills, week files). Used by the web app, Claude Desktop, and
+Claude Code.
 
 ### Claude Code
 Interactive AI coding and task environment. Configuration in
 `~/src/dotfiles/claude/.claude/`:
 
-- `settings.json` — model, permissions, hooks (black formatter on save),
-  thinking enabled, effortLevel medium
-- `CLAUDE.md` — user preferences: Google developer docs style, concise,
-  Context7 for library docs
-- Memory system at `~/.claude/projects/` — auto-persisted across sessions
+- `settings.json` — model, permissions, hooks, thinking enabled
+- `CLAUDE.md` — user preferences
 
-### Jean-Claude plugin
-Claude Code plugin (`~/src/dotfiles/claude/.claude/plugins/jean-claude/`)
-providing the assistant identity and skills. Skills contain logic and structure
-only — personal context (learner profile, district contacts, compliance calendar)
-is loaded at runtime from the private family repo via `!cat` directives. Nothing
-personal is hardcoded here.
-
-Skills:
-- **jean-claude** — activates the persona; loads identity, soul, and workspace
-  map from the private repo
-- **district-writer** — compliance documents and letters under 8 NYCRR §100.10
-- **lesson-planner** — weekly and daily lesson plans; learner profile injected
-  at runtime
-- **week-logger** — logs completed sessions, updates STATUS.md and hour totals
-- **mail-intake** — processes Drive-synced mail images, writes structured
-  summaries with deadlines
+### Jean-Claude skills
+Skill definitions live in `<private-family-repo>/homeschool/skills/*.md` — plain markdown,
+readable by any human or LLM. Each skill contains purpose, triggers, file
+ownership, domain knowledge, behavior instructions, and examples.
 
 ### Private family repo (`<private-family-repo>/`)
 Canonical information store. Not public. Contains:
 - Homeschool week logs, lesson plans, compliance documents
-- Learner profile, district context, compliance calendar
-- Jean-Claude private context files (IDENTITY.md, SOUL.md, CONTEXT.md, AGENTS.md)
+- Jean-Claude private context files (IDENTITY.md, AGENTS.md)
 - Mail intake folder (images excluded from git, summaries committed)
 - STATUS.md — current week, hours, open deadlines
 
-Backed up via Google Drive (rclone bisync, 10 min) and GitHub (`https://github.com/brfid/family.git`).
+Backed up via Google Drive (rclone bisync, 10 min) and GitHub.
 
 ---
 
 ## Data flow
 
-**Telegram → response:**
-User message → OpenClaw → Claude API + skills → response
+**Browser → response:**
+User message → web app → MCP server → Claude API + skills → response
 
 **Mail intake:**
 Phone photo → Google Drive → rclone sync → `<private-family-repo>/homeschool/mail/` →
@@ -107,12 +95,11 @@ mail-intake skill → `summary.md` committed to family repo
 
 **Curriculum tracking:**
 Google Drive files folder → sync_all.py (every 10 min) → Markdown files in
-`resources/gdrive/` → available for lesson planning context. Write access to
-Google Sheets only via `gog sheets update` in OpenClaw.
+`resources/gdrive/` → available for lesson planning context.
 
 **Logging:**
 Week-logger skill → `<private-family-repo>/homeschool/weeks/week-NN.md` + STATUS.md →
-committed to family repo nightly
+committed to family repo
 
 ---
 
@@ -120,13 +107,12 @@ committed to family repo nightly
 
 | Layer | Location | Public |
 |-------|----------|--------|
-| System config (this) | `~/src/dotfiles/jean-claude/` | Yes |
-| Claude settings, skills | `~/src/dotfiles/claude/` | Yes |
-| OpenClaw setup | `~/src/dotfiles/openclaw/` | Yes |
+| System config (this) | `~/src/dotfiles/projects/jean-claude/` | Yes |
+| Claude settings | `~/src/dotfiles/claude/` | Yes |
 | Identity, private context | `<private-family-repo>/jean-claude/` | No |
 | Homeschool data | `<private-family-repo>/homeschool/` | No |
 
-Skills are public; the data they operate on is private.
+Skills are public (as a pattern); the data they operate on is private.
 
 ---
 
@@ -135,8 +121,6 @@ Skills are public; the data they operate on is private.
 To give an LLM full system context, load this file alongside the private context:
 
 ```
-!`cat ~/src/dotfiles/jean-claude/README.md`
-!`cat <private-family-repo>/jean-claude/CONTEXT.md`
+cat ~/src/dotfiles/projects/jean-claude/README.md
+cat <private-family-repo>/jean-claude/IDENTITY.md
 ```
-
-Or reference it on demand — skills don't load this automatically.

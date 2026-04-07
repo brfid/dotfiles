@@ -5,12 +5,5 @@
   "owner": {
     "name": "Local"
   },
-  "plugins": [
-    {
-      "name": "jean-claude",
-      "description": "Family assistant: homeschool planning, compliance, scheduling, and household logistics",
-      "source": "./jean-claude",
-      "category": "productivity"
-    }
-  ]
+  "plugins": []
 }

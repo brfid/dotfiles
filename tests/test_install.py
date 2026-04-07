@@ -1,54 +1,69 @@
 """Tests for the dotfiles repo structure.
 
-Validates bash syntax for all shell scripts and verifies that every source
-path declared in mapping.yaml exists in the repo.
+Validates bash syntax for shell scripts (excluding vendored plugins) and
+verifies that every tool in the README.md profile table exists as a directory.
 """
 from __future__ import annotations
 
+import re
 import subprocess
 from pathlib import Path
 
 import pytest
-import yaml
 
 DOTFILES = Path(__file__).parent.parent
-MAPPING = DOTFILES / "mapping.yaml"
+README = DOTFILES / "README.md"
+
+# Directories containing third-party code — not ours to test.
+_VENDORED = {"plugins", ".tmux"}
 
 
-def all_shell_scripts() -> list[Path]:
-    """Return all .sh files in the repo (excluding .git)."""
-    return sorted(
-        p for p in DOTFILES.rglob("*.sh")
-        if ".git" not in p.parts
-    )
+def _is_vendored(path: Path) -> bool:
+    """Return True if path is inside a vendored directory."""
+    return bool(_VENDORED & set(path.relative_to(DOTFILES).parts))
 
 
-def all_bash_configs() -> list[Path]:
-    """Return bash config files that should pass syntax check."""
-    candidates = [
-        DOTFILES / "shell" / "bashrc",
-        DOTFILES / "shell" / "aliases",
+def all_shell_files() -> list[Path]:
+    """Return shell files we own: *.sh scripts plus bashrc/aliases."""
+    scripts = [
+        p
+        for p in DOTFILES.rglob("*.sh")
+        if ".git" not in p.parts and not _is_vendored(p)
     ]
-    candidates.extend((DOTFILES / "shell" / "local").glob("*.sh"))
-    return [p for p in candidates if p.exists()]
+    for name in ("bashrc", "aliases"):
+        p = DOTFILES / "shell" / name
+        if p.exists():
+            scripts.append(p)
+    return sorted(scripts)
 
 
-def mapping_sources() -> list[Path]:
-    """Return all source paths declared in mapping.yaml."""
-    with MAPPING.open() as f:
-        data = yaml.safe_load(f)
-    sources = []
-    for profile in data.values():
-        for src in profile:
-            sources.append(DOTFILES / src)
-    return sources
+def profile_tools() -> list[str]:
+    """Parse tool names from the profile table in README.md."""
+    text = README.read_text()
+    tools: list[str] = []
+    in_table = False
+    for line in text.splitlines():
+        if line.startswith("| Tool "):
+            in_table = True
+            continue
+        if in_table and line.startswith("|---"):
+            continue
+        if in_table and line.startswith("| "):
+            match = re.match(r"\|\s*(\S+)\s*\|", line)
+            if match:
+                tools.append(match.group(1))
+        elif in_table:
+            break
+    return tools
 
 
 @pytest.mark.parametrize(
-    "script", all_shell_scripts(), ids=lambda p: str(p.relative_to(DOTFILES))
+    "script",
+    all_shell_files(),
+    ids=lambda p: str(p.relative_to(DOTFILES)),
 )
 def test_bash_syntax(script: Path) -> None:
-    """All .sh files must pass bash -n syntax check."""
+    """Our shell files must pass bash -n syntax check."""
     result = subprocess.run(
         ["bash", "-n", str(script)],
         capture_output=True,
@@ -60,25 +75,12 @@ def test_bash_syntax(script: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    "config", all_bash_configs(), ids=lambda p: str(p.relative_to(DOTFILES))
+    "tool",
+    profile_tools(),
+    ids=lambda t: t,
 )
-def test_bash_config_syntax(config: Path) -> None:
-    """Bash config files (bashrc, aliases, local/) must pass syntax check."""
-    result = subprocess.run(
-        ["bash", "-n", str(config)],
-        capture_output=True,
-        text=True,
+def test_profile_tools_exist(tool: Path) -> None:
+    """Every tool in the README profile table must exist as a directory."""
+    assert (DOTFILES / tool).is_dir(), (
+        f"README.md profile table references missing directory: {tool}"
     )
-    assert result.returncode == 0, (
-        f"Syntax error in {config.name}:\n{result.stderr}"
-    )
-
-
-@pytest.mark.parametrize(
-    "source", mapping_sources(), ids=lambda p: str(p.relative_to(DOTFILES))
-)
-def test_mapping_sources_exist(source: Path) -> None:
-    """Every source path in mapping.yaml must exist in the repo."""
-    assert source.exists(), f"mapping.yaml references missing path: {source}"
-
-

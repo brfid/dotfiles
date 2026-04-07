@@ -2,8 +2,8 @@
 
 export PATH="$HOME/.npm-global/bin:$PATH"
 
-# OpenClaw: faster CLI startup on ARM via Node.js compile cache
-export NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
+# Node.js compile cache for faster CLI startup on ARM
+export NODE_COMPILE_CACHE=/var/tmp/node-compile-cache
 
 alias t='tmux new-session -A -s main'
 alias tmx='tmux new-session \; split-window -h -p 67 \; select-pane -t 0'
