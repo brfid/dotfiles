@@ -42,10 +42,8 @@ Each tool directory is symlinked to its standard config location. Install `commo
 | vscode | ✓ | | | | VS Code settings and snippets |
 | yazi | ✓ | | | | Yazi file manager keybindings |
 | neomutt | | ✓ | | | Neomutt mail client |
-| x11 | | ✓ | | | X11 session config (xinitrc, xprofile) |
 | systemd | | ✓ | | | User systemd services and timers |
 | gdrive-backup | | ✓ | | | rclone backup config |
-| keyboard | | ✓ | | | udev hwdb key remaps (requires sudo — see keyboard/README.md) |
 
 ## Overrides
 
@@ -58,7 +56,6 @@ Most tools install to their standard XDG or dotfile location (e.g. `nvim/` → `
   - common: `shell/aliases` → `~/.config/shell/aliases`
 - **tmux**: `~/.tmux/` must be a real directory (tpm installs plugins into `~/.tmux/plugins/`). Symlink `tmux/tmux.conf` → `~/.tmux.conf`, then each script in `tmux/scripts/` individually into `~/.tmux/` (e.g. `~/.tmux/cpu.sh`). Do not symlink the scripts directory itself.
 - **gdrive-backup**: `gdrive-backup/config.toml` → `~/.config/gdrive-backup/config.toml`
-- **keyboard**: Requires sudo. See `keyboard/README.md`.
 
 ## Cleanup
 
@@ -116,12 +113,10 @@ claude/         Claude Code settings, commands, plugins
 copilot/        GitHub Copilot CLI config
 vscode/         VS Code settings and snippets
 neomutt/        Neomutt (Pi only)
-x11/            X11 session config (Pi only)
 systemd/        User systemd services and timers (Pi only)
 yazi/           Yazi file manager keybindings
 iterm2/         iTerm2 profiles with light/dark colors (macOS only)
 gdrive-backup/  rclone backup config (Pi only)
-keyboard/       udev hwdb key remaps (Pi only, requires sudo)
 
 reference/      System configs requiring sudo — reviewed and applied manually
   linux/          /etc/: unbound, cpufreq, lightdm, rsnapshot, etc.

@@ -1,3 +1,0 @@
-# Swap Caps Lock and Left Ctrl (mirrors Leopold FC660MBT DIP sw3)
-# Sourced by display managers (LightDM, GDM, etc.) on login
-setxkbmap -option ctrl:swapcaps
