@@ -20,7 +20,7 @@
   "explorer.confirmDragAndDrop": false,
 
   // Editor
-  "editor.fontSize": 14,
+  "editor.fontSize": 15,
   "editor.tabSize": 2,
   "editor.detectIndentation": true,
   "editor.minimap.enabled": false,
@@ -47,7 +47,7 @@
 
   // Terminal
   "terminal.integrated.cursorBlinking": true,
-  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fontSize": 15,
   "terminal.integrated.smoothScrolling": true,
   "terminal.integrated.suggest.enabled": true,
   "terminal.integrated.shellIntegration.environmentReporting": true,
@@ -75,7 +75,7 @@
   // Chat & AI
   "chat.editor.wordWrap": "on",
   "chat.commandCenter.enabled": true,
-  "chat.fontSize": 14,
+  "chat.fontSize": 15,
   "chat.editing.confirmEditRequestRetry": false,
   "chat.instructionsFilesLocations": {
     ".github/instructions": true
@@ -91,26 +91,17 @@
   // Python
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.typeCheckingMode": "standard",
+  "python.analysis.typeCheckingMode": "strict",
   "python.analysis.completeFunctionParens": true,
   "python.terminal.focusAfterLaunch": true,
   "[python]": {
     "editor.wordWrapColumn": 88,
-    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit",
-      "source.organizeImports": "explicit"
-    },
     "editor.rulers": [
       88
     ]
   },
-  "ruff.enable": true,
-  "ruff.lint.enable": true,
-  "ruff.importStrategy": "fromEnvironment",
-  "ruff.organizeImports": true,
-  "ruff.fixAll": true,
 
   // Language-Specific
   "[json]": {
@@ -195,5 +186,17 @@
   "chat.viewSessions.orientation": "stacked",
   "claudeCode.useTerminal": true,
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.preferredDarkColorTheme": "Dark Modern"
+  "workbench.preferredDarkColorTheme": "Dark Modern",
+  "claudeCode.allowDangerouslySkipPermissions": true,
+  "window.newWindowProfile": "Default",
+  "workbench.preferredLightColorTheme": "Light Modern",
+  "editor.defaultFormatter": "ms-python.black-formatter",
+  "editor.codeLensFontSize": 15,
+  "editor.inlayHints.fontSize": 15,
+  "chat.editor.fontSize": 15,
+  "debug.console.fontSize": 15,
+  "scm.inputFontSize": 15,
+  "notebook.markup.fontSize": 15,
+  "markdown.preview.fontSize": 15,
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
 }

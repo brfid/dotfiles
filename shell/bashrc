@@ -1,3 +1,8 @@
+# Homebrew
+if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -35,11 +40,6 @@ fi
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-# Homebrew
-if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-fi
-
 # User PATH — single authoritative block.
 # Machine-local additions (e.g. ~/.npm-global/bin) go in ~/.config/shell/local
 PATH="$HOME/.local/bin:$HOME/bin:$PATH"
@@ -58,4 +58,8 @@ if [ -n "${TMUX-}" ] && { [ -z "${DISPLAY-}" ] || [ -z "${XAUTHORITY-}" ]; }; th
     while IFS= read -r line; do
         eval "$line"
     done < <(tmux show-environment -g -s 2>/dev/null | grep -E '^(DISPLAY|XAUTHORITY)=')
+fi
+
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
 fi
