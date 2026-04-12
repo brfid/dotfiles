@@ -1,4 +1,5 @@
 # Runtime-generated plugin state — not portable, not committed
+plugins/install-counts-cache.json
 plugins/cache/
 plugins/installed_plugins.json
 plugins/known_marketplaces.json

@@ -1,3 +1,6 @@
 # Agent instructions
 
-All dotfiles configuration, profiles, deployment rules, and coding conventions live in [`README.md`](README.md). Read that first.
+Read [`README.md`](README.md) first.
+
+If your client supports Agent Skills, load
+[`dotfiles-stack`](skills/dotfiles-stack/SKILL.md).

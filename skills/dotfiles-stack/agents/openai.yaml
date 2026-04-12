@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dotfiles Stack"
+  short_description: "Repo rules for this dotfiles stack"
+  default_prompt: "Use $dotfiles-stack to inspect or modify this dotfiles repo correctly."

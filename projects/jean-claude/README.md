@@ -63,7 +63,7 @@ Claude Code.
 
 ### Claude Code
 Interactive AI coding and task environment. Configuration in
-`~/src/dotfiles/claude/.claude/`:
+`~/src/dotfiles/claude/`:
 
 - `settings.json` — model, permissions, hooks, thinking enabled
 - `CLAUDE.md` — user preferences

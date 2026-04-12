@@ -1,5 +1,5 @@
 # Pi user crontab (reference only — install with: crontab crontab.pi)
-# Project-specific names use __PLACEHOLDER__ vars rendered by install.sh
+# Replace __PLACEHOLDER__ vars manually before installing this crontab.
 
 SHELL=/bin/bash
 BASH_ENV=/home/__USER__/.secrets

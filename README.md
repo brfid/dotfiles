@@ -68,7 +68,7 @@ Verify current package names before installing — they drift between OS version
 ### Pi (Debian/Raspberry Pi OS)
 
 ```
-apt: zsh tmux eza bat yazi nodejs npm git neovim neomutt
+apt: zsh tmux eza bat yazi nodejs npm git neovim neomutt samba
 npm (global, ~/.npm-global): @githubnext/github-copilot-cli
 ```
 
@@ -119,14 +119,15 @@ iterm2/         iTerm2 profiles with light/dark colors (macOS only)
 gdrive-backup/  rclone backup config (Pi only)
 
 reference/      System configs requiring sudo — reviewed and applied manually
-  linux/          /etc/: unbound, cpufreq, lightdm, rsnapshot, etc.
+  linux/          /etc/ files and host-level notes: unbound, cpufreq, lightdm, rsnapshot, samba, tailscale, etc.
   python/         Python tooling templates: Black, Flake8, mypy
   templates/      .gitconfig.example
 
-<<<<<<< HEAD
-scripts/        Google Drive backup
-projects/       Bootstrap docs for jean-claude
+skills/         Agent Skills-compatible repo guidance
+scripts/        Small local automation utilities
+projects/       Public docs for larger system setups
 tests/          pytest: profile table coverage, bash syntax
+x11/            X11 login/startx snippets
 ```
 
 ## edcloud
