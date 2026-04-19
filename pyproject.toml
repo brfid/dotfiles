@@ -17,6 +17,7 @@ dev = [
     "flake8-bugbear",
     "mdformat>=0.7",
     "mdformat-gfm>=0.4",
+    "mdformat-frontmatter>=2.0",
 ]
 
 [tool.pytest.ini_options]

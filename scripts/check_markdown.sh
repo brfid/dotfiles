@@ -18,4 +18,4 @@ if [ "${#markdown_files[@]}" -eq 0 ]; then
   exit 0
 fi
 
-exec "${MDFORMAT_BIN}" --check --wrap keep --number --extensions gfm "$@" "${markdown_files[@]}"
+exec "${MDFORMAT_BIN}" --check --wrap keep --number --extensions gfm --extensions frontmatter "$@" "${markdown_files[@]}"

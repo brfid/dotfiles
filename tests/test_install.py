@@ -129,6 +129,7 @@ def test_pyproject_declares_markdown_tools() -> None:
     dev = pyproject["project"]["optional-dependencies"]["dev"]
     assert any(dep.startswith("mdformat") for dep in dev)
     assert any(dep.startswith("mdformat-gfm") for dep in dev)
+    assert any(dep.startswith("mdformat-frontmatter") for dep in dev)
 
 
 @pytest.mark.parametrize(
