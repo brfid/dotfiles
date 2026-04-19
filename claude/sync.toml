@@ -1,0 +1,79 @@
+version = 1
+tool = "claude"
+live_root = "~/.claude"
+
+[[managed]]
+name = "claude-md"
+repo = "CLAUDE.md"
+live = "CLAUDE.md"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "settings"
+repo = "settings.json"
+live = "settings.json"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "settings-anthropic"
+repo = "settings.anthropic.json"
+live = "settings.anthropic.json"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "settings-glm"
+repo = "settings.glm.json"
+live = "settings.glm.json"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "local-marketplace"
+repo = "plugins/.claude-plugin/marketplace.json"
+live = "plugins/.claude-plugin/marketplace.json"
+actions = ["import", "copy"]
+
+[[unmanaged]]
+live = ".credentials.json"
+class = "secret"
+
+[[unmanaged]]
+live = "backups/**"
+class = "state"
+
+[[unmanaged]]
+live = "cache/**"
+class = "cache"
+
+[[unmanaged]]
+live = "debug/**"
+class = "state"
+
+[[unmanaged]]
+live = "file-history/**"
+class = "state"
+
+[[unmanaged]]
+live = "plugins/cache/**"
+class = "cache"
+
+[[unmanaged]]
+live = "plugins/install-counts-cache.json"
+class = "generated"
+
+[[unmanaged]]
+live = "plugins/installed_plugins.json"
+class = "generated"
+
+[[unmanaged]]
+live = "plugins/known_marketplaces.json"
+class = "generated"
+
+[[unmanaged]]
+live = "plugins/marketplaces/**"
+class = "generated"
+
+[[verify]]
+run = 'test -e "$HOME/.claude/CLAUDE.md"'
+
+[[verify]]
+run = 'test -e "$HOME/.claude/settings.json"'

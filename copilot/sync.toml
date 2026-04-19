@@ -1,0 +1,49 @@
+version = 1
+tool = "copilot"
+live_root = "~/.copilot"
+
+[[managed]]
+name = "instructions"
+repo = "copilot-instructions.md"
+live = "copilot-instructions.md"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "mcp-config"
+repo = "mcp-config.json"
+live = "mcp-config.json"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "config.json"
+class = "manual"
+
+[[unmanaged]]
+live = "command-history-state.json"
+class = "state"
+
+[[unmanaged]]
+live = "ide/**"
+class = "state"
+
+[[unmanaged]]
+live = "installed-plugins/**"
+class = "generated"
+
+[[unmanaged]]
+live = "logs/**"
+class = "state"
+
+[[unmanaged]]
+live = "restart"
+class = "state"
+
+[[unmanaged]]
+live = "session-state/**"
+class = "state"
+
+[[verify]]
+run = 'test -e "$HOME/.copilot/copilot-instructions.md"'
+
+[[verify]]
+run = 'test -e "$HOME/.copilot/mcp-config.json"'

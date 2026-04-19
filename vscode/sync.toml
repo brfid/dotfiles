@@ -1,0 +1,33 @@
+version = 1
+tool = "vscode"
+live_root = "~/.config/Code/User"
+
+[[managed]]
+name = "settings"
+repo = "settings.json"
+live = "settings.json"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "default-snippets"
+repo = "snippets/snippet_default.code-snippets"
+live = "snippets/snippet_default.code-snippets"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "History/**"
+class = "state"
+
+[[unmanaged]]
+live = "snippets/*.json"
+class = "manual"
+
+[[unmanaged]]
+live = "snippets/*.pre-dotfiles.*"
+class = "state"
+
+[[verify]]
+run = 'test -e "$HOME/.config/Code/User/settings.json"'
+
+[[verify]]
+run = 'test -e "$HOME/.config/Code/User/snippets/snippet_default.code-snippets"'

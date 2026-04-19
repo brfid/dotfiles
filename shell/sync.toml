@@ -1,0 +1,59 @@
+version = 1
+tool = "shell"
+live_root = "~/.config/shell"
+
+[[managed]]
+name = "bashrc"
+repo = "bashrc"
+live = "~/.bashrc"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "zshrc"
+repo = "zshrc"
+live = "~/.zshrc"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "aliases"
+repo = "aliases"
+live = "aliases"
+actions = ["import", "copy", "link"]
+
+# One of these local variants usually maps to the single live path `~/.config/shell/local`.
+# Pick the right one for the target machine.
+[[managed]]
+name = "local-pi"
+repo = "local/pi.sh"
+live = "local"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "local-macos"
+repo = "local/macos.sh"
+live = "local"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "local-edcloud"
+repo = "local/edcloud.sh"
+live = "local"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "local.d/**"
+class = "state"
+
+[[unmanaged]]
+live = "~/.bash_history"
+class = "state"
+
+[[unmanaged]]
+live = "~/.zsh_history"
+class = "state"
+
+[[verify]]
+run = 'test -e "$HOME/.config/shell/aliases"'
+
+[[verify]]
+run = 'test -e "$HOME/.config/shell/local"'

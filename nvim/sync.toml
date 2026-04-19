@@ -1,0 +1,47 @@
+version = 1
+tool = "nvim"
+live_root = "~/.config/nvim"
+
+[[managed]]
+name = "core-files"
+repo = "init.lua"
+live = "init.lua"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "lua-config"
+repo = "lua/**"
+live = "lua"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "lazyvim-config"
+repo = "lazyvim.json"
+live = "lazyvim.json"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "lazy-lock"
+repo = "lazy-lock.json"
+live = "lazy-lock.json"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "stylua-config"
+repo = "stylua.toml"
+live = "stylua.toml"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "~/.local/share/nvim/**"
+class = "generated"
+
+[[unmanaged]]
+live = "~/.cache/nvim/**"
+class = "cache"
+
+[[verify]]
+run = 'test -e "$HOME/.config/nvim/init.lua"'
+
+[[verify]]
+run = 'test -e "$HOME/.config/nvim/lazy-lock.json"'

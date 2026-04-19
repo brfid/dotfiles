@@ -1,0 +1,29 @@
+version = 1
+tool = "x11"
+live_root = "~"
+
+[[managed]]
+name = "xprofile"
+repo = "xprofile"
+live = ".xprofile"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "xinitrc"
+repo = "xinitrc"
+live = ".xinitrc"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = ".xsessionrc"
+class = "manual"
+
+[[unmanaged]]
+live = ".xsession-errors*"
+class = "state"
+
+[[verify]]
+run = 'test -e "$HOME/.xprofile"'
+
+[[verify]]
+run = 'test -e "$HOME/.xinitrc"'

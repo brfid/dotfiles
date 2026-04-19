@@ -1,0 +1,21 @@
+version = 1
+tool = "yazi"
+live_root = "~/.config/yazi"
+
+[[managed]]
+name = "config"
+repo = "yazi.toml"
+live = "yazi.toml"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "keymap"
+repo = "keymap.toml"
+live = "keymap.toml"
+actions = ["import", "copy", "link"]
+
+[[verify]]
+run = 'test -e "$HOME/.config/yazi/yazi.toml"'
+
+[[verify]]
+run = 'test -e "$HOME/.config/yazi/keymap.toml"'

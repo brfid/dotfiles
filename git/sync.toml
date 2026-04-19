@@ -1,0 +1,25 @@
+version = 1
+tool = "git"
+live_root = "~/.config/git"
+
+[[managed]]
+name = "gitleaks-config"
+repo = ".gitleaks.toml"
+live = ".gitleaks.toml"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "pre-commit-hook"
+repo = "hooks/pre-commit"
+live = "hooks/pre-commit"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "ignore"
+class = "manual"
+
+[[verify]]
+run = 'test -e "$HOME/.config/git/.gitleaks.toml"'
+
+[[verify]]
+run = 'test -x "$HOME/.config/git/hooks/pre-commit"'

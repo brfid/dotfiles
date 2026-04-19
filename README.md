@@ -1,69 +1,107 @@
 # dotfiles
 
-Personal configuration for a Raspberry Pi 5, macOS, and edcloud (EC2). Organized by tool, deployed by LLM agent via symlinks.
+Personal config for Raspberry Pi 5, macOS, and edcloud (EC2).
+Repo organized by tool.
+Goal: LLM-friendly import/apply workflows with real config files backed up in repo.
+Repo not full machine mirror.
 
-To deploy on a new machine:
+## Quick start
 
 ```bash
 git clone <repo> ~/src/dotfiles
 # tell your LLM: "read ~/src/dotfiles/README.md and set up my dotfiles"
 ```
 
-One-time setup (not automated):
+One-time setup:
 
 ```bash
 cp secrets.example ~/.secrets && chmod 600 ~/.secrets   # fill in real values
 cp reference/templates/.gitconfig.example ~/.gitconfig  # set name/email
 ```
 
+## LLM workflow
+
+Start at repo root.
+
+1. Read `README.md`.
+2. Read `AGENTS.md`.
+3. Read target tool's `AGENTS.md` and `sync.toml`.
+4. Pick smallest safe repo access mode: `local`, `temp`, or `remote`.
+5. Use tool manifest to pick live action: `import`, `copy`, or `link`.
+
+Repo stores canonical config plus agent guidance.
+Repo does not try to mirror whole home dirs or runtime state.
+
 ## Machine detection
 
-Run `uname -s` and `uname -m`:
+Run `uname -s` and `uname -m`.
 
 - Darwin = macOS
 - Linux + aarch64 = Pi
 - Linux + x86_64 = edcloud
 
-Skip deployment if hostname contains `edcloud` and the edcloud repo manages its own bootstrap.
+Skip deployment if hostname contains `edcloud` and edcloud repo already manages bootstrap.
 
-## Profiles
+## Config inventory
 
-Each tool directory is symlinked to its standard config location. Install `common` plus the matching machine profile.
+Yes: this section is meant to be clear list of what this repo maintains.
+These are the main config areas and support areas.
+Not every row applies on every machine.
 
-| Tool | common | pi | macos | edcloud | Description |
-|------|--------|----|-------|---------|-------------|
-| shell | ✓ | ✓ | ✓ | ✓ | bashrc/zshrc, shared aliases, per-machine local snippets |
-| nvim | ✓ | | | | Neovim (LazyVim) |
-| tmux | ✓ | | | | tmux.conf and status bar scripts |
-| git | ✓ | | | | Git hooks, gitleaks config |
-| gh | ✓ | | | | GitHub CLI config |
-| claude | ✓ | | | | Claude Code settings, commands, plugins |
-| copilot | ✓ | | | | GitHub Copilot CLI config |
-| vscode | ✓ | | | | VS Code settings and snippets |
-| yazi | ✓ | | | | Yazi file manager keybindings |
-| neomutt | | ✓ | | | Neomutt mail client |
-| systemd | | ✓ | | | User systemd services and timers |
-| gdrive-backup | | ✓ | | | rclone backup config |
+### Live-config areas
 
-## Overrides
+| Path          | Typical machines           | What it holds                                              |
+| ------------- | -------------------------- | ---------------------------------------------------------- |
+| shell         | Pi, macOS, edcloud         | shell startup files, aliases, machine-local shell snippets |
+| nvim          | most machines              | Neovim config                                              |
+| tmux          | most machines              | tmux config and helper scripts                             |
+| git           | most machines              | global git hook support and gitleaks config                |
+| gh            | most machines              | GitHub CLI config                                          |
+| claude        | machines using Claude Code | Claude Code config                                         |
+| codex         | machines using Codex       | Codex CLI config                                           |
+| copilot       | machines using Copilot CLI | Copilot CLI config                                         |
+| vscode        | machines using VS Code     | VS Code settings and snippets                              |
+| yazi          | most machines              | Yazi config                                                |
+| neomutt       | Pi                         | Neomutt config                                             |
+| systemd       | Pi or Linux user services  | user systemd units                                         |
+| gdrive-backup | Pi                         | Google Drive backup config                                 |
+| x11           | Linux desktop machines     | X11 startup glue                                           |
+| iterm2        | macOS                      | iTerm2 dynamic profiles                                    |
+| reference     | manual host-level work     | `/etc/` reference files, templates, host notes             |
 
-Most tools install to their standard XDG or dotfile location (e.g. `nvim/` → `~/.config/nvim`). These are the exceptions:
+### Support and context areas
 
-- **shell**: Each profile sources a different rc file and machine-local snippet.
+| Path     | What it holds                                   |
+| -------- | ----------------------------------------------- |
+| projects | public system overviews and design/context docs |
+| skills   | repo-local skill guidance                       |
+| scripts  | small local automation utilities                |
+| tests    | repo verification                               |
+| .github  | repo-level GitHub Actions workflows             |
+
+If a reader wants to know what config this repo maintains, the first table above is the answer.
+
+## Override paths
+
+Most tools go to normal XDG or dotfile locations.
+Exceptions:
+
+- **shell**
   - pi: `shell/bashrc` → `~/.bashrc`, `shell/local/pi.sh` → `~/.config/shell/local`
   - macos: `shell/zshrc` → `~/.zshrc`, `shell/local/macos.sh` → `~/.config/shell/local`
   - edcloud: `shell/bashrc` → `~/.bashrc`, `shell/local/edcloud.sh` → `~/.config/shell/local`
   - common: `shell/aliases` → `~/.config/shell/aliases`
-- **tmux**: `~/.tmux/` must be a real directory (tpm installs plugins into `~/.tmux/plugins/`). Symlink `tmux/tmux.conf` → `~/.tmux.conf`, then each script in `tmux/scripts/` individually into `~/.tmux/` (e.g. `~/.tmux/cpu.sh`). Do not symlink the scripts directory itself.
+- **tmux**: keep `~/.tmux/` real dir because TPM writes `~/.tmux/plugins/`. `tmux/tmux.conf` goes to `~/.tmux.conf`. Helper scripts go into `~/.tmux/`.
+- **codex**: keep `~/.codex/` real dir. Manage only paths declared in `codex/sync.toml`. Leave auth, caches, sessions, sqlite state, and generated plugin data unmanaged.
 - **gdrive-backup**: `gdrive-backup/config.toml` → `~/.config/gdrive-backup/config.toml`
 
 ## Cleanup
 
-Remove `~/.config/shell/local.d` symlink if present (stow migration artifact).
+Remove `~/.config/shell/local.d` symlink if present. Old stow artifact.
 
 ## Packages
 
-Verify current package names before installing — they drift between OS versions.
+Verify package names before install. Names drift.
 
 ### Pi (Debian/Raspberry Pi OS)
 
@@ -72,7 +110,11 @@ apt: zsh tmux eza bat yazi nodejs npm git neovim neomutt samba
 npm (global, ~/.npm-global): @githubnext/github-copilot-cli
 ```
 
-Set npm prefix before installing: `npm config set prefix ~/.npm-global`
+Set npm prefix first:
+
+```bash
+npm config set prefix ~/.npm-global
+```
 
 ### macOS
 
@@ -81,40 +123,55 @@ brew: zsh tmux eza bat yazi node git neovim
 npm (global, ~/.npm-global): @githubnext/github-copilot-cli
 ```
 
-## reference/ — system configs requiring sudo
+## `reference/` rules
 
-Do not apply automatically. For each file:
+`reference/` holds system configs that need sudo or host-level review.
+Do not apply automatically.
+For each file:
 
-1. Show a diff between the repo file and the current `/etc/` version.
-2. Explain what the change does.
-3. Ask for confirmation before `sudo cp`.
-4. Run `sudo systemctl daemon-reload` after applying systemd-related changes.
+1. Show diff against current `/etc/` file.
+2. Explain what change does.
+3. Ask before `sudo cp`.
+4. Run `sudo systemctl daemon-reload` after systemd-related changes.
 
-Keyboard remaps for the local Leopold live in
-`reference/linux/keyboard/`. Install them as `systemd-hwdb` rules under
-`/etc/udev/hwdb.d/`; do not rely on `~/.xprofile`/`setxkbmap` for the real
-machine-local fix.
+Keyboard remaps for local Leopold live in `reference/linux/keyboard/`.
+Install as `systemd-hwdb` rules under `/etc/udev/hwdb.d/`.
+Do not rely on `~/.xprofile` or `setxkbmap` for the real machine-local fix.
 
-## Adding a new tool
+## Adding a tool
 
-1. Create a directory named after the tool with its config files inside.
-2. Add it to the profile table above.
-3. If the install location isn't the standard XDG/dotfile convention, add an entry under Overrides.
-4. Create the symlink on the current machine.
+1. Create tool dir.
+2. Put canonical config files there.
+3. Add local `AGENTS.md`.
+4. Add local `sync.toml`.
+5. Add it to the config inventory above.
+6. If path is nonstandard, document it under override paths.
+7. Apply with workflow described by that tool's `AGENTS.md` and `sync.toml`.
 
 ## PII policy
 
-Never write real names, emails, phone numbers, addresses, or account identifiers into tracked files. Use placeholders: `<name>`, `<email>`, `<phone>`, `<address>`. Real values belong only in `~/.secrets` (untracked). The gitleaks pre-commit hook (`git/.gitleaks.toml`) enforces this at commit time.
+Never write real names, emails, phone numbers, addresses, or account identifiers into tracked files.
+Use placeholders like `<name>`, `<email>`, `<phone>`, `<address>`.
+Real values belong only in `~/.secrets`.
+Gitleaks hook enforces this locally. GitHub Actions secret scan enforces it in CI too.
 
 ## Layout
 
-```
+Most tool dirs may contain:
+
+- real config files
+- `AGENTS.md` for tool-local workflow and caveats
+- `sync.toml` for managed/unmanaged paths
+- optional `scripts/` for nontrivial import/apply/verify logic
+
+```text
 shell/          bashrc, zshrc, shared aliases, per-machine local snippets
 nvim/           Neovim (LazyVim)
 tmux/           tmux.conf and status bar scripts
 git/            Git hooks, gitleaks config
 gh/             GitHub CLI config
-claude/         Claude Code settings, commands, plugins
+claude/         Claude Code settings, hooks, commands, plugins
+codex/          Codex CLI instructions and config fragments
 copilot/        GitHub Copilot CLI config
 vscode/         VS Code settings and snippets
 neomutt/        Neomutt (Pi only)
@@ -124,36 +181,40 @@ iterm2/         iTerm2 profiles with light/dark colors (macOS only)
 gdrive-backup/  rclone backup config (Pi only)
 
 reference/      System configs requiring sudo — reviewed and applied manually
-  linux/          /etc/ files and host-level notes: keyboard, unbound, cpufreq, lightdm, rsnapshot, samba, tailscale, etc.
-  python/         Python tooling templates: Black, Flake8, mypy
-  templates/      .gitconfig.example
+  linux/        /etc/ files and host-level notes: keyboard, unbound, cpufreq, lightdm, rsnapshot, samba, tailscale, etc.
+  python/       Python tooling templates: Black, Flake8, mypy
+  templates/    .gitconfig.example
 
 skills/         Agent Skills-compatible repo guidance
 scripts/        Small local automation utilities
 projects/       Public docs for larger system setups
-tests/          pytest: profile table coverage, bash syntax
+tests/          pytest: repo structure and syntax checks
 x11/            X11 login/startx snippets
 ```
 
 ## edcloud
 
-During provisioning, cloud-init clones this repo into `~/src/dotfiles`. Dotfiles are linked on first LLM session, not at boot. On each login, `~/.bashrc` sources `~/.secrets` and `shell/local/edcloud.sh`.
+Cloud-init clones this repo into `~/src/dotfiles` during provisioning.
+Dotfiles get linked or copied on first LLM session, not at boot.
+On login, `~/.bashrc` sources `~/.secrets` and `shell/local/edcloud.sh`.
 
 ## Coding conventions
 
 ### Language choice
 
-- Use bash for shell configuration, install scripts, and simple glue.
-- Use Python when there is a choice between languages.
-- Python scripts must work with the system Python (no external dependencies unless unavoidable).
+- Use bash for shell config, install scripts, and simple glue.
+- Use Python when there is a choice.
+- Python scripts must work with system Python unless extra deps are truly needed.
+- Write tracked Markdown in CommonMark style. Use GitHub Flavored Markdown only where GitHub needs it, like tables.
+- Run `scripts/check_markdown.sh` after Markdown edits.
 
 ### Python
 
-- Follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html).
-- Use Google-style docstrings on all public functions, classes, and modules.
+- Follow [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html).
+- Use Google-style docstrings on public functions, classes, and modules.
 - Use type annotations on function signatures.
 - Prefer `pathlib.Path` over `os.path`.
-- Use `from __future__ import annotations` for forward references.
+- Use `from __future__ import annotations` for forward refs.
 
 #### Docstring format
 
@@ -179,44 +240,51 @@ def sync(repo_dir: Path, branch: str = "main") -> None:
 - **Linter**: Flake8 + flake8-bugbear
 - **Type checker**: mypy (strict mode)
 - **LSP**: pyright (strict type checking)
-- **No ruff/Astral** — see Design Decisions below
+- **No ruff/Astral** — see design notes below
 
-Reference configs live in `reference/python/`. Copy `pyproject.toml` and `.flake8` into new project roots.
+Reference configs live in `reference/python/`.
+Copy `pyproject.toml` and `.flake8` into new project roots.
 
 ### Markdown
 
-- Follow [CommonMark](https://commonmark.org/) spec.
-- Use ATX headers (`#`, `##`) instead of bold text for sections.
-- Leave a blank line before and after lists.
-- Use fenced code blocks with a language identifier.
-- Do not hard-wrap prose. Let the editor or viewer handle line wrapping.
+- Follow [CommonMark](https://commonmark.org/).
+- Use ATX headers.
+- Leave blank lines before and after lists.
+- Use fenced code blocks with language identifier.
+- Do not hard-wrap prose.
 
 ### Shell scripts
 
 - Use `set -euo pipefail` in bash scripts.
-- Quote all variable expansions.
+- Quote variable expansions.
 - Use `command -v` instead of `which`.
 
-## Design decisions
+## Design notes
 
-### Why Black + Flake8 + mypy (not ruff)
+### Why Black + Flake8 + mypy, not ruff
 
-Ruff collapses formatting, linting, and some type-checking into one tool with its own rule semantics. Black + Flake8 + mypy is the established, modular stack:
+Black + Flake8 + mypy is boring modular stack.
+Each tool does one job.
+Each fails separately.
+Most Python devs already know it.
 
-- **Black** is the canonical Python formatter. Zero config, deterministic, widely understood.
-- **Flake8** with flake8-bugbear catches real bugs (B-series) beyond style. Plugin ecosystem is mature.
-- **mypy** in strict mode is the reference type checker. Strict means: no implicit `Any`, no untyped defs, no missing return types.
-
-Each tool does one thing. They compose cleanly, fail independently, and are understood by every Python developer.
+- **Black**: canonical formatter, deterministic, low-config
+- **Flake8** + bugbear: real bug checks beyond style
+- **mypy** strict: catches type drift early
 
 ### Why strict mypy
 
-Gradual typing with `strict = false` means half the codebase has `Any` leaking through, and mypy only catches errors in the parts you remembered to annotate. Strict from the start means every function has a contract. The upfront cost is small; the long-term benefit is that refactoring is safe.
+Loose typing leaks `Any` everywhere.
+Strict typing gives every function a contract.
+Upfront cost small. Refactor safety worth it.
 
 ### Why Python 3.11+
 
-3.11 is the minimum supported version across both macOS (Homebrew) and Raspberry Pi OS (Debian Bookworm ships 3.11). Using 3.11+ means: `tomllib` in stdlib, exception groups, `Self` type, and fine-grained error locations.
+3.11 is common baseline across macOS and current Raspberry Pi OS.
+It also gives stdlib `tomllib`, better typing, better errors.
 
 ### Why no flake8-docstrings
 
-Docstring conventions (Google style) are documented here and enforced by review, not by linter. `flake8-docstrings` (pydocstyle) produces noisy false positives on helper functions and test code, encouraging either boilerplate docstrings or per-file `# noqa` blankets. Neither outcome improves code quality.
+Docstring style lives in repo guidance and review.
+`flake8-docstrings` adds noise and pushes boilerplate or broad `# noqa` use.
+Not worth it here.

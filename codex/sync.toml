@@ -1,0 +1,61 @@
+version = 1
+tool = "codex"
+live_root = "~/.codex"
+
+[[managed]]
+name = "config"
+repo = "config.toml"
+live = "config.toml"
+actions = ["import", "copy"]
+
+[[managed]]
+name = "instructions"
+repo = "instructions/caveman.md"
+live = "instructions.md"
+actions = ["copy", "link"]
+
+[[unmanaged]]
+live = "auth.json"
+class = "secret"
+
+[[unmanaged]]
+live = "history.jsonl"
+class = "state"
+
+[[unmanaged]]
+live = "sessions/**"
+class = "state"
+
+[[unmanaged]]
+live = "log/**"
+class = "state"
+
+[[unmanaged]]
+live = "logs_*.sqlite*"
+class = "state"
+
+[[unmanaged]]
+live = "state_*.sqlite*"
+class = "state"
+
+[[unmanaged]]
+live = "cache/**"
+class = "cache"
+
+[[unmanaged]]
+live = "tmp/**"
+class = "cache"
+
+[[unmanaged]]
+live = "shell_snapshots/**"
+class = "state"
+
+[[unmanaged]]
+live = "plugins/cache/**"
+class = "generated"
+
+[[verify]]
+run = 'test -f "$HOME/.codex/config.toml"'
+
+[[verify]]
+run = 'test -e "$HOME/.codex/instructions.md"'

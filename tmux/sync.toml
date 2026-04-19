@@ -1,0 +1,25 @@
+version = 1
+tool = "tmux"
+live_root = "~/.tmux"
+
+[[managed]]
+name = "tmux-conf"
+repo = "tmux.conf"
+live = "~/.tmux.conf"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "status-scripts"
+repo = "scripts/*.sh"
+live = "*.sh"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "plugins/**"
+class = "generated"
+
+[[verify]]
+run = 'test -e "$HOME/.tmux.conf"'
+
+[[verify]]
+run = 'test -e "$HOME/.tmux/cpu.sh"'

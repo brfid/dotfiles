@@ -1,0 +1,26 @@
+version = 1
+tool = "neomutt"
+live_root = "~/.config/neomutt"
+
+[[managed]]
+name = "config"
+repo = "neomuttrc"
+live = "neomuttrc"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "mailcap"
+repo = "mailcap"
+live = "mailcap"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "cache/**"
+class = "cache"
+
+[[unmanaged]]
+live = "certificates/**"
+class = "state"
+
+[[verify]]
+run = 'test -e "$HOME/.config/neomutt/neomuttrc"'

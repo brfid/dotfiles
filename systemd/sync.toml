@@ -1,0 +1,34 @@
+version = 1
+tool = "systemd"
+live_root = "~/.config/systemd/user"
+
+[[managed]]
+name = "user-units"
+repo = "*.service"
+live = "*.service"
+actions = ["import", "copy", "link"]
+
+[[managed]]
+name = "user-timers"
+repo = "*.timer"
+live = "*.timer"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "*.service.d/**"
+class = "manual"
+
+[[unmanaged]]
+live = "*.pre-dotfiles.*"
+class = "state"
+
+[[unmanaged]]
+live = "default.target.wants/**"
+class = "generated"
+
+[[unmanaged]]
+live = "timers.target.wants/**"
+class = "generated"
+
+[[verify]]
+run = 'test -e "$HOME/.config/systemd/user/rclone-dropbox.service"'

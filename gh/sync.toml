@@ -1,0 +1,20 @@
+version = 1
+tool = "gh"
+live_root = "~/.config/gh"
+
+[[managed]]
+name = "config"
+repo = "config.yml"
+live = "config.yml"
+actions = ["import", "copy", "link"]
+
+[[unmanaged]]
+live = "hosts.yml"
+class = "secret"
+
+[[unmanaged]]
+live = "config.yml.pre-dotfiles.*"
+class = "state"
+
+[[verify]]
+run = 'test -e "$HOME/.config/gh/config.yml"'

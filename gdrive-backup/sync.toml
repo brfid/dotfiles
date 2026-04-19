@@ -1,0 +1,12 @@
+version = 1
+tool = "gdrive-backup"
+live_root = "~/.config/gdrive-backup"
+
+[[managed]]
+name = "config"
+repo = "config.toml"
+live = "config.toml"
+actions = ["import", "copy", "link"]
+
+[[verify]]
+run = 'test -e "$HOME/.config/gdrive-backup/config.toml"'

@@ -1,0 +1,9 @@
+version = 1
+tool = "iterm2"
+live_root = "~/Library/Application Support/iTerm2/DynamicProfiles"
+
+[[managed]]
+name = "profiles"
+repo = "profiles.json"
+live = "profiles.json"
+actions = ["import", "copy", "link"]

@@ -1,0 +1,22 @@
+version = 1
+tool = "reference"
+live_root = "/"
+
+# Import-only on purpose. Host-level files need review, diff, and manual install.
+[[managed]]
+name = "linux-reference"
+repo = "linux/**"
+live = "/etc/**"
+actions = ["import"]
+
+[[managed]]
+name = "python-templates"
+repo = "python/**"
+live = "manual"
+actions = ["import"]
+
+[[managed]]
+name = "generic-templates"
+repo = "templates/**"
+live = "manual"
+actions = ["import"]

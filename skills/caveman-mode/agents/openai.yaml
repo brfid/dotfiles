@@ -1,0 +1,4 @@
+interface:
+  display_name: "Caveman Mode"
+  short_description: "Optional terse low-token communication mode"
+  default_prompt: "Use $caveman-mode for terse, low-token explanations that keep technical accuracy."
