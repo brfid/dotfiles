@@ -1,16 +1,18 @@
-# Copilot CLI Custom Instructions
+# Copilot CLI custom instructions
 
 ## Working style
 
-- Be concise in routine responses; thorough in work.
-- Prefer ecosystem tools (npm, pip, stow, etc.) over manual changes.
-- Only comment code that needs clarification.
-- Clean up temporary files at end of task.
+- Be concise.
+- Be thorough when work needs it.
+- Prefer normal ecosystem tools over manual hacks.
+- Comment code only when comment helps.
+- Clean temporary files at end.
 
 ## This system
 
-- Primary dev tree is `~/src`. Full read/write access expected there.
-- Dotfiles managed via `mapping.yaml` symlink map in `~/src/dotfiles/`, deployed by LLM agent.
-- Shell: bash and zsh. Python scripts use system Python with no external deps unless unavoidable.
+- Main dev tree: `~/src`.
+- Dotfiles live in tool folders under `~/src/dotfiles/`.
+- Each tool may carry canonical config plus `AGENTS.md` and `sync.toml`.
+- Shells: bash and zsh.
+- Python scripts should use system Python unless extra deps are truly needed.
 - Editor: Neovim (LazyVim).
-
