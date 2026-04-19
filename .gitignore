@@ -26,10 +26,15 @@ tmux/.tmux/plugins/
 .vscode/
 .idea/
 
-# Claude Code artifacts
-superpowers/
-plans/
-.claude/settings.local.json
+# Claude Code local artifacts
+/.superpowers/
+/plans/
+/.claude/settings.local.json
+/claude/plugins/cache/
+/claude/plugins/marketplaces/
+/claude/plugins/install-counts-cache.json
+/claude/plugins/installed_plugins.json
+/claude/plugins/known_marketplaces.json
 
 # nvim runtime files
 nvim/lazy-lock.json

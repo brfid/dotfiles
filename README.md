@@ -1,5 +1,7 @@
 # dotfiles
 
+[![secret-scan](https://github.com/brfid/dotfiles/actions/workflows/secret-scan.yml/badge.svg?branch=main)](https://github.com/brfid/dotfiles/actions/workflows/secret-scan.yml) [![markdown](https://github.com/brfid/dotfiles/actions/workflows/markdown.yml/badge.svg?branch=main)](https://github.com/brfid/dotfiles/actions/workflows/markdown.yml)
+
 Personal config for Raspberry Pi 5, macOS, and edcloud (EC2).
 Repo organized by tool.
 Goal: LLM-friendly import/apply workflows with real config files backed up in repo.
