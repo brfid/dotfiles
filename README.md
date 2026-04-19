@@ -90,6 +90,11 @@ Do not apply automatically. For each file:
 3. Ask for confirmation before `sudo cp`.
 4. Run `sudo systemctl daemon-reload` after applying systemd-related changes.
 
+Keyboard remaps for the local Leopold live in
+`reference/linux/keyboard/`. Install them as `systemd-hwdb` rules under
+`/etc/udev/hwdb.d/`; do not rely on `~/.xprofile`/`setxkbmap` for the real
+machine-local fix.
+
 ## Adding a new tool
 
 1. Create a directory named after the tool with its config files inside.
@@ -119,7 +124,7 @@ iterm2/         iTerm2 profiles with light/dark colors (macOS only)
 gdrive-backup/  rclone backup config (Pi only)
 
 reference/      System configs requiring sudo — reviewed and applied manually
-  linux/          /etc/ files and host-level notes: unbound, cpufreq, lightdm, rsnapshot, samba, tailscale, etc.
+  linux/          /etc/ files and host-level notes: keyboard, unbound, cpufreq, lightdm, rsnapshot, samba, tailscale, etc.
   python/         Python tooling templates: Black, Flake8, mypy
   templates/      .gitconfig.example
 

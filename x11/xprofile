@@ -1,3 +1,3 @@
-# Swap Caps Lock and Left Ctrl (mirrors Leopold FC660MBT DIP sw3)
-# Sourced by display managers (LightDM, GDM, etc.) on login
-setxkbmap -option ctrl:swapcaps
+# Keyboard remaps live in systemd-hwdb via reference/linux/keyboard/.
+# Keep this file so the ~/.xprofile symlink stays valid.
+# Do not call setxkbmap here; it conflicts with the kernel-level remap.
