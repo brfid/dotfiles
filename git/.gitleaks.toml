@@ -71,7 +71,7 @@ tags = ["key"]
 [[rules]]
 id = "phone-number"
 description = "Phone number (US format)"
-regex = '''(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}'''
+regex = '''\b(?:\+1[ .-]?)?(?:\(\d{3}\)|\d{3})[ .-]\d{3}[ .-]\d{4}\b'''
 tags = ["pii"]
 [rules.allowlist]
 paths = ['''secrets\.example$''']

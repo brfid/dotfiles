@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -38,17 +39,17 @@ def all_shell_files() -> list[Path]:
 
 
 def profile_tools() -> list[str]:
-    """Parse tool names from the profile table in README.md."""
+    """Parse tool names from the root config inventory table in README.md."""
     text = README.read_text()
     tools: list[str] = []
     in_table = False
     for line in text.splitlines():
-        if line.startswith("| Tool "):
+        if line.startswith("| Path "):
             in_table = True
             continue
-        if in_table and line.startswith("|---"):
+        if in_table and set(line.replace("|", "").strip()) <= {"-", ":", " "}:
             continue
-        if in_table and line.startswith("| "):
+        if in_table and line.startswith("|"):
             match = re.match(r"\|\s*(\S+)\s*\|", line)
             if match:
                 tools.append(match.group(1))
@@ -82,6 +83,78 @@ def tracked_text_files() -> list[Path]:
         if path.suffix in extensions:
             files.append(path)
     return sorted(files)
+
+
+def structured_tool_dirs() -> list[Path]:
+    """Return top-level tool dirs that opt into the sync.toml convention."""
+    return sorted(
+        path.parent
+        for path in DOTFILES.glob("*/sync.toml")
+        if path.parent.is_dir()
+    )
+
+
+def test_secret_scan_script_exists() -> None:
+    """Repo should provide a visible local secret-scan entry point."""
+    assert (DOTFILES / "scripts" / "check_secrets.sh").is_file()
+
+
+def test_secret_scan_workflow_exists() -> None:
+    """Repo should provide CI secret scanning."""
+    workflow = DOTFILES / ".github" / "workflows" / "secret-scan.yml"
+    assert workflow.is_file()
+    text = workflow.read_text()
+    assert "gitleaks" in text
+    assert "git/.gitleaks.toml" in text
+
+
+def test_markdown_check_script_exists() -> None:
+    """Repo should provide a visible local Markdown check entry point."""
+    assert (DOTFILES / "scripts" / "check_markdown.sh").is_file()
+
+
+def test_markdown_workflow_exists() -> None:
+    """Repo should provide CI Markdown formatting checks."""
+    workflow = DOTFILES / ".github" / "workflows" / "markdown.yml"
+    assert workflow.is_file()
+    text = workflow.read_text()
+    assert "mdformat" in text
+    assert "./scripts/check_markdown.sh" in text
+
+
+def test_pyproject_declares_markdown_tools() -> None:
+    """Dev dependencies should include Markdown format tooling."""
+    with (DOTFILES / "pyproject.toml").open("rb") as handle:
+        pyproject = tomllib.load(handle)
+    dev = pyproject["project"]["optional-dependencies"]["dev"]
+    assert any(dep.startswith("mdformat") for dep in dev)
+    assert any(dep.startswith("mdformat-gfm") for dep in dev)
+
+
+@pytest.mark.parametrize(
+    "tool_dir",
+    structured_tool_dirs(),
+    ids=lambda p: str(p.relative_to(DOTFILES)),
+)
+def test_structured_tool_has_agents_and_sync_manifest(tool_dir: Path) -> None:
+    """A tool using sync.toml must also provide a local AGENTS.md guide."""
+    assert (tool_dir / "AGENTS.md").is_file(), (
+        f"{tool_dir.relative_to(DOTFILES)}/AGENTS.md is missing"
+    )
+
+
+@pytest.mark.parametrize(
+    "tool_dir",
+    structured_tool_dirs(),
+    ids=lambda p: str(p.relative_to(DOTFILES)),
+)
+def test_structured_tool_sync_manifest_parses(tool_dir: Path) -> None:
+    """Per-tool sync manifests must be valid TOML and self-identifying."""
+    sync_path = tool_dir / "sync.toml"
+    with sync_path.open("rb") as handle:
+        manifest = tomllib.load(handle)
+    assert manifest["version"] == 1
+    assert manifest["tool"] == tool_dir.name
 
 
 @pytest.mark.parametrize(
