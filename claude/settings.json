@@ -25,6 +25,17 @@
     "opus"
   ],
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/src/dotfiles/claude/hooks/caveman-session-start.sh"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
@@ -38,10 +49,11 @@
     ]
   },
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": false,
+    "superpowers@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": false,
-    "context7@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false
+    "context7@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": false,
+    "compound-engineering@compound-engineering-plugin": true
   },
   "extraKnownMarketplaces": {
     "local": {
@@ -49,8 +61,15 @@
         "source": "directory",
         "path": "~/src/dotfiles/claude/plugins"
       }
+    },
+    "compound-engineering-plugin": {
+      "source": {
+        "source": "github",
+        "repo": "EveryInc/compound-engineering-plugin"
+      }
     }
   },
   "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true
 }

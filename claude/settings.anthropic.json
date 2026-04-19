@@ -31,6 +31,17 @@
     "opus"
   ],
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/src/dotfiles/claude/hooks/caveman-session-start.sh"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
@@ -47,8 +58,7 @@
     "superpowers@claude-plugins-official": false,
     "commit-commands@claude-plugins-official": true,
     "context7@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": true,
-    "jean-claude@local": true
+    "claude-md-management@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "local": {
