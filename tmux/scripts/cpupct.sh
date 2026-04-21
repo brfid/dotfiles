@@ -1,6 +1,10 @@
 #!/bin/bash
 
-cache="/tmp/.tmux_cpustat_${UID:-$(id -u)}"
+uid=${UID:-$(id -u)}
+cache_dir="${XDG_RUNTIME_DIR:-/run/user/$uid}"
+[ -d "$cache_dir" ] && [ -w "$cache_dir" ] || cache_dir=/dev/shm
+[ -d "$cache_dir" ] && [ -w "$cache_dir" ] || cache_dir=/tmp
+cache="$cache_dir/.tmux_cpustat_$uid"
 
 # Aggregate CPU busy percentage over the previous tmux refresh interval.
 # Treat iowait as non-busy time so the number tracks actual CPU work done.

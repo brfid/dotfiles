@@ -1,5 +1,9 @@
 #!/bin/bash
-cache=/tmp/.tmux_netstat
+uid=${UID:-$(id -u)}
+cache_dir="${XDG_RUNTIME_DIR:-/run/user/$uid}"
+[ -d "$cache_dir" ] && [ -w "$cache_dir" ] || cache_dir=/dev/shm
+[ -d "$cache_dir" ] && [ -w "$cache_dir" ] || cache_dir=/tmp
+cache="$cache_dir/.tmux_netstat_$uid"
 IDLE_THRESHOLD=102400  # 100 KB/s — below this, show idle
 
 # Find active non-virtual interface
@@ -8,9 +12,10 @@ iface=$(ip -br link show | awk '$2=="UP"{print $1; exit}')
 
 read -r rx2 tx2 < <(awk -v i="$iface:" '$1==i{print $2, $10}' /proc/net/dev)
 
+now=$(date +%s)
+
 if [ -f "$cache" ]; then
     read -r rx1 tx1 ts1 < "$cache"
-    now=$(date +%s)
     dt=$((now - ts1))
     [ "$dt" -lt 1 ] && dt=1
     rxr=$(( (rx2 - rx1) / dt ))
@@ -32,4 +37,4 @@ if [ -f "$cache" ]; then
         echo "↓ $(fmt_rate $rxr) ↑ $(fmt_rate $txr)"
     fi
 fi
-echo "$rx2 $tx2 $(date +%s)" > "$cache"
+echo "$rx2 $tx2 $now" > "$cache"

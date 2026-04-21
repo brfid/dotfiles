@@ -45,7 +45,7 @@ export VISUAL="nvim"
 PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 export PATH
 
-PS1='\e[0;32m\w\e[0m\n\$ '
+PS1='\[\e[0;32m\]\w\[\e[0m\]\n\$ '
 
 # Machine-specific additions (from shell/local/{machine}.sh → ~/.config/shell/local)
 if [ -f ~/.config/shell/local ]; then
