@@ -1,0 +1,38 @@
+# Allow read-only crontab inspection without repeated prompts.
+prefix_rule(
+    pattern = ["crontab", "-l"],
+    decision = "allow",
+    justification = "Listing the user crontab is read-only and useful for system checks.",
+    match = [
+        "crontab -l",
+    ],
+    not_match = [
+        "crontab -e",
+        "crontab -r",
+    ],
+)
+
+# Prompt before broader crontab changes. `crontab -e` and `crontab -r` can alter scheduled jobs.
+prefix_rule(
+    pattern = ["crontab"],
+    decision = "prompt",
+    justification = "Crontab writes are persistent system behavior changes; ask first unless the command is read-only.",
+    match = [
+        "crontab -e",
+        "crontab -r",
+    ],
+    not_match = [],
+)
+
+# Allow tmux control commands. These are needed to reload and inspect the current terminal session.
+prefix_rule(
+    pattern = ["tmux"],
+    decision = "allow",
+    justification = "Tmux commands control the active terminal session and are needed for config reloads and inspection.",
+    match = [
+        "tmux list-sessions",
+        "tmux source-file ~/.tmux.conf",
+        "tmux show-options -g set-clipboard",
+    ],
+    not_match = [],
+)

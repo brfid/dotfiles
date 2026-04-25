@@ -1,7 +1,8 @@
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 model_instructions_file = "/home/__USER__/.codex/instructions.md"
 approvals_reviewer = "user"
+
 [projects."/home/__USER__"]
 trust_level = "trusted"
 
@@ -28,6 +29,10 @@ trust_level = "trusted"
 
 [notice]
 hide_full_access_warning = true
+hide_rate_limit_model_nudge = true
 
 [plugins."superpowers@openai-curated"]
 enabled = true
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
