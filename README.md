@@ -96,6 +96,11 @@ Exceptions:
 - **tmux**: keep `~/.tmux/` real dir because TPM writes `~/.tmux/plugins/`. `tmux/tmux.conf` goes to `~/.tmux.conf`. Helper scripts go into `~/.tmux/`.
 - **codex**: keep `~/.codex/` real dir. Manage only paths declared in `codex/sync.toml`. Leave auth, caches, sessions, sqlite state, and generated plugin data unmanaged.
 - **gdrive-backup**: `gdrive-backup/config.toml` → `~/.config/gdrive-backup/config.toml`
+- **x11**:
+  - `x11/xprofile` → `~/.xprofile`
+  - `x11/xinitrc` → `~/.xinitrc`
+  - `x11/lxsession/LXDE-pi/autostart` → `~/.config/lxsession/LXDE-pi/autostart`
+    on Raspberry Pi LXDE sessions
 
 ## Cleanup
 
@@ -139,6 +144,8 @@ For each file:
 Keyboard remaps for local Leopold live in `reference/linux/keyboard/`.
 Install as `systemd-hwdb` rules under `/etc/udev/hwdb.d/`.
 Do not rely on `~/.xprofile` or `setxkbmap` for the real machine-local fix.
+On Raspberry Pi LXDE, also apply `x11/lxsession/LXDE-pi/autostart` so LXDE
+does not reintroduce `setxkbmap -option ctrl:swapcaps` on login.
 
 ## Adding a tool
 

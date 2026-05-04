@@ -1,0 +1,8 @@
+# Keyboard remaps live in systemd-hwdb via /etc/udev/hwdb.d/90-leopold-fc900rw.hwdb.
+# Do not call setxkbmap here; it conflicts with the kernel-level remap.
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+@xscreensaver -no-splash
+@xset s 1200 1200
+@xset +dpms
+@xset dpms 0 0 1800

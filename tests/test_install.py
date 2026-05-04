@@ -187,6 +187,20 @@ def test_profile_tools_exist(tool: Path) -> None:
     )
 
 
+def test_pi_keyboard_reinstall_path_is_documented_and_managed() -> None:
+    """Pi keyboard reinstall must cover hwdb and the LXDE setxkbmap conflict."""
+    x11_sync = (DOTFILES / "x11" / "sync.toml").read_text()
+    keyboard_readme = (DOTFILES / "reference" / "linux" / "keyboard" / "README.md").read_text()
+    root_readme = README.read_text()
+
+    assert ".config/lxsession/LXDE-pi/autostart" in x11_sync
+    assert "90-leopold-fc900rw.hwdb" in keyboard_readme
+    assert "systemd-hwdb update" in keyboard_readme
+    assert "setxkbmap" in keyboard_readme
+    assert "Keyboard remaps for local Leopold" in root_readme
+    assert ".config/lxsession/LXDE-pi/autostart" in root_readme
+
+
 @pytest.mark.parametrize(
     "path",
     tracked_text_files(),

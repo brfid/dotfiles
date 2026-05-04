@@ -17,6 +17,7 @@ Managed files:
 
 - `xprofile`
 - `xinitrc`
+- `lxsession/LXDE-pi/autostart`
 
 ## Import
 
@@ -26,7 +27,9 @@ Managed files:
 
 ## Apply
 
-- Apply `xprofile` to `~/.xprofile` and `xinitrc` to `~/.xinitrc` by copy or link.
+- Apply `xprofile` to `~/.xprofile`, `xinitrc` to `~/.xinitrc`, and
+  `lxsession/LXDE-pi/autostart` to `~/.config/lxsession/LXDE-pi/autostart`
+  by copy or link.
 - Use copy when unsure.
 
 ## Exclusions
@@ -36,4 +39,6 @@ Unmanaged live paths include `~/.xsessionrc`, Xorg logs, and other session/runti
 ## Verify
 
 - `~/.xprofile` and `~/.xinitrc` exist.
+- `~/.config/lxsession/LXDE-pi/autostart` exists and does not run
+  `setxkbmap`.
 - Run `pytest`.

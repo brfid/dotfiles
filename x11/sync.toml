@@ -14,6 +14,12 @@ repo = "xinitrc"
 live = ".xinitrc"
 actions = ["import", "copy", "link"]
 
+[[managed]]
+name = "lxde-pi-autostart"
+repo = "lxsession/LXDE-pi/autostart"
+live = ".config/lxsession/LXDE-pi/autostart"
+actions = ["import", "copy", "link"]
+
 [[unmanaged]]
 live = ".xsessionrc"
 class = "manual"
@@ -27,3 +33,6 @@ run = 'test -e "$HOME/.xprofile"'
 
 [[verify]]
 run = 'test -e "$HOME/.xinitrc"'
+
+[[verify]]
+run = 'test -e "$HOME/.config/lxsession/LXDE-pi/autostart"'

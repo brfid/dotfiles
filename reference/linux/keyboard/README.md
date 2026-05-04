@@ -31,6 +31,19 @@ sudo udevadm trigger --subsystem-match=input
 
 If old map remains, unplug/replug keyboard once or reboot.
 
+## Pi LXDE
+
+Also apply the managed X11 autostart file:
+
+```bash
+install -Dm0644 x11/lxsession/LXDE-pi/autostart \
+  ~/.config/lxsession/LXDE-pi/autostart
+```
+
+This file must not run `setxkbmap -option ctrl:swapcaps`.
+The `hwdb` rule already maps `Caps Lock` to `Left Ctrl`.
+Stacking X11 `swapcaps` on top causes double remap after login.
+
 ## Verify
 
 ```bash
