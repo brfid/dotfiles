@@ -15,8 +15,8 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 vim.api.nvim_set_hl(0, "@markup.raw.markdown_inline", { bg = "NONE" })
 
-vim.o.autoread = true
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+  desc = "Reload unchanged buffers after external file changes",
   callback = function()
     if vim.fn.getcmdwintype() == "" and vim.bo.buftype == "" then
       vim.cmd("silent! checktime")
