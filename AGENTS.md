@@ -7,6 +7,8 @@ If your client supports Agent Skills, load `skills/dotfiles-stack/SKILL.md`.
 ## What repo is
 
 Repo stores canonical, human-written config plus agent guidance.
+Repo is designed for LLM execution: root docs define shared policy, tool folders
+define local truth, and `sync.toml` declares managed live paths.
 Repo not full home-dir mirror.
 Repo public. Keep secrets, auth, personal identifiers, and private machine state out of git.
 

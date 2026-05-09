@@ -4,7 +4,8 @@
 
 Personal config for Raspberry Pi 5, macOS, and edcloud (EC2).
 Repo organized by tool.
-Goal: LLM-friendly import/apply workflows with real config files backed up in repo.
+Agent-operable: an LLM can cold-start from the docs, inspect per-tool manifests,
+and apply managed config without mirroring runtime state.
 Repo not full machine mirror.
 
 ## Quick start
@@ -33,6 +34,18 @@ Start at repo root.
 
 Repo stores canonical config plus agent guidance.
 Repo does not try to mirror whole home dirs or runtime state.
+
+## Agent-operable design
+
+This repo is designed for LLM execution, not just human dotfile browsing.
+The durable pattern:
+
+- Root docs define shared policy.
+- Tool folders define local truth.
+- `sync.toml` declares managed live paths.
+- `AGENTS.md` gives execution rules.
+- Runtime state stays out of git.
+- Validation checks confirm changes after design decisions.
 
 ## Machine detection
 
