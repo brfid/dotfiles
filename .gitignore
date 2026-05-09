@@ -1,4 +1,10 @@
 # local-only secrets
+/agent-skills/
+/family/
+/homeschool/
+/jean-claude/
+/mail/
+/signal-downloads/
 shell/env
 *.secret
 *.secrets
@@ -15,6 +21,17 @@ shell/env
 # python/cache
 __pycache__/
 *.pyc
+
+# runtime state and databases
+*.db
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+logs/
+sessions/
+cache/
+history.jsonl
 
 # tmux plugin manager (installed at runtime)
 tmux/.tmux/plugins/

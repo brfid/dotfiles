@@ -176,7 +176,9 @@ does not reintroduce `setxkbmap -option ctrl:swapcaps` on login.
 Never write real names, emails, phone numbers, addresses, or account identifiers into tracked files.
 Use placeholders like `<name>`, `<email>`, `<phone>`, `<address>`.
 Real values belong only in `~/.secrets`.
-Gitleaks hook enforces this locally. GitHub Actions secret scan enforces it in CI too.
+Gitleaks hook enforces secret patterns locally. `scripts/check_public_safety.sh`
+blocks known private paths, direct identifiers, and accidental private data dirs.
+GitHub Actions runs both checks in CI.
 
 ## Layout
 

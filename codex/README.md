@@ -22,7 +22,8 @@ Everything else in `~/.codex/` is live runtime state or plugin-owned output unle
 - Shared instructions: caveman natural-language mode from `instructions/caveman.md`
 - Enabled plugin: `superpowers@openai-curated`
 - Enabled MCP server: `openaiDeveloperDocs` at `https://developers.openai.com/mcp`
-- Trusted project roots are explicit in `config.toml`.
+- Trusted project roots are explicit in `config.toml` with `/home/__USER__`
+  placeholders for public-repo safety.
 - UI acknowledgement state, model-picker NUX state, auth, sessions, logs, caches, sqlite files, and plugin-generated payloads are not tracked.
 
 ## Rules policy
@@ -118,7 +119,8 @@ cp ~/.codex/rules/default.rules codex/rules/default.rules
 cp ~/.codex/memories/markdown-soft-wrap.md codex/memories/markdown-soft-wrap.md
 ```
 
-Before committing, remove transient UI state from `config.toml`, such as `[tui.model_availability_nux]`.
+Before committing, replace direct home paths with `/home/__USER__` and remove
+transient UI state from `config.toml`, such as `[tui.model_availability_nux]`.
 
 ## Apply workflow
 
@@ -126,7 +128,7 @@ Apply managed files to the live Codex directory:
 
 ```bash
 mkdir -p ~/.codex/rules ~/.codex/memories
-cp codex/config.toml ~/.codex/config.toml
+sed "s#/home/__USER__#$HOME#g" codex/config.toml > ~/.codex/config.toml
 ln -sfn "$HOME/src/dotfiles/codex/instructions/caveman.md" ~/.codex/instructions.md
 cp codex/rules/default.rules ~/.codex/rules/default.rules
 cp codex/memories/markdown-soft-wrap.md ~/.codex/memories/markdown-soft-wrap.md

@@ -41,6 +41,10 @@ live = "backups/**"
 class = "state"
 
 [[unmanaged]]
+live = "settings.local.json"
+class = "private-local"
+
+[[unmanaged]]
 live = "cache/**"
 class = "cache"
 

@@ -1,30 +1,18 @@
 model = "gpt-5.5"
 model_reasoning_effort = "high"
-model_instructions_file = "/home/__USER__/.codex/instructions.md"
+model_instructions_file = "~/.codex/instructions.md"
 approvals_reviewer = "user"
 
 [projects."/home/__USER__"]
 trust_level = "trusted"
 
-[projects."/home/__USER__/family"]
-trust_level = "trusted"
-
 [projects."/home/__USER__/src"]
-trust_level = "trusted"
-
-[projects."/home/__USER__/<private-family-repo>/<private-family-data>"]
-trust_level = "trusted"
-
-[projects."/home/__USER__/<private-family-repo>/<private-app-context>"]
-trust_level = "trusted"
-
-[projects."/home/__USER__/src/millcapsule"]
 trust_level = "trusted"
 
 [projects."/home/__USER__/src/edcloud"]
 trust_level = "trusted"
 
-[projects."/home/__USER__/src/mill-capsule"]
+[projects."/home/__USER__/src/dotfiles"]
 trust_level = "trusted"
 
 [notice]

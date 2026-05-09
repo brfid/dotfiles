@@ -14,7 +14,7 @@ notify_email = "$GOG_ACCOUNT"
 
 # DISABLED 2026-04-07: file sync moved to Syncthing
 # [[backup]]
-# name = "family"
+# name = "private-files"
 # mode = "bisync"
-# source = "<private-family-repo>"
-# remote = "gdrive:family"
+# source = "<private-source>"
+# remote = "gdrive:<private-remote>"

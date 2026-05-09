@@ -32,6 +32,8 @@ Managed files:
 
 - Keep `~/.codex/` real dir.
 - Apply `config.toml` by copy.
+- Before applying `config.toml`, replace `/home/__USER__` with the target
+  machine's real home path.
 - Apply instruction files by copy or link. Use copy when unsure.
 - Apply managed rules and memories by copy.
 - Do not mirror full `~/.codex/` tree into repo.

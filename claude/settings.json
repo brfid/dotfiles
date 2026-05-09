@@ -14,10 +14,7 @@
       "WebFetch(*)",
       "WebSearch(*)"
     ],
-    "defaultMode": "acceptEdits",
-    "additionalDirectories": [
-      "<private-family-repo>"
-    ]
+    "defaultMode": "acceptEdits"
   },
   "availableModels": [
     "haiku",

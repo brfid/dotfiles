@@ -25,6 +25,8 @@ Managed files:
 - Import only managed files from `sync.toml`.
 - Do not import `.credentials.json`, backups, cache, debug output, file history, downloaded marketplace data, or plugin install state.
 - If live file has machine-local paths, keep repo convention unless user explicitly wants that path backed up.
+- Keep private workspace access such as `additionalDirectories` in
+  `~/.claude/settings.local.json`, not tracked settings files.
 
 ## Apply
 
