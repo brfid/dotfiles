@@ -25,6 +25,9 @@ y() {
 	rm -f -- "$tmp"
 }
 
+# Kiro CLI
+alias kiro='kiro-cli chat --trust-all-tools'
+
 # Claude Code / Copilot CLI
 alias claude="$HOME/bin/claude"
 # Make Copilot CLI pick up ~/.claude/CLAUDE.md (user prefs, style, Context7 rule)
