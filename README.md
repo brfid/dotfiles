@@ -73,13 +73,14 @@ Not every row applies on every machine.
 
 ### Support and context areas
 
-| Path     | What it holds                                   |
-| -------- | ----------------------------------------------- |
-| projects | public system overviews and design/context docs |
-| skills   | repo-local skill guidance                       |
-| scripts  | small local automation utilities                |
-| tests    | repo verification                               |
-| .github  | repo-level GitHub Actions workflows             |
+| Path      | What it holds                                     |
+| --------- | ------------------------------------------------- |
+| projects  | public system overviews and design/context docs   |
+| skills    | repo-local skill guidance                         |
+| workspace | core rebuild resources for local repave/reinstall |
+| scripts   | small local automation utilities                  |
+| tests     | repo verification                                 |
+| .github   | repo-level GitHub Actions workflows               |
 
 If a reader wants to know what config this repo maintains, the first table above is the answer.
 
@@ -195,6 +196,7 @@ reference/      System configs requiring sudo — reviewed and applied manually
   templates/    .gitconfig.example
 
 skills/         Agent Skills-compatible repo guidance
+workspace/      Core rebuild resources for local repave/reinstall
 scripts/        Small local automation utilities
 projects/       Public docs for larger system setups
 tests/          pytest: repo structure and syntax checks

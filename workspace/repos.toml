@@ -1,0 +1,37 @@
+version = 1
+base_dir = "~/src"
+github_owner = "brfid"
+
+# Core repos for rebuilding this local workspace after reinstall or repave.
+# Not a full repo inventory.
+# GitHub repo visibility is the source of truth for public/private handling.
+
+[[repo]]
+name = "dotfiles"
+url = "git@github.com:brfid/dotfiles.git"
+path = "~/src/dotfiles"
+purpose = "Machine, tool, and agent configuration."
+
+[[repo]]
+name = "agent-skills"
+url = "git@github.com:brfid/agent-skills.git"
+path = "~/src/agent-skills"
+purpose = "LLM skills and skill references."
+
+[[repo]]
+name = "homeschool"
+url = "git@github.com:brfid/homeschool.git"
+path = "~/src/homeschool"
+purpose = "Homeschool workspace."
+
+[[repo]]
+name = "brfid.github.io"
+url = "git@github.com:brfid/brfid.github.io.git"
+path = "~/src/brfid.github.io"
+purpose = "Hugo site and technical writing portfolio."
+
+[[repo]]
+name = "edcloud"
+url = "git@github.com:brfid/edcloud.git"
+path = "~/src/edcloud"
+purpose = "Cloud environment and lifecycle support."
