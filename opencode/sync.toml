@@ -1,0 +1,8 @@
+version = 2
+tool = "opencode"
+live_root = "~/.config/opencode"
+
+[[managed]]
+name = "config"
+repo = "opencode.json"
+live = "opencode.json"

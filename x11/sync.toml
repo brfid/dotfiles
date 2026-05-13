@@ -1,0 +1,18 @@
+version = 2
+tool = "x11"
+live_root = "~"
+
+[[managed]]
+name = "xprofile"
+repo = "xprofile"
+live = ".xprofile"
+
+[[managed]]
+name = "xinitrc"
+repo = "xinitrc"
+live = ".xinitrc"
+
+[[managed]]
+name = "lxde-pi-autostart"
+repo = "lxsession/LXDE-pi/autostart"
+live = ".config/lxsession/LXDE-pi/autostart"

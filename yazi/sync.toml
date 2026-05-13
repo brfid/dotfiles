@@ -1,0 +1,13 @@
+version = 2
+tool = "yazi"
+live_root = "~/.config/yazi"
+
+[[managed]]
+name = "config"
+repo = "yazi.toml"
+live = "yazi.toml"
+
+[[managed]]
+name = "keymap"
+repo = "keymap.toml"
+live = "keymap.toml"

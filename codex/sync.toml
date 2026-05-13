@@ -1,0 +1,23 @@
+version = 2
+tool = "codex"
+live_root = "~/.codex"
+
+[[managed]]
+name = "config"
+repo = "config.toml"
+live = "config.toml"
+
+[[managed]]
+name = "instructions"
+repo = "instructions/concise.md"
+live = "instructions.md"
+
+[[managed]]
+name = "rules"
+repo = "rules/default.rules"
+live = "rules/default.rules"
+
+[[managed]]
+name = "memories"
+repo = "memories/markdown-soft-wrap.md"
+live = "memories/markdown-soft-wrap.md"

@@ -1,0 +1,13 @@
+version = 2
+tool = "systemd"
+live_root = "~/.config/systemd/user"
+
+[[managed]]
+name = "user-units"
+repo = "*.service"
+live = "*.service"
+
+[[managed]]
+name = "user-timers"
+repo = "*.timer"
+live = "*.timer"

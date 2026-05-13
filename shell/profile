@@ -1,0 +1,52 @@
+# shell/profile — shared profile sourced by both bashrc and zshrc.
+#
+# Mostly POSIX sh with one bash/zsh-only construct (process substitution
+# in the tmux X11 rehydration block at the bottom). Both target shells
+# support it.
+#
+# Put cross-shell, cross-machine setup here. Shell-specific behavior
+# (HISTSIZE, completion, prompt) stays in bashrc/zshrc.
+#
+# Host-unique blocks below are guarded so this file is safe on every
+# target machine. Currently only the Pi has host-unique setup; macOS and
+# edcloud have nothing to add beyond the shared profile. If a new
+# machine-unique block is needed, add it here behind its own guard.
+
+# Editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# PATH spine. Authoritative single block.
+PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+[ -d "$HOME/.npm-global/bin" ] && PATH="$HOME/.npm-global/bin:$PATH"
+[ -d "$HOME/.opencode/bin" ] && PATH="$HOME/.opencode/bin:$PATH"
+export PATH
+
+# Shared aliases and functions
+[ -f "$HOME/.config/shell/aliases" ] && . "$HOME/.config/shell/aliases"
+
+# Secrets (real values; never tracked)
+[ -f "$HOME/.secrets" ] && . "$HOME/.secrets"
+
+# -------------------------
+# Pi-only host setup
+# Guarded by Linuxbrew presence so this is a no-op on macOS and edcloud.
+# -------------------------
+if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+    # Node.js compile cache for faster CLI startup on ARM
+    export NODE_COMPILE_CACHE=/var/tmp/node-compile-cache
+fi
+
+# Cargo env (Rust). Guarded so it's a no-op when Rust isn't installed.
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# Old tmux panes can keep an SSH-originated environment without X11 vars.
+# Import the GUI display/auth vars from tmux's global environment when needed.
+# Uses process substitution; sourced only by bash and zsh, both support it.
+if [ -n "${TMUX-}" ] && { [ -z "${DISPLAY-}" ] || [ -z "${XAUTHORITY-}" ]; }; then
+    while IFS= read -r line; do
+        eval "$line"
+    done < <(tmux show-environment -g -s 2>/dev/null | grep -E '^(DISPLAY|XAUTHORITY)=')
+fi

@@ -1,0 +1,23 @@
+version = 2
+tool = "shell"
+live_root = "~/.config/shell"
+
+[[managed]]
+name = "bashrc"
+repo = "bashrc"
+live = "~/.bashrc"
+
+[[managed]]
+name = "zshrc"
+repo = "zshrc"
+live = "~/.zshrc"
+
+[[managed]]
+name = "profile"
+repo = "profile"
+live = "profile"
+
+[[managed]]
+name = "aliases"
+repo = "aliases"
+live = "aliases"

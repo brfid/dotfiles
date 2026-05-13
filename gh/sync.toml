@@ -1,0 +1,8 @@
+version = 2
+tool = "gh"
+live_root = "~/.config/gh"
+
+[[managed]]
+name = "config"
+repo = "config.yml"
+live = "config.yml"

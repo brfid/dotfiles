@@ -1,0 +1,32 @@
+# shell/bashrc — bash-specific. Cross-shell setup lives in shell/profile.
+# Used on Pi and edcloud (bash). macOS uses zsh.
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# History settings (bash-specific)
+HISTCONTROL=ignoreboth
+shopt -s histappend
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# Update window size after each command
+shopt -s checkwinsize
+
+# Bash completion
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
+fi
+
+# Prompt (bash-specific escape syntax)
+PS1='\[\e[0;32m\]\w\[\e[0m\]\n\$ '
+
+# Shared profile: PATH, aliases, secrets, machine-local, tmux rehydration
+[ -f "$HOME/.config/shell/profile" ] && . "$HOME/.config/shell/profile"

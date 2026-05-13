@@ -1,0 +1,40 @@
+# Shared aliases — sourced by both zsh and bash
+
+# Modern CLI replacements
+alias l='eza -lhga --icons --group-directories-first'
+alias ls='eza --icons --group-directories-first'
+alias tree='eza --tree --icons'
+if command -v batcat &>/dev/null; then
+    alias cat='batcat --plain'
+elif command -v bat &>/dev/null; then
+    alias cat='bat --plain'
+fi
+alias grep='grep --color=auto'
+
+# Python
+alias python='python3'
+alias pip='pip3'
+alias venv='source venv/bin/activate'
+
+# File manager
+y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
+# OpenCode — PATH is set in shell/profile; no alias needed
+# Claude Code
+alias claude="$HOME/bin/claude"
+
+# tmux launchers — shared across machines.
+# `t` attaches/creates a `main` session; on X11 hosts it also propagates
+# DISPLAY into tmux's global env so xclip works in copy-mode. Off-X11
+# (macOS, headless edcloud) the DISPLAY check is a no-op.
+t() {
+    [ -n "${DISPLAY:-}" ] && tmux set-environment -g DISPLAY "$DISPLAY" 2>/dev/null
+    tmux new-session -A -s main
+}
+alias tmx='tmux new-session \; split-window -h -p 67 \; select-pane -t 0'

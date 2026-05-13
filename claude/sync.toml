@@ -1,0 +1,23 @@
+version = 2
+tool = "claude"
+live_root = "~/.claude"
+
+[[managed]]
+name = "claude-md"
+repo = "CLAUDE.md"
+live = "CLAUDE.md"
+
+[[managed]]
+name = "settings"
+repo = "settings.json"
+live = "settings.json"
+
+[[managed]]
+name = "settings-anthropic"
+repo = "settings.anthropic.json"
+live = "settings.anthropic.json"
+
+[[managed]]
+name = "local-marketplace"
+repo = "plugins/.claude-plugin/marketplace.json"
+live = "plugins/.claude-plugin/marketplace.json"

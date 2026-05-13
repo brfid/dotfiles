@@ -1,0 +1,23 @@
+# shell/zshrc — zsh-specific. Cross-shell setup lives in shell/profile.
+# Used on macOS. Pi and edcloud use bash.
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# History settings (zsh-specific)
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE="$HOME/.zsh_history"
+setopt SHARE_HISTORY HIST_IGNORE_DUPS HIST_IGNORE_SPACE
+
+# Completion
+autoload -Uz compinit && compinit -i
+
+# Prompt
+PROMPT='%D{%H:%M:%S} %n@%m %1~ %# '
+
+# Convenience: reload zshrc
+alias zshrc='source ~/.zshrc'
+
+# Shared profile: PATH, aliases, secrets, machine-local, tmux rehydration
+[ -f "$HOME/.config/shell/profile" ] && . "$HOME/.config/shell/profile"

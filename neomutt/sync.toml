@@ -1,0 +1,13 @@
+version = 2
+tool = "neomutt"
+live_root = "~/.config/neomutt"
+
+[[managed]]
+name = "config"
+repo = "neomuttrc"
+live = "neomuttrc"
+
+[[managed]]
+name = "mailcap"
+repo = "mailcap"
+live = "mailcap"

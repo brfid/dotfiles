@@ -1,0 +1,26 @@
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+model_instructions_file = "~/.codex/instructions.md"
+approvals_reviewer = "user"
+
+[projects."/home/__USER__"]
+trust_level = "trusted"
+
+[projects."/home/__USER__/src"]
+trust_level = "trusted"
+
+[projects."/home/__USER__/src/edcloud"]
+trust_level = "trusted"
+
+[projects."/home/__USER__/src/dotfiles"]
+trust_level = "trusted"
+
+[notice]
+hide_full_access_warning = true
+hide_rate_limit_model_nudge = true
+
+[plugins."superpowers@openai-curated"]
+enabled = true
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Global pre-commit hook: scan staged changes for secrets.
+# Installed via dotfiles — git config --global core.hooksPath points here.
+set -euo pipefail
+
+if ! command -v gitleaks &>/dev/null; then
+    echo "ERROR: gitleaks not found — refusing commit without secret scan" >&2
+    exit 1
+fi
+
+# Use repo-local .gitleaks.toml if present, otherwise the dotfiles one.
+config=()
+if [ -f ".gitleaks.toml" ]; then
+    config=(--config .gitleaks.toml)
+elif [ -f "$HOME/src/dotfiles/git/.gitleaks.toml" ]; then
+    config=(--config "$HOME/src/dotfiles/git/.gitleaks.toml")
+fi
+
+gitleaks protect --staged --redact --verbose "${config[@]}"

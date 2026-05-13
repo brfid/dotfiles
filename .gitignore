@@ -1,0 +1,57 @@
+# Secret material in any form
+shell/env
+*.secret
+*.secrets
+.secrets
+.env
+.env.*
+*.key
+*.pem
+
+# shell/editor history
+.bash_history
+.lesshst
+
+# python/cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# uv (dev tooling only — repo is not a published package)
+.venv/
+uv.lock
+
+# runtime state and databases
+*.db
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+logs/
+sessions/
+cache/
+history.jsonl
+
+# tmux plugin manager (installed at runtime)
+tmux/.tmux/plugins/
+
+# OS/editor
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code local artifacts
+/.superpowers/
+/plans/
+/.claude/settings.local.json
+/claude/plugins/cache/
+/claude/plugins/marketplaces/
+/claude/plugins/install-counts-cache.json
+/claude/plugins/installed_plugins.json
+/claude/plugins/known_marketplaces.json
+
+# nvim runtime files
+nvim/lazy-lock.json
+nvim/lazyvim.json

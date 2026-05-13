@@ -1,0 +1,19 @@
+# Pi-hole v6 non-default settings (reference only — pihole-FTL manages the live file)
+# To restore: apply these values via Pi-hole web UI or pihole-FTL.conf
+# Router DHCP/RA DNS belongs in router admin, not this file. Use placeholders in
+# docs instead of recording private network addresses.
+# Tailnet split DNS uses a placeholder suffix. Replace before applying.
+
+[dns]
+  upstreams = [
+    "1.1.1.1",
+    "1.0.0.1",
+    "2606:4700:4700::1111",
+    "2606:4700:4700::1001"
+  ]
+  interface = "wlan0"
+
+[misc]
+  dnsmasq_lines = [
+    "server=/<tailnet_suffix>/100.100.100.100"
+  ]

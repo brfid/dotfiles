@@ -1,0 +1,13 @@
+version = 2
+tool = "tmux"
+live_root = "~/.tmux"
+
+[[managed]]
+name = "tmux-conf"
+repo = "tmux.conf"
+live = "~/.tmux.conf"
+
+[[managed]]
+name = "status-scripts"
+repo = "scripts/*.sh"
+live = "*.sh"

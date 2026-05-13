@@ -1,0 +1,12 @@
+# Pi user crontab (reference only — install with: crontab crontab.pi)
+# Replace __PLACEHOLDER__ vars manually before installing this crontab.
+
+SHELL=/bin/bash
+BASH_ENV=/home/__USER__/.secrets
+PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin
+
+# Repo backup: git backup at 2am and 2pm
+0 2,14 * * * cd /home/__USER__/__SYNC_REPO__ && git add -A && git commit -m "backup $(date +\%F\ \%H:\%M)" --allow-empty && git push 2>&1 | logger -t repo-backup
+
+# Sync Google Sheets to local markdown (every 12 hours)
+0 6,18 * * * /usr/bin/python3 /home/__USER__/__AGENT_REPO__/scripts/sync_sheets.py 2>&1 | logger -t sheets-sync

@@ -1,0 +1,18 @@
+version = 2
+tool = "nvim"
+live_root = "~/.config/nvim"
+
+[[managed]]
+name = "core-files"
+repo = "init.lua"
+live = "init.lua"
+
+[[managed]]
+name = "lua-config"
+repo = "lua/**"
+live = "lua"
+
+[[managed]]
+name = "stylua-config"
+repo = "stylua.toml"
+live = "stylua.toml"

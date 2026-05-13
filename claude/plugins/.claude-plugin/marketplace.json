@@ -1,0 +1,9 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "local",
+  "description": "Local plugins from dotfiles",
+  "owner": {
+    "name": "Local"
+  },
+  "plugins": []
+}

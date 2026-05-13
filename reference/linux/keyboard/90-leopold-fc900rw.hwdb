@@ -1,0 +1,16 @@
+# Leopold FC900RW (USB, Cypress HID 04B4:0510)
+#
+# Local machine mapping:
+#   Caps Lock  -> Left Ctrl
+#   Left Ctrl  -> Left Ctrl  (unchanged)
+#   Right Ctrl -> Caps Lock
+#
+# Kernel-level remap via systemd-hwdb. Applies in console, display manager,
+# X11, Wayland, and local terminal/ssh sessions launched from this machine.
+#
+# HID usage codes (0x700XX): 39=CapsLock, e0=LCtrl, e4=RCtrl
+# Target values are Linux input key names (lowercase, no KEY_ prefix).
+
+evdev:input:b0003v04B4p0510*
+ KEYBOARD_KEY_70039=leftctrl
+ KEYBOARD_KEY_700e4=capslock

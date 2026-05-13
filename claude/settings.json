@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "WebFetch(*)",
+      "WebSearch(*)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "availableModels": [
+    "haiku",
+    "sonnet",
+    "opus"
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_FILE_PATHS\" | grep -q '\\.py$'; then black --quiet \"$CLAUDE_FILE_PATHS\" 2>/dev/null; fi"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": false,
+    "context7@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": false,
+    "compound-engineering@compound-engineering-plugin": true
+  },
+  "extraKnownMarketplaces": {
+    "local": {
+      "source": {
+        "source": "directory",
+        "path": "~/src/dotfiles/claude/plugins"
+      }
+    },
+    "compound-engineering-plugin": {
+      "source": {
+        "source": "github",
+        "repo": "EveryInc/compound-engineering-plugin"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true
+}

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Keyboard remaps live in systemd-hwdb via reference/linux/keyboard/.
+# Do not call setxkbmap here; it conflicts with the kernel-level remap.
+# Keep ~/.xinitrc usable for manual startx by chaining to the system xinitrc.
+
+exec /bin/sh /etc/X11/xinit/xinitrc

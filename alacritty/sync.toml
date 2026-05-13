@@ -1,0 +1,8 @@
+version = 2
+tool = "alacritty"
+live_root = "~/.config/alacritty"
+
+[[managed]]
+name = "alacritty-config"
+repo = "alacritty.toml"
+live = "alacritty.toml"

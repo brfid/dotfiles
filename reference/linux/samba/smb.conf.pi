@@ -1,0 +1,71 @@
+# /etc/samba/smb.conf for Raspberry Pi
+# Reference only — review and apply manually.
+# Replace placeholders before manual install.
+
+[global]
+   workgroup = WORKGROUP
+   server string = <pi_hostname>
+   server role = standalone server
+
+   # Auth — no anonymous access
+   security = user
+   map to guest = Never
+
+   # Protocol — SMB3 minimum, encrypt if client supports it
+   server min protocol = SMB3
+   smb encrypt = desired
+   unix charset = UTF-8
+
+   # Network — Tailscale only
+   hosts allow = 127.0.0.1 <tailscale_ipv4_cidr> <tailscale_ipv6_cidr>
+   hosts deny = 0.0.0.0/0 ::/0
+
+   # No legacy NetBIOS
+   disable netbios = yes
+   smb ports = 445
+
+   # Logging
+   log file = /var/log/samba/log.%m
+   max log size = 1000
+   logging = file
+
+[family]
+   path = /home/__USER__/family
+   browseable = yes
+   read only = no
+   guest ok = no
+   valid users = __USER__
+   force user = __USER__
+   create mask = 0644
+   directory mask = 0755
+
+   # Apple clients expect these metadata/resource-fork behaviors.
+   vfs objects = catia fruit streams_xattr
+   fruit:metadata = stream
+   fruit:resource = stream
+
+   hide unreadable = yes
+   hide files = /.DS_Store/._*/
+   veto files = /.DS_Store/._*/
+   delete veto files = yes
+
+[src]
+   comment = Source Tree
+   path = /home/__USER__/src
+   browseable = yes
+   read only = no
+   guest ok = no
+   valid users = __USER__
+   force user = __USER__
+   create mask = 0644
+   directory mask = 0755
+
+   # Apple clients expect these metadata/resource-fork behaviors.
+   vfs objects = catia fruit streams_xattr
+   fruit:metadata = stream
+   fruit:resource = stream
+
+   hide unreadable = yes
+   hide files = /.git/.venv/.direnv/.pytest_cache/.mypy_cache/.ruff_cache/node_modules/.DS_Store/._*/
+   veto files = /.git/.venv/.direnv/.pytest_cache/.mypy_cache/.ruff_cache/node_modules/.DS_Store/._*/
+   delete veto files = yes

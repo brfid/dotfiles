@@ -1,0 +1,39 @@
+[user]
+  name = Your Name
+  email = you@example.com
+
+[init]
+  defaultBranch = main
+
+[core]
+  editor = nvim
+  autocrlf = input
+  hooksPath = ~/.config/git/hooks
+
+[pull]
+  rebase = false
+
+[push]
+  default = current
+  autoSetupRemote = true
+
+[fetch]
+  prune = true
+
+[merge]
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default
+
+[color]
+  ui = auto
+
+[alias]
+  st = status
+  co = checkout
+  br = branch
+  ci = commit
+  unstage = reset HEAD --
+  last = log -1 HEAD
+  lg = log --oneline --graph --decorate
