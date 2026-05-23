@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Global pre-commit hook: scan staged changes for secrets.
+# Global pre-commit hook: scan staged changes for secrets and PII.
 # Installed via dotfiles — git config --global core.hooksPath points here.
 set -euo pipefail
 
@@ -17,7 +17,10 @@ else
     dotfiles_config="$(cd "$hook_dir/.." && pwd)/.gitleaks.toml"
     if [ -f "$dotfiles_config" ]; then
         config=(--config "$dotfiles_config")
+    else
+        echo "ERROR: no gitleaks config found — refusing commit without PII rules" >&2
+        exit 1
     fi
 fi
 
-gitleaks protect --staged --redact --verbose "${config[@]}"
+gitleaks protect --staged --redact --verbose --exit-code 1 "${config[@]}"
