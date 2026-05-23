@@ -8,12 +8,16 @@ if ! command -v gitleaks &>/dev/null; then
     exit 1
 fi
 
-# Use repo-local .gitleaks.toml if present, otherwise the dotfiles one.
+# Use repo-local .gitleaks.toml if present, otherwise the one next to this hook.
 config=()
 if [ -f ".gitleaks.toml" ]; then
     config=(--config .gitleaks.toml)
-elif [ -f "$HOME/src/dotfiles/git/.gitleaks.toml" ]; then
-    config=(--config "$HOME/src/dotfiles/git/.gitleaks.toml")
+else
+    hook_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    dotfiles_config="$(cd "$hook_dir/.." && pwd)/.gitleaks.toml"
+    if [ -f "$dotfiles_config" ]; then
+        config=(--config "$dotfiles_config")
+    fi
 fi
 
 gitleaks protect --staged --redact --verbose "${config[@]}"
