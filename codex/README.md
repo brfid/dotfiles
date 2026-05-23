@@ -1,25 +1,16 @@
-# Codex adapter
+# Codex
 
-Agent policy and private skills live in `~/src/agents`.
+Use `~/src/agents` as source text when updating local Codex behavior.
 
-- Shared policy: `~/src/agents/policy/`
-- Codex base instructions: `~/src/agents/codex/AGENTS.md`
 - Live Codex instructions: `~/.codex/AGENTS.md`
-- Private portable skills: `~/src/agents/skills/`
+- Agent rules: `~/src/agents/rules.md`
+- Agent personas: `~/src/agents/personas/`
 
-Copy `~/src/agents/codex/AGENTS.md` into `~/.codex/AGENTS.md` outside the
-managed compound tool-map block. Do not symlink the whole file because Codex
-manages that block.
+Apply relevant rule and persona text by editing the human-written sections of
+`~/.codex/AGENTS.md`. Preserve the managed compound tool-map block.
 
-Link private skills individually:
-
-```text
-~/.codex/skills/<name> -> ~/src/agents/skills/<name>
-```
-
-Do not replace `~/.codex/skills/`; Codex system and plugin skills also live
-there.
-
+- Do not symlink `~/.codex/AGENTS.md`.
+- Do not replace `~/.codex/skills/`; Codex system and plugin skills live there.
 - Keep `~/.codex/auth.json`, history, sessions, logs, sqlite state, caches, and
   generated state out of git.
 - Configure MCP servers and model settings from current Codex docs at setup time.

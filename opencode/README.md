@@ -1,16 +1,15 @@
-# OpenCode adapter
+# OpenCode
 
-Agent policy, private agents, and private skills live in `~/src/agents`.
+Use `~/src/agents` as source text when updating local OpenCode behavior.
 
-OpenCode consumes them by symlink:
+- Local agents: `~/.config/opencode/agents/*.md`
+- Agent rules: `~/src/agents/rules.md`
+- Agent personas: `~/src/agents/personas/`
 
-```text
-~/.config/opencode/agents -> ~/src/agents/opencode/agents
-~/.config/opencode/skills -> ~/src/agents/skills
-```
+Generate local OpenCode agent files from the rules and personas. Add OpenCode YAML
+frontmatter locally because model names, permissions, and provider settings are
+client-specific.
 
-Shared policy lives in `~/src/agents/policy/`. OpenCode agent markdown files
-embed only the rules needed by that agent.
-
+- Do not symlink local OpenCode config back to `~/src/agents`.
 - Keep auth, session state, node modules, generated config, package locks, and
   plugin caches out of git.

@@ -1,12 +1,9 @@
 # dotfiles
 
-Personal dotfiles for LLM-orchestrated preference recall across machines.
+Durable machine and tool configuration notes.
 
-Hooks keep generated state, private data, and machine-specific files out of git
-so the repo stays clean.
+Use this repo with `~/src/agents` when setting up local LLM clients. Dotfiles
+owns tool paths and setup notes; agents owns reusable LLM agent config. An LLM
+adapts both into local config for the current machine.
 
-## Model
-
-- Let the LLM adapt these files to the current OS, package manager, and tool
-  versions at setup time.
-- Each root folder owns its setup notes in its own `README.md`.
+Each root folder owns its setup notes in its own `README.md`.
