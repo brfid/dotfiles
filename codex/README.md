@@ -1,10 +1,10 @@
 # Codex
 
-Use `~/src/agents` as source text when updating local Codex behavior.
+Use `agents/` as source text when updating local Codex behavior.
 
 - Live Codex instructions: `~/.codex/AGENTS.md`
-- Agent rules: `~/src/agents/rules.md`
-- Agent personas: `~/src/agents/personas/`
+- Agent rules: `agents/rules.md`
+- Agent personas: `agents/personas/`
 
 Apply relevant rule and persona text by editing the human-written sections of `~/.codex/AGENTS.md`. Preserve the managed compound tool-map block.
 
