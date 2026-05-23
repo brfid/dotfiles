@@ -1,0 +1,12 @@
+[font]
+size = 14.0
+
+[colors.primary]
+foreground = "#ff8700"
+
+[window.padding]
+x = 4
+y = 4
+
+[font.normal]
+family = "Fira Code"

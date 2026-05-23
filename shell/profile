@@ -1,0 +1,32 @@
+# shell/profile - shared profile sourced by both bashrc and zshrc.
+#
+# Mostly POSIX sh with one bash/zsh-only construct (process substitution
+# in the tmux display rehydration block at the bottom). Both target shells
+# support it.
+#
+# Put cross-shell, cross-machine setup here. Shell-specific behavior
+# (HISTSIZE, completion, prompt) stays in bashrc/zshrc.
+
+# Editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# PATH spine. Authoritative single block.
+PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+[ -d "$HOME/.opencode/bin" ] && PATH="$HOME/.opencode/bin:$PATH"
+export PATH
+
+# Shared aliases and functions
+[ -f "$HOME/.config/shell/aliases" ] && . "$HOME/.config/shell/aliases"
+
+# Cargo env (Rust). Guarded so it's a no-op when Rust isn't installed.
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# Old tmux panes can keep an SSH-originated environment without display vars.
+# Import the GUI display/auth vars from tmux's global environment when needed.
+# Uses process substitution; sourced only by bash and zsh, both support it.
+if [ -n "${TMUX-}" ] && { [ -z "${DISPLAY-}" ] || [ -z "${XAUTHORITY-}" ]; }; then
+    while IFS= read -r line; do
+        eval "$line"
+    done < <(tmux show-environment -g -s 2>/dev/null | grep -E '^(DISPLAY|XAUTHORITY)=')
+fi
