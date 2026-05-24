@@ -1,6 +1,6 @@
 # pi
 
-Role: Raspberry Pi 5 host config and hotspare strategy.
+Role: Raspberry Pi 5 host config and hotspare strategy. See `debian/` for OS-level preferences.
 
 ## Boot order
 
