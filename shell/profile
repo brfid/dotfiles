@@ -12,6 +12,9 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 
 # PATH spine. Authoritative single block.
+# Linuxbrew first so user bins can override brew-installed tools.
+[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ] && \
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 [ -d "$HOME/.opencode/bin" ] && PATH="$HOME/.opencode/bin:$PATH"
 export PATH
