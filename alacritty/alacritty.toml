@@ -9,4 +9,17 @@ x = 4
 y = 4
 
 [font.normal]
-family = "Fira Code"
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "Regular"
+
+[font.bold]
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "Bold Italic"
