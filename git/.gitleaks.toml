@@ -12,6 +12,9 @@ tags = ["password"]
 regexes = [
     '''(?i)(example|placeholder|changeme|xxxx|your[_-]|dummy|template)''',
 ]
+paths = [
+    '''secrets/render-neomutt-account''',
+]
 
 [[rules]]
 id = "personal-email"

@@ -10,3 +10,4 @@ Live paths:
 Notes:
 - Enable the hook with `git config --global core.hooksPath ~/.config/git/hooks`.
 - The hook blocks commits when `gitleaks` is unavailable; keep it optional on new machines.
+- Create `~/.config/git/blocklist` with one grep-compatible pattern per line to block local identifiers (hostnames, usernames, addresses) from any commit. Never commit this file.

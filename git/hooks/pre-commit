@@ -24,3 +24,16 @@ else
 fi
 
 gitleaks protect --staged --redact --verbose --exit-code 1 "${config[@]}"
+
+# Local identifier blocklist — patterns live outside the repo, never committed.
+blocklist="$HOME/.config/git/blocklist"
+if [ -f "$blocklist" ]; then
+    diff=$(git diff --cached --unified=0)
+    while IFS= read -r pattern || [ -n "$pattern" ]; do
+        [[ "$pattern" =~ ^[[:space:]]*#|^[[:space:]]*$ ]] && continue
+        if printf '%s' "$diff" | grep -qE "^\+.*${pattern}"; then
+            echo "ERROR: commit blocked by local policy" >&2
+            exit 1
+        fi
+    done < "$blocklist"
+fi

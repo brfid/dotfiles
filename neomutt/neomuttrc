@@ -1,16 +1,12 @@
 # ===========================================================================
 # Account Information
 # ===========================================================================
-set realname = `printf '"%s"' "$NEOMUTT_NAME"`
-set from = `printf '"%s"' "$NEOMUTT_EMAIL"`
+source ~/.config/neomutt/account.muttrc
 set envelope_from = "yes"
 
 # ===========================================================================
 # IMAP Settings (Receiving Mail)
 # ===========================================================================
-set imap_user = `printf '"%s"' "$NEOMUTT_EMAIL"`
-set imap_pass = `printf '"%s"' "$NEOMUTT_PASSWORD"`
-
 set folder = "imaps://imap.gmail.com:993"
 set spoolfile = "+INBOX"
 set postponed = "+[Gmail]/Drafts"
@@ -21,8 +17,7 @@ set ssl_force_tls = yes
 # ===========================================================================
 # SMTP Settings (Sending Mail)
 # ===========================================================================
-set smtp_url = `printf '"smtp://%s@smtp.gmail.com:587/"' "$NEOMUTT_EMAIL"`
-set smtp_pass = $imap_pass
+# `smtp_url` and `smtp_pass` are generated in the local account file.
 
 # ===========================================================================
 # Gmail Specific Folder Settings
