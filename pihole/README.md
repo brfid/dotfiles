@@ -19,7 +19,7 @@ validation — Unbound delegates that to Quad9.
 Configure these on the router as the DNS server for all clients:
 
 - IPv4: `<pi-local-ip>`
-- IPv6: `<pi-local-ipv6-static>` (ULA, static — ends in `::19`; prefer over the dynamic ULA or public GUA)
+- IPv6: `<pi-local-ipv6-static>` (ULA, static — prefer over any dynamic ULA or public GUA)
 
 ## Do not store
 
