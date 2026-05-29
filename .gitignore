@@ -7,9 +7,6 @@ shell/env
 .env.*
 *.key
 *.pem
-secrets/*.decrypted.*
-secrets/*.plain.*
-secrets/local/
 
 # shell/editor history
 .bash_history
