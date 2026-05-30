@@ -1,7 +1,18 @@
 # openbox
 
-Role: legacy LXDE/Openbox fallback config.
+Role: fallback window-manager-only session.
 
 Facts:
 - Current Openbox config is minimal fallback state, not the primary desktop source.
-- Desktop behavior is more likely owned by the active session, panel, file manager, and compositor config than by Openbox.
+
+## Bluetooth
+
+`~/.config/openbox/autostart`:
+
+```sh
+lxpolkit &
+blueman-applet &
+```
+
+Openbox needs a tray host for `blueman-applet` to be visible. Without one, use
+`blueman-manager`.
