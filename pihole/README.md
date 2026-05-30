@@ -4,22 +4,18 @@ Role: network-wide DNS ad blocker and local DNS server for the home network.
 
 ## Setup
 
-Pi-hole v6 (FTL + built-in web server), installed via the official install script.
-Runs as `pihole-FTL.service` (systemd, enabled).
+Pi-hole installed via the official install script. Runs as `pihole-FTL.service` (systemd, enabled). Upstream is a local recursive resolver over DoT. Pi-hole does not do its own DNSSEC validation.
 
-Listens on the local interface, port 53. Web interface on a non-standard port.
+## PADD
 
-## DNS upstream
+Stats display script. Install:
 
-Upstream is Unbound on localhost. Pi-hole does not do its own DNSSEC
-validation — Unbound delegates that to Quad9.
+```
+curl -sSL https://install.padd.sh -o ~/padd.sh && chmod +x ~/padd.sh
+sudo ln -s ~/padd.sh /usr/local/bin/padd
+```
 
-## Home network DNS addresses
-
-Configure these on the router as the DNS server for all clients:
-
-- IPv4: `<pi-local-ip>`
-- IPv6: `<pi-local-ipv6-static>` (ULA, static — prefer over any dynamic ULA or public GUA)
+Update: `~/padd.sh -u`
 
 ## Do not store
 

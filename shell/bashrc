@@ -29,3 +29,7 @@ PS1='\[\e[0;32m\]\w\[\e[0m\]\n\$ '
 
 # Shared profile: PATH, aliases, and tmux environment repair.
 [ -f "$HOME/.config/shell/profile" ] && . "$HOME/.config/shell/profile"
+
+# >>> Codex installer >>>
+export PATH="$HOME/.local/bin:$PATH"
+# <<< Codex installer <<<

@@ -4,7 +4,7 @@ Role: OS-level preferences for Debian installs.
 
 ## Base
 
-Debian Trixie (13). Unattended upgrades enabled, security-only.
+Unattended upgrades enabled, security-only.
 
 ## Firewall
 
@@ -18,9 +18,8 @@ Packages added for local secret handling:
 - `age`
 
 Non-APT local binaries:
-- `sops` is installed at `/usr/local/bin/sops` from the upstream getsops
-  Linux arm64 release binary. Verify downloaded artifacts against the published
-  release checksum before installing.
+- `sops` from the upstream getsops release binary. Verify downloaded artifacts
+  against the published release checksum before installing.
 
 ## Kernel tuning
 

@@ -7,9 +7,5 @@ Live paths:
 - `mailcap` -> `~/.config/neomutt/mailcap`
 
 Notes:
-- Account settings are generated into `~/.config/neomutt/account.muttrc`.
-- Current local convention keeps the source secret at
-  `~/.local/share/private-state/neomutt.sops.yaml`.
-- Render account settings with
-  `~/.local/share/private-state/render-neomutt-account`.
+- Account settings are generated into a local muttrc sourced by neomuttrc.
 - Account credentials and mail cache stay outside git.
