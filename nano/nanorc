@@ -1,0 +1,25 @@
+set softwrap
+set atblanks
+
+set autoindent
+set tabsize 2
+set tabstospaces
+set trimblanks
+
+set linenumbers
+set indicator
+set stateflags
+set smarthome
+set afterends
+set zap
+
+set historylog
+set positionlog
+set multibuffer
+set unix
+
+set mouse
+set minibar
+set constantshow
+
+include /usr/share/nano/*.nanorc

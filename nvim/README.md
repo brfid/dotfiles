@@ -158,6 +158,35 @@ editor shortcuts:
 
 `<C-s>` save is a LazyVim default; do not re-map it.
 
+Start normal editable file buffers in Insert mode once when they are first
+displayed. This lowers modal-editing friction while preserving normal LazyVim
+behavior after pressing `<Esc>`. Use a guarded `BufWinEnter` autocmd instead of
+setting insert-mode globally or forcing insert mode on every window switch:
+
+```lua
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  group = vim.api.nvim_create_augroup("friendly_start_insert", { clear = true }),
+  callback = function(event)
+    local bo = vim.bo[event.buf]
+
+    if vim.b[event.buf].friendly_start_insert_done then
+      return
+    end
+    if bo.buftype ~= "" or not bo.modifiable or bo.readonly then
+      return
+    end
+
+    vim.b[event.buf].friendly_start_insert_done = true
+
+    vim.schedule(function()
+      if vim.api.nvim_get_current_buf() == event.buf and vim.fn.mode() == "n" then
+        vim.cmd.startinsert()
+      end
+    end)
+  end,
+})
+```
+
 ## Autocmds
 
 Keep these local autocmd behaviors:
