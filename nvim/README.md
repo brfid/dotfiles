@@ -58,15 +58,8 @@ Keep LazyVim Bufferline enabled for buffer tabs. Do not disable
 `akinsho/bufferline.nvim`.
 
 Do not add Dropbar by default. The outline is the preferred structure
-navigation surface; Dropbar adds duplicate UI chrome for this setup. If the
-plugin appears in a generated config, keep it disabled:
-
-```lua
-return {
-  "Bekaboo/dropbar.nvim",
-  enabled = false,
-}
-```
+navigation surface; Dropbar adds duplicate UI chrome for this setup. Include
+it in the disabled plugins list in `disable.lua`.
 
 Use Snacks Explorer as the file explorer. Keep the sidebar compact:
 
@@ -109,25 +102,27 @@ Disable plugins that add unwanted surface area or duplicate this setup:
 
 ## Language Tooling
 
-Configure `mason.nvim` to ensure these general tools:
-
-- `json-lsp`
-- `shellcheck`
-- `shfmt`
-- `stylua`
-- `yaml-language-server`
-
 Configure `nvim-lspconfig` for:
 
 - `jsonls`
 - `yamlls`, with SchemaStore enabled
 - `pyright`, with basic Python type checking
 
+These LSP servers are auto-installed by mason-lspconfig; do not duplicate them
+in Mason's `ensure_installed`.
+
+Configure `mason.nvim` `ensure_installed` for non-LSP tools only:
+
+- `shellcheck`
+- `shfmt`
+- `stylua`
+- `black`
+- `flake8`
+
 Configure Python formatting and linting:
 
 - `conform.nvim` uses `black` for Python.
 - `nvim-lint` uses `flake8` for Python.
-- Mason ensures `black`, `flake8`, and `pyright`.
 
 Do not run `mypy` globally by default. Add it only for projects that actually
 use typed Python and benefit from project-specific type checking.
@@ -136,7 +131,6 @@ use typed Python and benefit from project-specific type checking.
 
 Preserve these local editing preferences:
 
-- `vim.opt.autoread = true`
 - `vim.opt.selection = "exclusive"`
 - Fill characters:
   - `eob = " "`
@@ -158,10 +152,11 @@ vim.keymap.set("i", "<End>", "<C-o>g$", { noremap = true, silent = true })
 Keep Shift-arrow selection in normal, visual, and insert modes. Keep familiar
 editor shortcuts:
 
-- `<C-s>` saves.
 - `<C-a>` selects all.
 - `<C-p>` opens the Snacks file picker.
 - `<C-f>` opens Snacks project search.
+
+`<C-s>` save is a LazyVim default; do not re-map it.
 
 ## Autocmds
 
@@ -169,8 +164,8 @@ Keep these local autocmd behaviors:
 
 - Remove background highlighting from inline Markdown code whenever the color
   scheme changes, and once during startup.
-- Run `silent! checktime` on `FocusGained`, `BufEnter`, and `CursorHold` for
-  normal file buffers so externally changed files are reloaded.
+
+`autoread` and `checktime` on focus are LazyVim defaults; do not duplicate them.
 
 ## Local Verification
 
