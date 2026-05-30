@@ -38,7 +38,7 @@ require("lazy").setup({
   },
   install = { colorscheme = { "tokyonight", "habamax" } },
   checker = {
-    enabled = true,
+    enabled = false,
     notify = false,
   },
 })
@@ -46,10 +46,9 @@ require("lazy").setup({
 
 ## Terminal And Icons
 
-Assume the terminal uses a Nerd Font-capable monospace. On this machine,
-Alacritty uses `JetBrainsMonoNL Nerd Font Mono`. Do not add ASCII icon
-fallback overrides for LazyVim, lualine, mini.icons, Dropbar, or dashboard
-unless the target terminal lacks Nerd Font support.
+Assume the terminal uses a Nerd Font-capable monospace. Do not add ASCII icon
+fallback overrides for LazyVim, lualine, mini.icons, or dashboard unless the
+target terminal lacks Nerd Font support.
 
 Keep LazyVim's default lualine and Bufferline icon behavior.
 
@@ -58,12 +57,14 @@ Keep LazyVim's default lualine and Bufferline icon behavior.
 Keep LazyVim Bufferline enabled for buffer tabs. Do not disable
 `akinsho/bufferline.nvim`.
 
-Use Dropbar for clickable breadcrumbs and drop-down menus:
+Do not add Dropbar by default. The outline is the preferred structure
+navigation surface; Dropbar adds duplicate UI chrome for this setup. If the
+plugin appears in a generated config, keep it disabled:
 
 ```lua
 return {
   "Bekaboo/dropbar.nvim",
-  event = "BufReadPost",
+  enabled = false,
 }
 ```
 
@@ -99,6 +100,7 @@ Disable plugins that add unwanted surface area or duplicate this setup:
   native command line, messages, and search UI.
 - `catppuccin/nvim` when using Tokyo Night.
 - `folke/lazydev.nvim` unless doing Lua/Neovim plugin development.
+- `Bekaboo/dropbar.nvim`.
 - `windwp/nvim-ts-autotag`.
 - `rafamadriz/friendly-snippets`.
 - `folke/persistence.nvim`.
@@ -119,13 +121,16 @@ Configure `nvim-lspconfig` for:
 
 - `jsonls`
 - `yamlls`, with SchemaStore enabled
-- `pyright`, with strict Python type checking
+- `pyright`, with basic Python type checking
 
 Configure Python formatting and linting:
 
 - `conform.nvim` uses `black` for Python.
-- `nvim-lint` uses `flake8` and `mypy` for Python.
-- Mason ensures `black`, `flake8`, `mypy`, and `pyright`.
+- `nvim-lint` uses `flake8` for Python.
+- Mason ensures `black`, `flake8`, and `pyright`.
+
+Do not run `mypy` globally by default. Add it only for projects that actually
+use typed Python and benefit from project-specific type checking.
 
 ## Editing Behavior
 
@@ -150,8 +155,13 @@ vim.keymap.set("i", "<Home>", "<C-o>g0", { noremap = true, silent = true })
 vim.keymap.set("i", "<End>", "<C-o>g$", { noremap = true, silent = true })
 ```
 
-Keep Shift-arrow selection in normal, visual, and insert modes, plus
-`<C-s>` for save and `<C-a>` for select all.
+Keep Shift-arrow selection in normal, visual, and insert modes. Keep familiar
+editor shortcuts:
+
+- `<C-s>` saves.
+- `<C-a>` selects all.
+- `<C-p>` opens the Snacks file picker.
+- `<C-f>` opens Snacks project search.
 
 ## Autocmds
 
@@ -170,5 +180,5 @@ After generating the live config, run a headless startup check:
 nvim -i NONE --headless '+lua print("startup ok")' '+qa'
 ```
 
-For this setup, a loaded UI should have Bufferline owning `tabline`, Dropbar
-owning `winbar`, and lualine setting `laststatus=3`.
+For this setup, a loaded UI should have Bufferline owning `tabline` and lualine
+setting `laststatus=3`.
