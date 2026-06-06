@@ -48,14 +48,18 @@ publishable implementation conventions and may be overridden locally.
    owned mounts, and check the boot filesystem offline.
 
 Keep several weekly snapshots. Exclude virtual filesystems, transient mounts,
-the backup tree itself, and disposable user caches. Reject unexpected devices
-at target mountpoints and never unmount a correct mount that predates the run.
-Run the batch as root from a systemd timer with a lock, private mount namespace,
-cleanup-aware signal handling, and bounded start and stop timeouts.
+the backup tree itself, general user caches, trash, and downloaded apt package
+archives. Preserve installed language toolchains and package-manager caches
+such as Rust toolchains, the Cargo registry, and npm cache because the USB drive
+is intended to serve as a usable temporary workstation. Reject unexpected
+devices at target mountpoints and never unmount a correct mount that predates
+the run. Run the batch as root from a systemd timer with a lock, private mount
+namespace, cleanup-aware signal handling, and bounded start and stop timeouts.
 
-For an interactive run, pass `--noisy` or `-v` to print phase transitions,
-mount decisions, exclusions, changed rsync paths, aggregate progress, transfer
-statistics, and warnings. Scheduled runs remain concise by default.
+For an interactive run, pass `--progress` to print phase transitions, mount
+decisions, aggregate percentage/rate/ETA, transfer statistics, and warnings
+without listing files. Pass `--noisy` or `-v` to add exclusions and every
+changed rsync path. Scheduled runs remain concise by default.
 
 Runtime dependencies include Python 3, rsync, util-linux, dosfstools, e2fsprogs,
 parted, and systemd. Install `backup_drive.py` as a root-owned executable under

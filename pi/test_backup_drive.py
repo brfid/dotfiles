@@ -155,24 +155,37 @@ class BackupDriveTests(unittest.TestCase):
         self.assertNotIn("-aHAX", args)
         self.assertIn("--modify-window=1", args)
 
-    def test_noisy_rsync_args_enable_file_and_aggregate_progress(self) -> None:
+    def test_rsync_verbosity_levels(self) -> None:
         quiet = backup_drive.rsync_args(Path("/source"), Path("/target"))
+        progress = backup_drive.rsync_args(
+            Path("/source"),
+            Path("/target"),
+            verbosity="progress",
+        )
         noisy = backup_drive.rsync_args(
             Path("/source"),
             Path("/target"),
-            noisy=True,
+            verbosity="noisy",
         )
         self.assertNotIn("--itemize-changes", quiet)
         self.assertNotIn("--human-readable", quiet)
+        self.assertNotIn("--itemize-changes", progress)
+        self.assertIn("--human-readable", progress)
+        self.assertIn("--info=progress2,stats2", progress)
         self.assertIn("--itemize-changes", noisy)
         self.assertIn("--human-readable", noisy)
         self.assertIn("--info=progress2,stats2", noisy)
 
-    def test_noisy_cli_aliases(self) -> None:
+    def test_cli_verbosity_options(self) -> None:
         self.assertTrue(backup_drive.parse_args(["--noisy", "run"]).noisy)
         self.assertTrue(backup_drive.parse_args(["-v", "run"]).noisy)
         self.assertTrue(backup_drive.parse_args(["run", "--noisy"]).noisy)
-        self.assertFalse(backup_drive.parse_args(["run"]).noisy)
+        progress = backup_drive.parse_args(["run", "--progress"])
+        self.assertTrue(progress.progress)
+        self.assertFalse(progress.noisy)
+        quiet = backup_drive.parse_args(["run"])
+        self.assertFalse(quiet.progress)
+        self.assertFalse(quiet.noisy)
 
     def test_nested_mount_excludes_cover_user_cloud_mounts(self) -> None:
         payload = json.dumps(
@@ -193,6 +206,17 @@ class BackupDriveTests(unittest.TestCase):
         self.assertIn("/boot/firmware/***", excludes)
         self.assertIn("/home/example/Cloud/***", excludes)
         self.assertNotIn("//***", excludes)
+
+    def test_temporary_workstation_cache_policy_preserves_tooling(self) -> None:
+        self.assertIn("/var/cache/apt/***", backup_drive.ROOT_EXCLUDES)
+        self.assertIn("/home/*/.cache/***", backup_drive.ROOT_EXCLUDES)
+        self.assertIn(
+            "/home/*/.local/share/Trash/***",
+            backup_drive.ROOT_EXCLUDES,
+        )
+        self.assertNotIn("/home/*/.cargo/registry/***", backup_drive.ROOT_EXCLUDES)
+        self.assertNotIn("/home/*/.npm/***", backup_drive.ROOT_EXCLUDES)
+        self.assertNotIn("/home/*/.rustup/***", backup_drive.ROOT_EXCLUDES)
 
     def test_run_rsync_accepts_only_success_and_vanished_source(self) -> None:
         success = subprocess.CompletedProcess(["rsync"], 0)

@@ -35,11 +35,9 @@ ROOT_EXCLUDES = (
     "/run/***",
     "/sys/***",
     "/tmp/***",
+    "/var/cache/apt/***",
     "/home/*/.cache/***",
-    "/home/*/.cargo/registry/***",
     "/home/*/.local/share/Trash/***",
-    "/home/*/.npm/***",
-    "/home/*/.rustup/***",
 )
 
 
@@ -105,9 +103,9 @@ def run_command(
     )
 
 
-def noisy_log(enabled: bool, message: str) -> None:
+def progress_log(verbosity: str, message: str) -> None:
     """Emit an immediate human-readable progress message when requested."""
-    if enabled:
+    if verbosity != "quiet":
         print(f"pi-backup: {message}", flush=True)
 
 
@@ -370,7 +368,12 @@ def mount_action(
     return "mount"
 
 
-def mount_device(device: Path, target: Path, *, noisy: bool = False) -> MountLease:
+def mount_device(
+    device: Path,
+    target: Path,
+    *,
+    verbosity: str = "quiet",
+) -> MountLease:
     """Mount the expected device or safely reuse an existing correct mount."""
     target.mkdir(parents=True, exist_ok=True)
     expected_identity = device_identity(device)
@@ -387,10 +390,10 @@ def mount_device(device: Path, target: Path, *, noisy: bool = False) -> MountLea
     except RuntimeError as exc:
         raise RuntimeError(f"{target}: {exc}") from exc
     if action == "reuse":
-        noisy_log(noisy, f"reusing {device} mounted at {target}")
+        progress_log(verbosity, f"reusing {device} mounted at {target}")
         return MountLease(device=device, target=target, created=False)
 
-    noisy_log(noisy, f"mounting {device} at {target}")
+    progress_log(verbosity, f"mounting {device} at {target}")
     run_command(["mount", device, target])
     if mounted_identity(target) != expected_identity:
         with suppress(subprocess.CalledProcessError):
@@ -403,12 +406,16 @@ def unmount(target: Path) -> None:
     run_command(["umount", target])
 
 
-def mount_source_view(target: Path, *, noisy: bool = False) -> MountLease:
+def mount_source_view(
+    target: Path,
+    *,
+    verbosity: str = "quiet",
+) -> MountLease:
     """Create a read-only non-recursive bind view that omits nested mounts."""
     target.mkdir(parents=True, exist_ok=True)
     if mounted_source(target):
         raise RuntimeError(f"source-view mountpoint already in use: {target}")
-    noisy_log(noisy, f"creating read-only root view at {target}")
+    progress_log(verbosity, f"creating read-only root view at {target}")
     run_command(["mount", "--bind", "/", target])
     try:
         run_command(["mount", "-o", "remount,bind,ro", target])
@@ -425,7 +432,7 @@ def rsync_args(
     *,
     excludes: Iterable[str] = (),
     link_dest: Path | None = None,
-    noisy: bool = False,
+    verbosity: str = "quiet",
 ) -> list[str]:
     """Build the common metadata-preserving rsync invocation."""
     args = [
@@ -436,14 +443,15 @@ def rsync_args(
         "--delete",
         "--delete-delay",
     ]
-    if noisy:
+    if verbosity != "quiet":
         args.extend(
             [
                 "--human-readable",
-                "--itemize-changes",
                 "--info=progress2,stats2",
             ]
         )
+        if verbosity == "noisy":
+            args.append("--itemize-changes")
     else:
         args.append("--info=stats2")
     for pattern in excludes:
@@ -490,7 +498,7 @@ def boot_mirror_rsync_args(
     destination: Path,
     *,
     dry_run: bool = False,
-    noisy: bool = False,
+    verbosity: str = "quiet",
 ) -> list[str]:
     """Build a FAT-compatible boot mirror copy or comparison."""
     args = [
@@ -502,14 +510,15 @@ def boot_mirror_rsync_args(
     ]
     if dry_run:
         args.append("--itemize-changes")
-    elif noisy:
+    elif verbosity != "quiet":
         args.extend(
             [
                 "--human-readable",
-                "--itemize-changes",
                 "--info=progress2,stats2",
             ]
         )
+        if verbosity == "noisy":
+            args.append("--itemize-changes")
     else:
         args.append("--info=stats2")
     args.extend([f"{source}/", f"{destination}/"])
@@ -564,7 +573,7 @@ def create_snapshot(
     source_root: Path,
     root_excludes: Iterable[str],
     *,
-    noisy: bool = False,
+    verbosity: str = "quiet",
 ) -> tuple[Path, list[str]]:
     """Create an atomic linked snapshot of root and boot filesystems."""
     config.snapshots_dir.mkdir(parents=True, exist_ok=True)
@@ -584,10 +593,10 @@ def create_snapshot(
             partial / "root",
             excludes=root_excludes,
             link_dest=root_link,
-            noisy=noisy,
+            verbosity=verbosity,
         )
         for pass_number in (1, 2):
-            noisy_log(noisy, f"root capture pass {pass_number}/2")
+            progress_log(verbosity, f"root capture pass {pass_number}/2")
             warning = run_rsync(
                 root_args,
                 context=f"root pass {pass_number}",
@@ -600,10 +609,10 @@ def create_snapshot(
             Path("/boot/firmware"),
             partial / "boot-firmware",
             link_dest=boot_link,
-            noisy=noisy,
+            verbosity=verbosity,
         )
         for pass_number in (1, 2):
-            noisy_log(noisy, f"boot capture pass {pass_number}/2")
+            progress_log(verbosity, f"boot capture pass {pass_number}/2")
             warning = run_rsync(
                 boot_args,
                 context=f"boot pass {pass_number}",
@@ -670,7 +679,7 @@ def refresh_mirror(
     devices: Device,
     snapshot: Path,
     *,
-    noisy: bool = False,
+    verbosity: str = "quiet",
 ) -> None:
     """Refresh the bootable mirror strictly from the completed snapshot."""
     write_mirror_state(config, status="updating", snapshot=snapshot)
@@ -680,14 +689,14 @@ def refresh_mirror(
             config.root_mount,
             excludes=ROOT_EXCLUDES,
             link_dest=snapshot / "root",
-            noisy=noisy,
+            verbosity=verbosity,
         )
     )
     run_command(
         boot_mirror_rsync_args(
             snapshot / "boot-firmware",
             config.boot_mount,
-            noisy=noisy,
+            verbosity=verbosity,
         )
     )
 
@@ -864,7 +873,7 @@ def install_signal_handlers() -> None:
     signal.signal(signal.SIGINT, interrupt)
 
 
-def run_backup(config: Config, *, noisy: bool = False) -> None:
+def run_backup(config: Config, *, verbosity: str = "quiet") -> None:
     """Run snapshot, mirror, validation, state recording, sync, and unmount."""
     started = dt.datetime.now().astimezone()
     install_signal_handlers()
@@ -875,8 +884,8 @@ def run_backup(config: Config, *, noisy: bool = False) -> None:
     failure: Exception | None = None
     interrupted = False
     phase = "resolve-devices"
-    noisy_log(noisy, f"starting backup at {started.isoformat()}")
-    noisy_log(noisy, f"phase: {phase}")
+    progress_log(verbosity, f"starting backup at {started.isoformat()}")
+    progress_log(verbosity, f"phase: {phase}")
     write_state(
         config,
         status="running",
@@ -887,11 +896,11 @@ def run_backup(config: Config, *, noisy: bool = False) -> None:
     try:
         devices = resolve_devices(config)
         phase = "mount-targets"
-        noisy_log(
-            noisy,
+        progress_log(
+            verbosity,
             f"target disk {devices.disk}: boot={devices.boot}, root={devices.root}",
         )
-        noisy_log(noisy, f"phase: {phase}")
+        progress_log(verbosity, f"phase: {phase}")
         write_state(
             config,
             status="running",
@@ -900,23 +909,25 @@ def run_backup(config: Config, *, noisy: bool = False) -> None:
             phase=phase,
         )
         leases.append(
-            mount_device(devices.root, config.root_mount, noisy=noisy)
+            mount_device(devices.root, config.root_mount, verbosity=verbosity)
         )
         leases.append(
-            mount_device(devices.boot, config.boot_mount, noisy=noisy)
+            mount_device(devices.boot, config.boot_mount, verbosity=verbosity)
         )
-        leases.append(mount_source_view(DEFAULT_SOURCE_ROOT, noisy=noisy))
+        leases.append(
+            mount_source_view(DEFAULT_SOURCE_ROOT, verbosity=verbosity)
+        )
         write_probe(config.root_mount)
         write_probe(config.boot_mount)
         verify_capacity(config, DEFAULT_SOURCE_ROOT)
         root_excludes = merged_excludes(ROOT_EXCLUDES, nested_mount_excludes())
-        if noisy:
+        if verbosity == "noisy":
             print("pi-backup: root exclusions:", flush=True)
             for pattern in root_excludes:
                 print(f"  {pattern}", flush=True)
 
         phase = "create-snapshot"
-        noisy_log(noisy, f"phase: {phase}")
+        progress_log(verbosity, f"phase: {phase}")
         write_state(
             config,
             status="running",
@@ -929,20 +940,20 @@ def run_backup(config: Config, *, noisy: bool = False) -> None:
             started,
             DEFAULT_SOURCE_ROOT,
             root_excludes,
-            noisy=noisy,
+            verbosity=verbosity,
         )
         warnings.extend(capture_warnings)
         phase = "refresh-mirror"
-        noisy_log(noisy, f"canonical snapshot: {snapshot.name}")
-        noisy_log(noisy, f"phase: {phase}")
-        refresh_mirror(config, devices, snapshot, noisy=noisy)
+        progress_log(verbosity, f"canonical snapshot: {snapshot.name}")
+        progress_log(verbosity, f"phase: {phase}")
+        refresh_mirror(config, devices, snapshot, verbosity=verbosity)
         phase = "verify"
-        noisy_log(noisy, f"phase: {phase}")
+        progress_log(verbosity, f"phase: {phase}")
         run_command(["sync"])
         verify_mirror(config, devices, snapshot)
         write_mirror_state(config, status="verified", snapshot=snapshot)
         phase = "retention"
-        noisy_log(noisy, f"phase: {phase}")
+        progress_log(verbosity, f"phase: {phase}")
         prune_snapshots(config)
     except Exception as exc:
         failure = exc
@@ -954,7 +965,7 @@ def run_backup(config: Config, *, noisy: bool = False) -> None:
             if not lease.created:
                 continue
             try:
-                noisy_log(noisy, f"unmounting {lease.target}")
+                progress_log(verbosity, f"unmounting {lease.target}")
                 unmount(lease.target)
             except subprocess.CalledProcessError as exc:
                 cleanup_errors.append(f"failed to unmount {lease.target}: {exc}")
@@ -966,7 +977,7 @@ def run_backup(config: Config, *, noisy: bool = False) -> None:
 
     if failure is None and devices is not None:
         phase = "offline-check"
-        noisy_log(noisy, f"phase: {phase}")
+        progress_log(verbosity, f"phase: {phase}")
         try:
             offline_boot_check(devices)
         except Exception as exc:
@@ -984,12 +995,12 @@ def run_backup(config: Config, *, noisy: bool = False) -> None:
             message=str(failure),
             warnings=warnings,
         )
-        noisy_log(noisy, f"backup failed during {phase}: {failure}")
+        progress_log(verbosity, f"backup failed during {phase}: {failure}")
         raise failure
 
     for warning in warnings:
-        noisy_log(noisy, f"warning: {warning}")
-    noisy_log(noisy, "backup completed successfully")
+        progress_log(verbosity, f"warning: {warning}")
+    progress_log(verbosity, "backup completed successfully")
     write_state(
         config,
         status="success",
@@ -1025,7 +1036,13 @@ def locked(action: Callable[[], object]) -> None:
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
+    verbosity = parser.add_mutually_exclusive_group()
+    verbosity.add_argument(
+        "--progress",
+        action="store_true",
+        help="print phase changes plus aggregate rsync progress and statistics",
+    )
+    verbosity.add_argument(
         "-v",
         "--noisy",
         action="store_true",
@@ -1046,10 +1063,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         return status(config)
 
     require_root()
+    verbosity = "noisy" if args.noisy else "progress" if args.progress else "quiet"
     action = (
         (lambda: prepare_drive(config))
         if args.command == "prepare"
-        else (lambda: run_backup(config, noisy=args.noisy))
+        else (lambda: run_backup(config, verbosity=verbosity))
     )
     locked(action)
     return 0

@@ -13,7 +13,8 @@ alias grep='grep --color=auto'
 
 # Whole-system backup with interactive rsync progress.
 backup() {
-    sudo bash -lc 'set -a; . /etc/pi-backup.conf; set +a; exec /usr/local/sbin/pi-backup-drive run --noisy'
+    [ "$#" -gt 0 ] || set -- --progress
+    sudo bash -lc 'set -a; . /etc/pi-backup.conf; set +a; exec /usr/local/sbin/pi-backup-drive run "$@"' backup "$@"
 }
 
 # Python
