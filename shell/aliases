@@ -11,6 +11,11 @@ elif command -v bat &>/dev/null; then
 fi
 alias grep='grep --color=auto'
 
+# Whole-system backup with interactive rsync progress.
+backup() {
+    sudo bash -lc 'set -a; . /etc/pi-backup.conf; set +a; exec /usr/local/sbin/pi-backup-drive run --noisy'
+}
+
 # Python
 alias python='python3'
 alias pip='pip3'

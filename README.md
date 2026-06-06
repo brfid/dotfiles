@@ -27,6 +27,9 @@ The `agents/` folder owns reusable LLM personas, rules, and instructions. Local
 LLM client config is generated output; do not symlink client config back to this
 repo unless explicitly requested.
 
-Machine-specific values (hostnames, ports, IPs, cron schedules, partition
-labels, interface names, service unit names) live in a private restoration
-reference outside this repo. Capsules here describe intent and conventions only.
+Machine-specific values (hostnames, ports, IPs, partition labels, interface
+names, current enablement state, and private service names) live in a private
+restoration reference outside this repo. Tracked schedules, standard runtime
+paths, and public service names may remain here when they are intentional
+cross-machine policy or implementation conventions rather than observations of
+one host.

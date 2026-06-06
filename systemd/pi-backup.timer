@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly Raspberry Pi backup drive maintenance
+
+[Timer]
+OnCalendar=Mon *-*-* 01:00:00
+Persistent=true
+Unit=pi-backup.service
+
+[Install]
+WantedBy=timers.target

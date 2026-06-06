@@ -1,0 +1,15 @@
+[Unit]
+Description=Maintain bootable Raspberry Pi backup drive and linked snapshots
+RequiresMountsFor=/
+After=local-fs.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/pi-backup.conf
+ExecStart=/usr/local/sbin/pi-backup-drive run
+PrivateMounts=yes
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=6h
+TimeoutStopSec=5min
