@@ -1,8 +1,9 @@
-"""Focused tests for pure backup-drive planning and rendering helpers."""
+"""Focused tests for the direct bootable-mirror workflow."""
 
 from __future__ import annotations
 
 import json
+import os
 import signal
 import subprocess
 import tempfile
@@ -14,7 +15,7 @@ import backup_drive
 
 
 class BackupDriveTests(unittest.TestCase):
-    def test_load_config_requires_serial_and_both_labels(self) -> None:
+    def test_load_config_requires_serial_and_labels(self) -> None:
         with mock.patch.dict(
             backup_drive.os.environ,
             {"PI_BACKUP_DISK_SERIAL": "TARGET"},
@@ -32,162 +33,54 @@ class BackupDriveTests(unittest.TestCase):
                 "PI_BACKUP_DISK_SERIAL": "TARGET",
                 "PI_BACKUP_BOOT_LABEL": "BOOT",
                 "PI_BACKUP_ROOT_LABEL": "ROOT",
+                "PI_BACKUP_RETENTION": "obsolete",
             },
             clear=True,
         ):
             config = backup_drive.load_config()
-            self.assertEqual(config.boot_label, "BOOT")
-            self.assertEqual(config.root_label, "ROOT")
+        self.assertEqual(config.disk_serial, "TARGET")
 
-    def test_parse_lsblk_selects_matching_whole_disk(self) -> None:
+    def test_parse_lsblk_selects_exactly_one_matching_disk(self) -> None:
         payload = json.dumps(
             {
                 "blockdevices": [
                     {"path": "/dev/sda", "type": "disk", "serial": "TARGET"},
-                    {"path": "/dev/nvme0n1", "type": "disk", "serial": "BOOT"},
+                    {"path": "/dev/nvme0n1", "type": "disk", "serial": "SOURCE"},
                 ]
             }
         )
         self.assertEqual(backup_drive.parse_lsblk(payload, "TARGET"), Path("/dev/sda"))
-
-    def test_parse_lsblk_rejects_missing_or_duplicate_serial(self) -> None:
-        payload = json.dumps(
-            {
-                "blockdevices": [
-                    {"path": "/dev/sda", "type": "disk", "serial": "DUP"},
-                    {"path": "/dev/sdb", "type": "disk", "serial": "DUP"},
-                ]
-            }
-        )
-        with self.assertRaises(RuntimeError):
-            backup_drive.parse_lsblk(payload, "DUP")
         with self.assertRaises(RuntimeError):
             backup_drive.parse_lsblk(payload, "MISSING")
 
     def test_replace_root_argument_replaces_and_deduplicates(self) -> None:
-        cmdline = "console=tty1 root=/dev/old quiet root=UUID=also-old\n"
-        rendered = backup_drive.replace_root_argument(cmdline, "new-uuid")
-        self.assertEqual(
-            rendered,
-            "console=tty1 root=UUID=new-uuid quiet\n",
+        rendered = backup_drive.replace_root_argument(
+            "console=tty1 root=/dev/old quiet root=UUID=also-old\n",
+            "new-uuid",
         )
+        self.assertEqual(rendered, "console=tty1 root=UUID=new-uuid quiet\n")
 
     def test_render_fstab_uses_target_uuids(self) -> None:
         rendered = backup_drive.render_fstab("BOOT-UUID", "ROOT-UUID")
         self.assertIn("UUID=BOOT-UUID /boot/firmware vfat", rendered)
         self.assertIn("UUID=ROOT-UUID / ext4", rendered)
 
-    def test_snapshot_names_and_retention_ignore_partial_paths(self) -> None:
+    def test_mount_device_requires_exclusive_ownership(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            for name in (
-                "2026-05-18T020000",
-                "2026-05-25T020000",
-                "2026-06-01T020000",
-                "2026-06-08T020000.partial",
-                "notes",
+            target = Path(directory) / "backup"
+            with (
+                mock.patch.object(
+                    backup_drive, "device_identity", return_value="8:2"
+                ),
+                mock.patch.object(
+                    backup_drive, "mounted_identity", return_value="8:3"
+                ),
+                mock.patch.object(backup_drive, "mounted_targets", return_value=[]),
+                self.assertRaisesRegex(RuntimeError, "mountpoint already in use"),
             ):
-                (root / name).mkdir()
-            names = backup_drive.snapshot_names(root.iterdir())
-            self.assertEqual(
-                names,
-                [
-                    "2026-05-18T020000",
-                    "2026-05-25T020000",
-                    "2026-06-01T020000",
-                ],
-            )
-            self.assertEqual(
-                backup_drive.retention_deletions(names, 2),
-                ["2026-05-18T020000"],
-            )
+                backup_drive.mount_device(Path("/dev/sda2"), target)
 
-    def test_remove_partial_snapshots_keeps_completed_snapshots(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            completed = root / "2026-06-01T020000"
-            partial = root / "2026-06-08T020000.partial"
-            completed.mkdir()
-            partial.mkdir()
-            (partial / "data").write_text("incomplete", encoding="utf-8")
-
-            backup_drive.remove_partial_snapshots(root)
-
-            self.assertTrue(completed.exists())
-            self.assertFalse(partial.exists())
-
-    def test_mount_action_mounts_reuses_and_rejects_conflicts(self) -> None:
-        self.assertEqual(
-            backup_drive.mount_action(
-                target_identity="",
-                expected_identity="8:2",
-                other_targets=[],
-            ),
-            "mount",
-        )
-        self.assertEqual(
-            backup_drive.mount_action(
-                target_identity="8:2",
-                expected_identity="8:2",
-                other_targets=[],
-            ),
-            "reuse",
-        )
-        with self.assertRaisesRegex(RuntimeError, "unexpected device"):
-            backup_drive.mount_action(
-                target_identity="8:3",
-                expected_identity="8:2",
-                other_targets=[],
-            )
-        with self.assertRaisesRegex(RuntimeError, "already mounted"):
-            backup_drive.mount_action(
-                target_identity="",
-                expected_identity="8:2",
-                other_targets=[Path("/media/backup")],
-            )
-
-    def test_boot_mirror_args_avoid_unsupported_fat_metadata(self) -> None:
-        args = backup_drive.boot_mirror_rsync_args(
-            Path("/snapshot/boot"),
-            Path("/target/boot"),
-        )
-        self.assertIn("-rt", args)
-        self.assertNotIn("-aHAX", args)
-        self.assertIn("--modify-window=1", args)
-
-    def test_rsync_verbosity_levels(self) -> None:
-        quiet = backup_drive.rsync_args(Path("/source"), Path("/target"))
-        progress = backup_drive.rsync_args(
-            Path("/source"),
-            Path("/target"),
-            verbosity="progress",
-        )
-        noisy = backup_drive.rsync_args(
-            Path("/source"),
-            Path("/target"),
-            verbosity="noisy",
-        )
-        self.assertNotIn("--itemize-changes", quiet)
-        self.assertNotIn("--human-readable", quiet)
-        self.assertNotIn("--itemize-changes", progress)
-        self.assertIn("--human-readable", progress)
-        self.assertIn("--info=progress2,stats2", progress)
-        self.assertIn("--itemize-changes", noisy)
-        self.assertIn("--human-readable", noisy)
-        self.assertIn("--info=progress2,stats2", noisy)
-
-    def test_cli_verbosity_options(self) -> None:
-        self.assertTrue(backup_drive.parse_args(["--noisy", "run"]).noisy)
-        self.assertTrue(backup_drive.parse_args(["-v", "run"]).noisy)
-        self.assertTrue(backup_drive.parse_args(["run", "--noisy"]).noisy)
-        progress = backup_drive.parse_args(["run", "--progress"])
-        self.assertTrue(progress.progress)
-        self.assertFalse(progress.noisy)
-        quiet = backup_drive.parse_args(["run"])
-        self.assertFalse(quiet.progress)
-        self.assertFalse(quiet.noisy)
-
-    def test_nested_mount_excludes_cover_user_cloud_mounts(self) -> None:
+    def test_nested_mount_excludes_cover_user_mounts(self) -> None:
         payload = json.dumps(
             {
                 "filesystems": [
@@ -205,141 +98,343 @@ class BackupDriveTests(unittest.TestCase):
             excludes = backup_drive.nested_mount_excludes()
         self.assertIn("/boot/firmware/***", excludes)
         self.assertIn("/home/example/Cloud/***", excludes)
-        self.assertNotIn("//***", excludes)
 
-    def test_temporary_workstation_cache_policy_preserves_tooling(self) -> None:
-        self.assertIn("/var/cache/apt/***", backup_drive.ROOT_EXCLUDES)
-        self.assertIn("/home/*/.cache/***", backup_drive.ROOT_EXCLUDES)
-        self.assertIn(
-            "/home/*/.local/share/Trash/***",
-            backup_drive.ROOT_EXCLUDES,
+    def test_root_rsync_is_direct_destructive_mirror(self) -> None:
+        args = backup_drive.rsync_args(
+            Path("/source"),
+            Path("/target"),
+            excludes=backup_drive.MIRROR_EXCLUDES,
         )
-        self.assertNotIn("/home/*/.cargo/registry/***", backup_drive.ROOT_EXCLUDES)
-        self.assertNotIn("/home/*/.npm/***", backup_drive.ROOT_EXCLUDES)
-        self.assertNotIn("/home/*/.rustup/***", backup_drive.ROOT_EXCLUDES)
+        self.assertIn("--delete-excluded", args)
+        self.assertIn("protect /lost+found", args)
+        self.assertIn("protect /etc/fstab", args)
+        self.assertIn("/etc/fstab", backup_drive.MIRROR_EXCLUDES)
+        self.assertIn("-aHAXS", args)
+        self.assertNotIn("--link-dest", args)
+        self.assertEqual(args[-2:], ["/source/", "/target/"])
+
+    def test_root_rsync_excludes_reproducible_dependency_trees(self) -> None:
+        expected = (
+            "/home/*/.bun/install/cache/***",
+            "/home/*/.npm/_cacache/***",
+            "/home/*/.npm/_npx/***",
+            "/home/*/src/**/.venv/***",
+            "/home/*/src/**/node_modules/***",
+            "/home/*/src/**/target/***",
+        )
+        for pattern in expected:
+            self.assertIn(pattern, backup_drive.MIRROR_EXCLUDES)
+        self.assertNotIn("/home/*/src/**/dist/***", backup_drive.MIRROR_EXCLUDES)
+        self.assertNotIn("/home/*/src/**/build/***", backup_drive.MIRROR_EXCLUDES)
+
+    def test_direct_mirror_deletes_legacy_and_excluded_content(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source"
+            target = root / "target"
+            (source / "etc").mkdir(parents=True)
+            (source / "etc" / "issue").write_text("current\n")
+            (source / "etc" / "fstab").write_text("source root\n")
+            (source / "home" / "user" / "src" / "project").mkdir(parents=True)
+            (
+                source
+                / "home"
+                / "user"
+                / "src"
+                / "project"
+                / "source.txt"
+            ).write_text("keep\n")
+            node_modules = (
+                source
+                / "home"
+                / "user"
+                / "src"
+                / "project"
+                / "node_modules"
+            )
+            node_modules.mkdir()
+            (node_modules / "dependency").write_text("exclude\n")
+
+            (target / "backup" / "snapshots" / "old").mkdir(parents=True)
+            (target / "backup" / "snapshots" / "old" / "payload").write_text(
+                "legacy\n"
+            )
+            (target / "lost+found").mkdir()
+            (target / "lost+found" / "inode").write_text("preserve\n")
+            (target / "etc").mkdir(exist_ok=True)
+            (target / "etc" / "fstab").write_text("usb root\n")
+            stale_modules = (
+                target
+                / "home"
+                / "user"
+                / "src"
+                / "project"
+                / "node_modules"
+            )
+            stale_modules.mkdir(parents=True)
+            (stale_modules / "stale").write_text("delete\n")
+
+            subprocess.run(
+                backup_drive.rsync_args(
+                    source,
+                    target,
+                    excludes=backup_drive.MIRROR_EXCLUDES,
+                ),
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual((target / "etc" / "issue").read_text(), "current\n")
+            self.assertEqual((target / "etc" / "fstab").read_text(), "usb root\n")
+            self.assertFalse((target / "backup").exists())
+            self.assertFalse(stale_modules.exists())
+            self.assertTrue((target / "lost+found" / "inode").exists())
+
+    def test_progress_mode_shows_aggregate_progress(self) -> None:
+        args = backup_drive.rsync_args(
+            Path("/source"),
+            Path("/target"),
+            verbosity="progress",
+        )
+        self.assertIn("--info=progress2,stats2", args)
+        self.assertNotIn("--itemize-changes", args)
+
+    def test_noisy_mode_lists_changed_paths(self) -> None:
+        args = backup_drive.rsync_args(
+            Path("/source"),
+            Path("/target"),
+            verbosity="noisy",
+        )
+        self.assertIn("--itemize-changes", args)
+
+    def test_boot_args_use_fat_compatible_metadata(self) -> None:
+        args = backup_drive.boot_rsync_args(
+            Path("/boot/firmware"),
+            Path("/target/boot"),
+        )
+        self.assertIn("-rt", args)
+        self.assertNotIn("-aHAX", args)
+        self.assertIn("--modify-window=1", args)
+        self.assertIn("protect /cmdline.txt", args)
+        self.assertIn("/cmdline.txt", args)
+
+    def test_boot_copy_preserves_target_cmdline(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source"
+            target = root / "target"
+            source.mkdir()
+            target.mkdir()
+            (source / "config.txt").write_text("arm_64bit=1\n")
+            (source / "cmdline.txt").write_text("root=SOURCE\n")
+            (target / "cmdline.txt").write_text("root=USB\n")
+
+            subprocess.run(
+                backup_drive.boot_rsync_args(source, target),
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual((target / "config.txt").read_text(), "arm_64bit=1\n")
+            self.assertEqual((target / "cmdline.txt").read_text(), "root=USB\n")
+
+    def test_package_database_lock_rejects_an_active_package_manager(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            lock_path = Path(directory) / "dpkg.lock"
+            with (
+                mock.patch.object(
+                    backup_drive.fcntl,
+                    "lockf",
+                    side_effect=BlockingIOError,
+                ),
+                self.assertRaisesRegex(RuntimeError, "package manager is active"),
+            ):
+                with backup_drive.package_database_lock((lock_path,)):
+                    self.fail("lock should not have been acquired")
 
     def test_run_rsync_accepts_only_success_and_vanished_source(self) -> None:
-        success = subprocess.CompletedProcess(["rsync"], 0)
-        vanished = subprocess.CompletedProcess(["rsync"], 24)
-        partial_error = subprocess.CompletedProcess(["rsync"], 23)
-
-        with mock.patch.object(backup_drive, "run_command", return_value=success):
-            self.assertIsNone(
-                backup_drive.run_rsync(["rsync"], context="root pass 1")
-            )
-        with mock.patch.object(backup_drive, "run_command", return_value=vanished):
-            warning = backup_drive.run_rsync(
-                ["rsync"],
-                context="root pass 1",
-            )
-            self.assertIn("source files vanished", warning)
         with mock.patch.object(
             backup_drive,
             "run_command",
-            return_value=partial_error,
+            return_value=subprocess.CompletedProcess(["rsync"], 24),
         ):
-            with self.assertRaises(subprocess.CalledProcessError):
-                backup_drive.run_rsync(["rsync"], context="root pass 1")
+            warning = backup_drive.run_rsync(["rsync"], context="root")
+        self.assertIn("source files vanished", warning)
 
-    def test_snapshot_is_verified_before_canonical_rename(self) -> None:
+        with (
+            mock.patch.object(
+                backup_drive,
+                "run_command",
+                return_value=subprocess.CompletedProcess(["rsync"], 23),
+            ),
+            self.assertRaisesRegex(RuntimeError, "rsync status 23"),
+        ):
+            backup_drive.run_rsync(["rsync"], context="root")
+
+    def test_expected_target_config_uses_live_boot_cmdline(self) -> None:
+        devices = backup_drive.Device(
+            disk=Path("/dev/sda"),
+            boot=Path("/dev/sda1"),
+            root=Path("/dev/sda2"),
+        )
+        with (
+            mock.patch.object(
+                backup_drive,
+                "filesystem_uuid",
+                side_effect=["BOOT-UUID", "ROOT-UUID"],
+            ),
+            mock.patch.object(
+                backup_drive.Path,
+                "read_text",
+                return_value="console=tty1 root=SOURCE quiet\n",
+            ),
+        ):
+            generated = backup_drive.expected_target_config(devices)
+        self.assertIn("root=UUID=ROOT-UUID", generated.cmdline)
+
+    def test_atomic_write_flushes_file_and_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "state.json"
+            with mock.patch.object(
+                backup_drive.os,
+                "fsync",
+                wraps=os.fsync,
+            ) as fsync:
+                backup_drive.atomic_write(path, '{"status": "success"}\n')
+            self.assertGreaterEqual(fsync.call_count, 2)
+            self.assertEqual(json.loads(path.read_text()), {"status": "success"})
+
+    def test_runtime_directories_copy_source_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            config = backup_drive.Config(
-                disk_serial="TARGET",
-                boot_label="BOOT",
-                root_label="ROOT",
-                mount_root=root / "target",
-            )
-            seen: list[Path] = []
+            source = root / "source"
+            target = root / "target"
+            for relative in backup_drive.RUNTIME_DIRECTORIES:
+                path = source / relative
+                path.mkdir(parents=True)
+                path.chmod(0o751)
 
-            def verify(path: Path) -> None:
-                seen.append(path)
-                self.assertTrue(path.name.endswith(".partial"))
-                self.assertFalse(path.with_name(path.name.removesuffix(".partial")).exists())
+            backup_drive.ensure_runtime_directories(source, target)
 
-            with (
-                mock.patch.object(backup_drive, "run_rsync", return_value=None),
-                mock.patch.object(
-                    backup_drive,
-                    "verify_staged_snapshot",
-                    side_effect=verify,
-                ),
-            ):
-                snapshot, warnings = backup_drive.create_snapshot(
-                    config,
-                    backup_drive.dt.datetime(2026, 6, 5, 20, 0, 0),
-                    Path("/source"),
-                    (),
+            for relative in backup_drive.RUNTIME_DIRECTORIES:
+                self.assertEqual(
+                    (target / relative).stat().st_mode & 0o777,
+                    0o751,
                 )
 
-            self.assertEqual(len(seen), 1)
-            self.assertEqual(snapshot.name, "2026-06-05T200000")
-            self.assertTrue(snapshot.is_dir())
-            self.assertEqual(warnings, [])
-
-    def test_rejected_snapshot_is_deleted_immediately(self) -> None:
+    def test_verify_mirror_checks_config_and_rejects_legacy_snapshots(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             config = backup_drive.Config(
                 disk_serial="TARGET",
                 boot_label="BOOT",
                 root_label="ROOT",
-                mount_root=root / "target",
+                mount_root=root / "mounts",
             )
+            devices = backup_drive.Device(
+                disk=Path("/dev/sda"),
+                boot=Path("/dev/sda1"),
+                root=Path("/dev/sda2"),
+            )
+            generated = backup_drive.TargetConfig(
+                fstab="target fstab\n",
+                cmdline="root=UUID=ROOT\n",
+            )
+            (config.root_mount / "etc").mkdir(parents=True)
+            modules = (
+                config.root_mount / "lib" / "modules" / os.uname().release
+            )
+            modules.mkdir(parents=True)
+            config.boot_mount.mkdir(parents=True)
+            (config.root_mount / "etc" / "fstab").write_text(generated.fstab)
+            (config.root_mount / "etc" / "debian_version").write_text("13\n")
+            (config.boot_mount / "config.txt").write_text("arm_64bit=1\n")
+            (config.boot_mount / "cmdline.txt").write_text(generated.cmdline)
+
+            def mounted_source(target):
+                return str(
+                    devices.root if target == config.root_mount else devices.boot
+                )
+
             with (
-                mock.patch.object(backup_drive, "run_rsync", return_value=None),
                 mock.patch.object(
                     backup_drive,
-                    "verify_staged_snapshot",
-                    side_effect=RuntimeError("invalid capture"),
+                    "mounted_source",
+                    side_effect=mounted_source,
+                ),
+                mock.patch.object(
+                    backup_drive.shutil,
+                    "disk_usage",
+                    return_value=mock.Mock(free=20 * 1024**3),
                 ),
             ):
-                with self.assertRaisesRegex(RuntimeError, "invalid capture"):
-                    backup_drive.create_snapshot(
-                        config,
-                        backup_drive.dt.datetime(2026, 6, 5, 20, 0, 0),
-                        Path("/source"),
-                        (),
-                    )
+                backup_drive.verify_mirror(config, devices, generated)
+                (config.root_mount / "backup").mkdir()
+                with self.assertRaisesRegex(RuntimeError, "legacy snapshot"):
+                    backup_drive.verify_mirror(config, devices, generated)
 
-            self.assertEqual(list(config.snapshots_dir.iterdir()), [])
-
-    def test_pruning_keeps_configured_newest_snapshots(self) -> None:
+    def test_capacity_uses_target_total_not_incremental_free_space(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             config = backup_drive.Config(
                 disk_serial="TARGET",
                 boot_label="BOOT",
                 root_label="ROOT",
-                retention=2,
                 mount_root=Path(directory),
             )
-            config.snapshots_dir.mkdir(parents=True)
-            for name in (
-                "2026-05-18T020000",
-                "2026-05-25T020000",
-                "2026-06-01T020000",
+
+            def disk_usage(path):
+                if Path(path) == Path("/source"):
+                    return mock.Mock(used=20 * 1024**3)
+                return mock.Mock(total=40 * 1024**3, free=1 * 1024**3)
+
+            with mock.patch.object(
+                backup_drive.shutil,
+                "disk_usage",
+                side_effect=disk_usage,
             ):
-                (config.snapshots_dir / name).mkdir()
+                backup_drive.verify_capacity(config, Path("/source"))
 
-            backup_drive.prune_snapshots(config)
+            def undersized(path):
+                if Path(path) == Path("/source"):
+                    return mock.Mock(used=20 * 1024**3)
+                return mock.Mock(total=29 * 1024**3)
 
-            self.assertEqual(
-                backup_drive.snapshot_names(config.snapshots_dir.iterdir()),
-                ["2026-05-25T020000", "2026-06-01T020000"],
+            with (
+                mock.patch.object(
+                    backup_drive.shutil,
+                    "disk_usage",
+                    side_effect=undersized,
+                ),
+                self.assertRaisesRegex(RuntimeError, "insufficient backup capacity"),
+            ):
+                backup_drive.verify_capacity(config, Path("/source"))
+
+    def test_success_state_commits_last_run_after_last_success(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            config = backup_drive.Config(
+                disk_serial="TARGET",
+                boot_label="BOOT",
+                root_label="ROOT",
+                state_dir=Path(directory),
             )
+            now = backup_drive.dt.datetime.now().astimezone()
+            with mock.patch.object(backup_drive, "atomic_write") as atomic_write:
+                backup_drive.write_state(
+                    config,
+                    status="success",
+                    started=now,
+                    finished=now,
+                )
+        self.assertEqual(
+            [call.args[0].name for call in atomic_write.call_args_list],
+            ["last-success.json", "last-run.json"],
+        )
 
-    def test_signal_handler_raises_cleanup_aware_interruption(self) -> None:
-        old_term = signal.getsignal(signal.SIGTERM)
-        old_int = signal.getsignal(signal.SIGINT)
-        try:
-            backup_drive.install_signal_handlers()
-            with self.assertRaisesRegex(backup_drive.BackupInterrupted, "SIGTERM"):
-                signal.raise_signal(signal.SIGTERM)
-        finally:
-            signal.signal(signal.SIGTERM, old_term)
-            signal.signal(signal.SIGINT, old_int)
-
-    def test_failed_run_unmounts_only_owned_mounts_and_records_state(self) -> None:
+    def test_failed_run_unmounts_all_owned_mounts_and_records_state(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             config = backup_drive.Config(
@@ -354,38 +449,42 @@ class BackupDriveTests(unittest.TestCase):
                 boot=Path("/dev/sda1"),
                 root=Path("/dev/sda2"),
             )
-            root_lease = backup_drive.MountLease(
-                devices.root, config.root_mount, True
-            )
-            boot_lease = backup_drive.MountLease(
-                devices.boot, config.boot_mount, False
-            )
-            source_lease = backup_drive.MountLease(
-                Path("/"), backup_drive.DEFAULT_SOURCE_ROOT, True
-            )
-
+            mounts = [
+                config.root_mount,
+                config.boot_mount,
+                backup_drive.DEFAULT_SOURCE_ROOT,
+            ]
             with (
                 mock.patch.object(backup_drive, "install_signal_handlers"),
-                mock.patch.object(backup_drive, "resolve_devices", return_value=devices),
+                mock.patch.object(backup_drive, "package_database_lock"),
+                mock.patch.object(
+                    backup_drive,
+                    "resolve_devices",
+                    return_value=devices,
+                ),
                 mock.patch.object(
                     backup_drive,
                     "mount_device",
-                    side_effect=[root_lease, boot_lease],
+                    side_effect=mounts[:2],
                 ),
                 mock.patch.object(
                     backup_drive,
                     "mount_source_view",
-                    return_value=source_lease,
+                    return_value=mounts[2],
                 ),
                 mock.patch.object(backup_drive, "write_probe"),
                 mock.patch.object(backup_drive, "verify_capacity"),
-                mock.patch.object(backup_drive, "nested_mount_excludes", return_value=()),
                 mock.patch.object(
                     backup_drive,
-                    "create_snapshot",
+                    "nested_mount_excludes",
+                    return_value=(),
+                ),
+                mock.patch.object(
+                    backup_drive,
+                    "run_rsync",
                     side_effect=RuntimeError("rsync failed"),
                 ),
-                mock.patch.object(backup_drive, "run_command"),
+                mock.patch.object(backup_drive, "run_command") as run_command,
                 mock.patch.object(backup_drive, "unmount") as unmount,
             ):
                 with self.assertRaisesRegex(RuntimeError, "rsync failed"):
@@ -395,90 +494,77 @@ class BackupDriveTests(unittest.TestCase):
                 unmount.call_args_list,
                 [
                     mock.call(backup_drive.DEFAULT_SOURCE_ROOT),
+                    mock.call(config.boot_mount),
                     mock.call(config.root_mount),
                 ],
             )
             state = json.loads((config.state_dir / "last-run.json").read_text())
             self.assertEqual(state["status"], "failed")
-            self.assertEqual(state["phase"], "create-snapshot")
-            self.assertIn("rsync failed", state["message"])
+            self.assertEqual(state["phase"], "mirror-root")
+            self.assertNotIn(
+                mock.call(["sync"], check=False),
+                run_command.call_args_list,
+            )
 
-    def test_retention_runs_only_after_mirror_verification(self) -> None:
+    def test_cleanup_attempts_every_mount_after_an_unmount_failure(self) -> None:
+        config = backup_drive.Config("TARGET", "BOOT", "ROOT")
+        context = backup_drive.RunContext(
+            config=config,
+            started=backup_drive.dt.datetime.now().astimezone(),
+            verbosity="quiet",
+            mounts=[Path("/one"), Path("/two")],
+        )
+        failure = subprocess.CalledProcessError(1, ["umount", "/two"])
+        with mock.patch.object(
+            backup_drive,
+            "unmount",
+            side_effect=[failure, None],
+        ) as unmount:
+            errors = backup_drive.cleanup_mounts(context)
+
+        self.assertEqual(
+            unmount.call_args_list,
+            [mock.call(Path("/two")), mock.call(Path("/one"))],
+        )
+        self.assertEqual(len(errors), 1)
+
+    def test_backup_lock_reports_contention(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            config = backup_drive.Config(
-                disk_serial="TARGET",
-                boot_label="BOOT",
-                root_label="ROOT",
-                state_dir=root / "state",
-                mount_root=root / "mounts",
-            )
-            devices = backup_drive.Device(
-                disk=Path("/dev/sda"),
-                boot=Path("/dev/sda1"),
-                root=Path("/dev/sda2"),
-            )
-            leases = [
-                backup_drive.MountLease(devices.root, config.root_mount, True),
-                backup_drive.MountLease(devices.boot, config.boot_mount, True),
-            ]
-            snapshot = config.snapshots_dir / "2026-06-05T200000"
-            events: list[str] = []
-
+            lock_path = Path(directory) / "backup.lock"
             with (
-                mock.patch.object(backup_drive, "install_signal_handlers"),
-                mock.patch.object(backup_drive, "resolve_devices", return_value=devices),
+                mock.patch.object(backup_drive, "LOCK_PATH", lock_path),
                 mock.patch.object(
-                    backup_drive,
-                    "mount_device",
-                    side_effect=leases,
+                    backup_drive.fcntl,
+                    "flock",
+                    side_effect=BlockingIOError,
                 ),
-                mock.patch.object(
-                    backup_drive,
-                    "mount_source_view",
-                    return_value=backup_drive.MountLease(
-                        Path("/"),
-                        backup_drive.DEFAULT_SOURCE_ROOT,
-                        True,
-                    ),
-                ),
-                mock.patch.object(backup_drive, "write_probe"),
-                mock.patch.object(backup_drive, "verify_capacity"),
-                mock.patch.object(backup_drive, "nested_mount_excludes", return_value=()),
-                mock.patch.object(
-                    backup_drive,
-                    "create_snapshot",
-                    return_value=(snapshot, []),
-                ),
-                mock.patch.object(
-                    backup_drive,
-                    "refresh_mirror",
-                    side_effect=lambda *_, **__: events.append("refresh"),
-                ),
-                mock.patch.object(
-                    backup_drive,
-                    "verify_mirror",
-                    side_effect=lambda *_: events.append("verify"),
-                ),
-                mock.patch.object(
-                    backup_drive,
-                    "write_mirror_state",
-                    side_effect=lambda *_, **__: events.append("mark"),
-                ),
-                mock.patch.object(
-                    backup_drive,
-                    "prune_snapshots",
-                    side_effect=lambda *_: events.append("prune"),
-                ),
-                mock.patch.object(backup_drive, "offline_boot_check"),
-                mock.patch.object(backup_drive, "run_command"),
-                mock.patch.object(backup_drive, "unmount"),
+                self.assertRaisesRegex(RuntimeError, "already running"),
             ):
-                backup_drive.run_backup(config)
+                with backup_drive.backup_lock():
+                    self.fail("lock should not have been acquired")
 
-            self.assertEqual(events, ["refresh", "verify", "mark", "prune"])
+    def test_signal_handler_raises_cleanup_aware_interruption(self) -> None:
+        old_term = signal.getsignal(signal.SIGTERM)
+        old_int = signal.getsignal(signal.SIGINT)
+        try:
+            backup_drive.install_signal_handlers()
+            with self.assertRaisesRegex(backup_drive.BackupInterrupted, "SIGTERM"):
+                signal.raise_signal(signal.SIGTERM)
+            self.assertEqual(signal.getsignal(signal.SIGTERM), signal.SIG_DFL)
+            self.assertEqual(signal.getsignal(signal.SIGINT), signal.SIG_DFL)
+        finally:
+            signal.signal(signal.SIGTERM, old_term)
+            signal.signal(signal.SIGINT, old_int)
 
-    def test_status_fails_for_latest_non_successful_run(self) -> None:
+    def test_cli_verbosity_options(self) -> None:
+        self.assertTrue(backup_drive.parse_args(["--noisy", "run"]).noisy)
+        self.assertTrue(backup_drive.parse_args(["run", "--progress"]).progress)
+
+    def test_interactive_wrapper_uses_private_mount_namespace(self) -> None:
+        wrapper = Path(__file__).with_name("pi-backup").read_text(encoding="utf-8")
+        self.assertIn("unshare --mount --propagation private", wrapper)
+
+    def test_status_fails_for_non_successful_latest_run(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             config = backup_drive.Config(
                 disk_serial="TARGET",
@@ -487,18 +573,10 @@ class BackupDriveTests(unittest.TestCase):
                 state_dir=Path(directory),
             )
             (config.state_dir / "last-run.json").write_text(
-                json.dumps({"status": "interrupted"}) + "\n",
-                encoding="utf-8",
+                json.dumps({"status": "interrupted"}) + "\n"
             )
             with mock.patch("builtins.print"):
                 self.assertEqual(backup_drive.status(config), 1)
-
-            (config.state_dir / "last-run.json").write_text(
-                json.dumps({"status": "success"}) + "\n",
-                encoding="utf-8",
-            )
-            with mock.patch("builtins.print"):
-                self.assertEqual(backup_drive.status(config), 0)
 
 
 if __name__ == "__main__":

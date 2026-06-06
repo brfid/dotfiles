@@ -1,5 +1,5 @@
 [Unit]
-Description=Maintain bootable Raspberry Pi backup drive and linked snapshots
+Description=Maintain bootable Raspberry Pi replacement drive
 RequiresMountsFor=/
 After=local-fs.target
 
@@ -12,4 +12,4 @@ Nice=10
 IOSchedulingClass=best-effort
 IOSchedulingPriority=7
 TimeoutStartSec=6h
-TimeoutStopSec=5min
+TimeoutStopSec=15min

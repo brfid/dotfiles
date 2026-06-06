@@ -1,6 +1,7 @@
 # pi
 
-Role: host config and whole-system backup strategy. See `debian/` for OS-level preferences.
+Role: host config and whole-system backup strategy. See `debian/` for OS-level
+preferences.
 
 ## Boot order
 
@@ -17,69 +18,93 @@ latency reason.
 
 ## Backup drive
 
-Use a dedicated USB drive with:
+This section is the canonical design and operating reference. Code contains
+only local safety-contract docstrings. Machine-specific identity and live state
+belong in the private `pi` and `systemd` restoration notes.
 
-- A small FAT32 boot partition.
-- An ext4 root partition containing both a bootable mirror and linked snapshots.
-- Stable filesystem labels and a required USB device serial guard.
+Purpose: maintain one directly bootable USB replacement for the primary drive.
+It is an in-place mirror, not versioned or archival storage.
 
-The root-owned environment file must explicitly provide the disk serial and
-both filesystem labels. The script has no public fallback labels. The default
-mount root (`/mnt/pi-backup`) and state directory (`/var/lib/pi-backup`) are
-publishable implementation conventions and may be overridden locally.
+Layout:
 
-`backup_drive.py prepare` is destructive and creates the partition layout.
-`backup_drive.py run` performs one complete batch:
+- 1 GiB FAT32 boot partition.
+- Remaining space as an ext4 root partition.
+- Exact disk serial and filesystem labels in `/etc/pi-backup.conf`.
 
-1. Resolve the target by configured USB serial and partition labels.
-2. Safely reuse correct existing mounts or mount both target filesystems in a
-   private service namespace.
-3. Create a read-only, non-recursive view of the live root so unrelated nested
-   mounts are not traversed, and dynamically exclude their underlying
-   mountpoint directories.
-4. Create an atomic root and boot snapshot with a convergence pass,
-   hard-linking unchanged files to the previous snapshot. Tolerate only rsync's
-   live-source disappearance status; reject and delete every other partial
-   capture.
-5. Refresh the bootable mirror strictly from that completed snapshot and
-   rewrite only the target `fstab` and kernel root UUID.
-6. Compare the mirror to the snapshot, record phase-aware machine-readable
-   state, prune retention only after successful verification, sync, unmount
-   owned mounts, and check the boot filesystem offline.
+Safety invariants:
 
-Keep several weekly snapshots. Exclude virtual filesystems, transient mounts,
-the backup tree itself, general user caches, trash, and downloaded apt package
-archives. Preserve installed language toolchains and package-manager caches
-such as Rust toolchains, the Cargo registry, and npm cache because the USB drive
-is intended to serve as a usable temporary workstation. Reject unexpected
-devices at target mountpoints and never unmount a correct mount that predates
-the run. Run the batch as root from a systemd timer with a lock, private mount
-namespace, cleanup-aware signal handling, and bounded start and stop timeouts.
+- Resolve the disk by serial and prove both labels belong to it.
+- Refuse targets already mounted anywhere.
+- Serialize backup and provisioning with `/run/lock/pi-backup.lock`.
+- Run target mounts in a private mount namespace.
+- Hold native dpkg locks during capture.
+- Do not traverse nested source mounts.
+- Preserve the USB `fstab` and `cmdline.txt` until their atomic replacements
+  are ready.
+- Record success only after verification and clean unmount.
 
-For an interactive run, pass `--progress` to print phase transitions, mount
-decisions, aggregate percentage/rate/ETA, transfer statistics, and warnings
-without listing files. Pass `--noisy` or `-v` to add exclusions and every
-changed rsync path. Scheduled runs remain concise by default.
+The root and boot filesystems are each copied once. Root rsync preserves Linux
+metadata, hard links, ACLs, xattrs, and sparse files. Exclusions remove virtual
+filesystems, other mounts, caches, trash, downloaded packages, `node_modules`,
+project `.venv`, and Rust `target` trees. Source, lockfiles, application data,
+installed packages and runtimes, editor state, and unpublished build output
+remain.
 
-Runtime dependencies include Python 3, rsync, util-linux, dosfstools, e2fsprogs,
-parted, and systemd. Install `backup_drive.py` as a root-owned executable under
-`/usr/local/sbin`; keep the source in this capsule. Keep the target identity,
-labels, retention, and any path overrides in a root-owned local environment
-file outside this repository.
+Commands:
 
-Before enabling the timer on a rebuilt machine:
+```sh
+pi-backup
+pi-backup status
+sudo systemctl enable --now pi-backup.timer
+```
 
-1. Run the focused unit tests.
-2. Install the script and tracked systemd units.
-3. Create the machine-local environment file from the private restoration note.
-4. Run one interactive noisy backup and inspect its state and canonical
-   snapshot.
-5. Perform a recovery boot drill.
-6. Enable the timer only after the manual run and drill succeed.
+`pi-backup` runs interactively with aggregate percentage, rate, and ETA.
+Scheduled output is concise. `--noisy` also lists changed paths.
 
-Heartbeat should read the backup state file and alert when the latest run
-failed, no run exists, or the last success is older than the expected weekly
-window. Heartbeat observes the job; it does not run the privileged backup.
+The first interrupt terminates the active child and starts reverse-order
+unmounting. A second interrupt uses the OS default termination behavior. The
+private mount namespace prevents abandoned mounts after forced termination.
+Because the mirror is updated in place, an interrupted run may leave incomplete
+files; rerun it before relying on the drive.
+
+`prepare_backup_drive.py` is deliberately separate and destructive. It refuses
+NVMe, non-USB, non-removable, undersized, mounted, or serial-mismatched targets.
+Run it only with `--confirm-erase SERIAL`.
+
+Dependencies: Python 3, rsync, util-linux, dosfstools, e2fsprogs, parted, and
+systemd.
+
+Rebuild:
+
+```sh
+cd ~/src/dotfiles/pi
+python3 -m unittest -q test_backup_drive.py test_prepare_backup_drive.py
+sudo install -o root -g root -m 0755 backup_drive.py \
+  /usr/local/sbin/pi-backup-drive
+sudo install -o root -g root -m 0755 prepare_backup_drive.py \
+  /usr/local/sbin/pi-prepare-backup-drive
+sudo install -o root -g root -m 0755 pi-backup /usr/local/bin/pi-backup
+sudo install -o root -g root -m 0644 ../systemd/pi-backup.service \
+  /etc/systemd/system/pi-backup.service
+sudo install -o root -g root -m 0644 ../systemd/pi-backup.timer \
+  /etc/systemd/system/pi-backup.timer
+sudo systemctl daemon-reload
+```
+
+Machine identity remains in the private restoration note and root-owned
+environment file.
+
+Limitations:
+
+- The live copy is neither point-in-time nor application-consistent.
+- Excluded project dependencies may require network access to rebuild.
+- USB fallback does not help if NVMe firmware boot succeeds and Linux fails
+  later; disconnect or disable NVMe for recovery.
+- This unencrypted attached drive does not cover theft, electrical damage,
+  privileged compromise, or media failure. Keep independent archival backups.
+
+Before enabling the timer, run tests, perform one successful manual backup, and
+complete the recovery drill below.
 
 ## Recovery drill
 
@@ -89,6 +114,12 @@ window. Heartbeat observes the job; it does not run the privileged backup.
 4. Boot from the USB backup drive.
 5. Verify root and boot mounts, networking, SSH, and critical services.
 6. Reconnect the NVMe device and restore the intended boot order.
+
+## Bluetooth
+
+The on-board BCM4345C0 adapter has a firmware bug that causes MAC address
+instability across some reboots, which silently orphans the BlueZ pairing
+database. See `bluetooth/` for the workaround, backup, and restore strategy.
 
 ## Do not store
 

@@ -20,7 +20,7 @@ Packages added for local secret handling:
 Bluetooth/audio packages:
 - `bluez`
 - `blueman`
-- `lxpolkit`
+- `pi-bluetooth`
 - `libspa-0.2-bluetooth`
 - `pipewire`
 - `pipewire-pulse`

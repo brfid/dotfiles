@@ -1,0 +1,35 @@
+#!/bin/bash
+# Back up the current Bluetooth pairing database to /var/lib/bluetooth.backup/.
+# Run after any successful pairing change, and from the daily timer.
+
+set -euo pipefail
+
+SRC="/var/lib/bluetooth"
+DST="/var/lib/bluetooth.backup"
+
+if [ ! -d "$SRC" ]; then
+    echo "Source directory $SRC does not exist."
+    exit 1
+fi
+
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+mkdir -p "$DST"
+
+rsync -a --delete "$SRC/" "$DST/"
+
+# Keep timestamped snapshots from the live source; prune to last 10.
+# Snapshot from $SRC, not $DST, to avoid recursively including prior snapshots.
+rsync -a "$SRC/" "$DST/snapshots/$TIMESTAMP/" 2>/dev/null || true
+if [ -d "$DST/snapshots" ]; then
+    ls -1t "$DST/snapshots" | tail -n +11 | while read -r snap; do
+        rm -rf "${DST:?}/snapshots/$snap"
+    done
+fi
+
+# Record which adapter MAC was current at backup time.
+CURRENT_ADAPTER=$(bluetoothctl show 2>/dev/null | grep -oP 'Controller \K([0-9A-F:]{17})' || true)
+if [ -n "$CURRENT_ADAPTER" ]; then
+    echo "$CURRENT_ADAPTER" > "$DST/.last_adapter"
+fi
+
+echo "Bluetooth pairing database backed up to $DST"

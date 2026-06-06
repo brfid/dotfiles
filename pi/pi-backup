@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -eq 0 ]; then
+    set -- --progress run
+fi
+
+run='set -a; . /etc/pi-backup.conf; exec /usr/local/sbin/pi-backup-drive "$@"'
+
+if [ "$(id -u)" -eq 0 ]; then
+    exec unshare --mount --propagation private \
+        /bin/sh -c "$run" pi-backup-drive "$@"
+fi
+
+exec sudo unshare --mount --propagation private \
+    /bin/sh -c "$run" pi-backup-drive "$@"

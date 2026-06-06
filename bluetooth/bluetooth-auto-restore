@@ -1,0 +1,143 @@
+#!/bin/bash
+# Restore Bluetooth pairings after reboot.
+# For each device in /etc/bluetooth-auto-restore.conf, checks whether a
+# pairing info file exists under the current adapter directory. If missing,
+# searches the backup for the device and copies it into place.
+# Re-pairing is manual; this script only restores from backup.
+
+set -uo pipefail
+
+CONFIG="/etc/bluetooth-auto-restore.conf"
+BACKUP="/var/lib/bluetooth.backup"
+LOG_FILE="/var/log/bluetooth-auto-restore.log"
+
+# Detect the owner of the active desktop session for notifications.
+NOTIFY_USER=$(who | grep -E -m1 "(\(:0\)|tty[0-9])" | awk '{print $1}' 2>/dev/null || true)
+
+log_msg() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$LOG_FILE"
+}
+
+notify_user() {
+    local msg="$1"
+    log_msg "NOTIFY: $msg"
+    if [ -n "$NOTIFY_USER" ] && command -v notify-send >/dev/null 2>&1; then
+        local bus="unix:path=/run/user/$(id -u "$NOTIFY_USER")/bus"
+        DBUS_SESSION_BUS_ADDRESS="$bus" \
+            su - "$NOTIFY_USER" -c "notify-send -t 10000 'Bluetooth' '$msg'" 2>/dev/null || true
+    fi
+}
+
+wait_for_bluetooth() {
+    local retries=30
+    while [ $retries -gt 0 ]; do
+        bluetoothctl show >/dev/null 2>&1 && return 0
+        sleep 2
+        retries=$((retries - 1))
+    done
+    log_msg "ERROR: bluetoothd did not become ready in time"
+    return 1
+}
+
+get_adapter() {
+    bluetoothctl show 2>/dev/null | grep -oP 'Controller \K([0-9A-F:]{17})' || true
+}
+
+is_paired() {
+    local mac="$1"
+    local adapter
+    adapter=$(get_adapter)
+    [ -z "$adapter" ] && return 1
+    [ -f "/var/lib/bluetooth/${adapter}/${mac}/info" ] && return 0
+    bluetoothctl devices Paired 2>/dev/null | grep -qi "$mac" && return 0
+    return 1
+}
+
+restore_from_backup() {
+    local mac="$1"
+    local adapter
+    adapter=$(get_adapter)
+    [ -z "$adapter" ] && return 1
+
+    local backup_info=""
+    for adapter_dir in "$BACKUP"/*/; do
+        if [ -f "$adapter_dir/$mac/info" ]; then
+            backup_info="$adapter_dir/$mac/info"
+            break
+        fi
+    done
+
+    if [ -z "$backup_info" ]; then
+        return 1
+    fi
+
+    local target_dir="/var/lib/bluetooth/${adapter}/${mac}"
+    mkdir -p "$target_dir"
+    cp -a "$backup_info" "$target_dir/"
+    local src_dir
+    src_dir=$(dirname "$backup_info")
+    [ -f "$src_dir/attributes" ] && cp -a "$src_dir/attributes" "$target_dir/"
+    systemctl restart bluetooth
+    sleep 2
+    log_msg "Restored pairing for $mac from backup"
+    return 0
+}
+
+main() {
+    log_msg "=== bluetooth-auto-restore started ==="
+
+    if [ ! -f "$CONFIG" ]; then
+        log_msg "No config at $CONFIG — skipping"
+        exit 0
+    fi
+
+    wait_for_bluetooth || exit 1
+
+    local adapter
+    adapter=$(get_adapter)
+    log_msg "Adapter: $adapter"
+
+    if echo "$adapter" | grep -qiE '^43:4[35]:|^AA:AA:AA:AA:AA:AA$'; then
+        log_msg "WARNING: adapter has default/bad MAC: $adapter"
+        notify_user "Bluetooth adapter MAC is bad ($adapter). bthelper may not have run."
+    fi
+
+    local any_missing=0
+
+    while IFS= read -r line || [ -n "$line" ]; do
+        line="${line%%#*}"
+        line="${line#"${line%%[![:space:]]*}"}"
+        line="${line%"${line##*[![:space:]]}"}"
+        [ -z "$line" ] && continue
+
+        local mac name
+        mac=$(echo "$line" | awk '{print $1}')
+        name=$(echo "$line" | awk '{$1=""; print $0}' | xargs)
+
+        if ! is_paired "$mac"; then
+            log_msg "Missing: $mac ($name)"
+            any_missing=1
+            if restore_from_backup "$mac"; then
+                is_paired "$mac" \
+                    && notify_user "Restored pairing: $name" \
+                    || log_msg "Restore copy succeeded but device not yet recognised"
+            else
+                log_msg "No backup record for $mac — manual re-pair required"
+                notify_user "Re-pair needed: $name. Use the Bluetooth GUI."
+            fi
+        else
+            log_msg "OK: $mac ($name)"
+            bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes" \
+                || bluetoothctl --timeout 10 connect "$mac" 2>/dev/null || true
+        fi
+    done < "$CONFIG"
+
+    if [ "$any_missing" -eq 0 ]; then
+        log_msg "All devices present — running backup"
+        /usr/local/bin/bluetooth-backup-pairings
+    fi
+
+    log_msg "=== bluetooth-auto-restore finished ==="
+}
+
+main "$@"

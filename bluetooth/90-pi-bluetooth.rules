@@ -1,0 +1,8 @@
+# Raspberry Pi bluetooth module: enable routing of SCO packets to the
+# HCI interface.
+# Override for Pi 5: drops TEST=="/dev/serial1" from the packaged rule in
+# /usr/lib/udev/rules.d/90-pi-bluetooth.rules. That symlink is not created
+# on Pi 5, so bthelper@hci0.service never fires without this override.
+ACTION=="add", SUBSYSTEM=="bluetooth", KERNEL=="hci[0-9]", \
+  TAG+="systemd", \
+  ENV{SYSTEMD_WANTS}+="bthelper@%k.service"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup Bluetooth pairing database
+After=bluetooth.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/bluetooth-backup-pairings
+
+[Install]
+WantedBy=multi-user.target
