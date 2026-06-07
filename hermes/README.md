@@ -12,6 +12,17 @@ Facts:
 - Terminal backend is `local`; commands run directly on the host.
 - Profiles isolate per-context config, sessions, memory, and skills. Each
   profile has its own `config.yaml`, `.env`, `state.db`, and session history.
+- OpenCode Go and OpenCode Zen are separate Hermes providers with separate
+  credentials (`OPENCODE_GO_API_KEY` and `OPENCODE_ZEN_API_KEY`). Use
+  Qwen3.7 Max as the main conversational model, while Qwen3.7 Plus handles
+  auxiliary and delegated work.
+- Keep convenient aliases for the preferred model set: `max` for Qwen3.7 Max,
+  `plus` for Qwen3.7 Plus, `deepseek` for DeepSeek V4 Pro, `kimi` for Kimi
+  K2.6, `glm` for GLM-5.1, and `sonnet` for Claude Sonnet 4.6 through Zen.
+- The OpenCode provider model pickers may continue to show their complete
+  catalogs; aliases identify the intentionally selected high-level subset.
+- For OpenCode Zen, use the bare model ID `claude-sonnet-4-6` with provider
+  `opencode-zen`; Hermes selects the Anthropic Messages transport automatically.
 - The gateway script (`scripts/hermes-gateway` in the source tree) can install
   and manage a systemd user service for messaging platform integration.
 - Skills are reusable procedure documents organized by category under the
