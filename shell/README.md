@@ -6,7 +6,9 @@ an interactive `backup` command that runs the whole-system backup with compact
 phase and aggregate progress output. The command delegates to the installed
 root backup script and loads its root-owned machine-local environment file;
 those runtime files are not tracked here. Pass `backup --noisy` or `backup -v`
-to add exclusions and file-by-file updates.
+to add exclusions and file-by-file updates. The aliases also launch Telegram
+and Signal through separate nchat config directories; application setup lives
+in `../nchat/README.md`.
 
 Live paths:
 - `bashrc` -> `~/.bashrc`

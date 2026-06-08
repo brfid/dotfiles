@@ -40,3 +40,7 @@ t() {
     tmux new-session -A -s main
 }
 alias tmx='tmux new-session \; split-window -h -p 67 \; select-pane -t 0'
+
+# nchat — separate config dirs per protocol (recommended by upstream docs)
+alias telegram='nchat -d ~/.config/nchat'
+alias signal='nchat -d ~/.config/nchat-signal'
