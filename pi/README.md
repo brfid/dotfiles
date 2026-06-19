@@ -5,9 +5,8 @@ preferences.
 
 ## Boot order
 
-Prefer NVMe first and USB mass storage second. Configure this in EEPROM with
-`sudo rpi-eeprom-config --edit` after the USB mirror has completed and passed
-validation.
+Prefer NVMe first, USB mass storage second, and microSD third. The corresponding
+EEPROM value is `BOOT_ORDER=0xf146`; fields are evaluated right to left.
 
 ## CPU policy
 
@@ -103,8 +102,7 @@ Limitations:
 - This unencrypted attached drive does not cover theft, electrical damage,
   privileged compromise, or media failure. Keep independent archival backups.
 
-Before enabling the timer, run tests, perform one successful manual backup, and
-complete the recovery drill below.
+After the first successful manual backup, complete the recovery drill below.
 
 ## Recovery drill
 
