@@ -23,6 +23,10 @@ spurious queries when forwarding.
 **`edns-buffer-size: 1232`** — reduces IP fragmentation. Old guides say 4096;
 1232 is correct for modern deployments.
 
+**`infra-keep-probing: yes`** — keeps testing failed DoT forwarders so a
+transient upstream failure does not disable DNS until the infrastructure cache
+expires.
+
 ## Do not store
 
 - `/var/lib/unbound/root.key` — managed at runtime by `unbound-anchor`
