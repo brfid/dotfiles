@@ -27,4 +27,4 @@ spurious queries when forwarding.
 
 - `/var/lib/unbound/root.key` — managed at runtime by `unbound-anchor`
 - Unbound cache or runtime state
-- The live config file (machine-specific values live in private restoration reference)
+- The live config file (machine-specific values are preserved by the system backup)

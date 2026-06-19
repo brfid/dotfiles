@@ -8,7 +8,7 @@ Pi-hole installed via the official install script. Runs as `pihole-FTL.service` 
 
 Pi-hole v6 uses the FTL built-in web server and stores runtime settings in
 `/etc/pihole/pihole.toml`. Keep the live TOML local; document durable defaults
-here and exact host values in the private restoration reference.
+here. Exact host values are preserved by the system backup.
 
 Keep iCloud Private Relay special-domain handling enabled so Apple devices do
 not bypass Pi-hole on the home network. Pi-hole should answer the Apple relay

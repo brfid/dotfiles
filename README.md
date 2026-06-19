@@ -1,16 +1,12 @@
 # dotfiles+
 
-An LLM-first build spec for machine and tool configuration, plus reusable LLM agent config.
+A showcase of my configuration stack and preferences, plus reusable LLM agent config.
 
-This repo is a systematic description of preferred setup, not a universal
-symlink target. An LLM should use it to reconstruct or update local config on a
-machine, adapting paths, package names, installed tools, and runtime state to
-the current environment.
-
-Each root folder owns its own setup capsule in `README.md`. A capsule should
-record durable preferences, roles, live paths, dependencies, source-vs-state
-boundaries, and high-value snippets that would be hard or ambiguous for a
-strong model to infer.
+Each root folder owns a `README.md` capsule documenting what I use and why.
+Capsules record durable preferences, design rationale, and high-value snippets
+that would be hard or ambiguous for a strong model to infer. An LLM can use
+these to reconstruct or update local config, adapting to the current
+environment.
 
 Include config files or snippets only when prose would not get a SOTA model to
 a working result within a few iterations. Strip system-identifying details
@@ -27,9 +23,6 @@ The `agents/` folder owns reusable LLM personas, rules, and instructions. Local
 LLM client config is generated output; do not symlink client config back to this
 repo unless explicitly requested.
 
-Machine-specific values (hostnames, ports, IPs, partition labels, interface
-names, current enablement state, and private service names) live in a private
-restoration reference outside this repo. Tracked schedules, standard runtime
-paths, and public service names may remain here when they are intentional
-cross-machine policy or implementation conventions rather than observations of
-one host.
+Machine-specific values (hostnames, ports, partition labels, etc.) live on the
+machine itself and are preserved by the system backup. This repo documents
+stack choices and conventions, not machine inventory.

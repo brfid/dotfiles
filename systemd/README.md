@@ -7,8 +7,7 @@ Facts:
 - Peer sync daemon runs as a user service.
 - Snapshot timers run weekly and monthly for archival workflows.
 - Whole-system Pi backup is a weekly root oneshot with a private mount
-  namespace. Keep its timer disabled until a manual backup and recovery drill
-  succeed. The canonical design and rebuild procedure is in `pi/README.md`;
+  namespace. The canonical design and rebuild procedure is in `pi/README.md`;
   machine identity and enablement state are private restoration data.
 - The host agent service and its companion depend on local project virtualenvs
   outside dotfiles.
