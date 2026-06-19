@@ -22,8 +22,10 @@ set ssl_force_tls = yes
 # ===========================================================================
 # Gmail Specific Folder Settings
 # ===========================================================================
-# Where to save sent messages, drafts, and trashed messages
-set record = "+[Gmail]/Sent Mail"
+# Where to save sent messages, drafts, and trashed messages.
+# Gmail's SMTP auto-saves sent mail to Sent Mail server-side, so client Fcc is
+# redundant: it duplicates interactively and warns in batch mode. Leave unset.
+unset record
 set trash = "+[Gmail]/Trash"
 
 # ===========================================================================
