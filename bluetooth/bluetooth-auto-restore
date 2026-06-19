@@ -39,6 +39,18 @@ wait_for_bluetooth() {
     return 1
 }
 
+unblock_adapter() {
+    if command -v rfkill >/dev/null 2>&1; then
+        local blocked
+        blocked=$(rfkill list bluetooth 2>/dev/null | grep -c "Soft blocked: yes" || true)
+        if [ "$blocked" -gt 0 ]; then
+            log_msg "Adapter is soft-blocked — unblocking via rfkill"
+            rfkill unblock bluetooth 2>/dev/null || true
+            sleep 1
+        fi
+    fi
+}
+
 get_adapter() {
     bluetoothctl show 2>/dev/null | grep -oP 'Controller \K([0-9A-F:]{17})' || true
 }
@@ -92,6 +104,7 @@ main() {
     fi
 
     wait_for_bluetooth || exit 1
+    unblock_adapter
 
     local adapter
     adapter=$(get_adapter)
