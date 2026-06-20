@@ -25,8 +25,10 @@ imports on save.
 **Font size**: 15px across all surfaces (editor, terminal, chat, debug, etc.).
 Applied to all profiles via `workbench.settings.applyToAllProfiles`.
 
-**Themes**: Ayu Light Bordered (light) / Ayu Mirage Bordered (dark). Auto-detect
-system theme. Material Icon Theme with Angular pack.
+**Themes**: Built-in `Light 2026` / `Dark 2026`, auto-detecting system theme,
+plus `workbench.colorCustomizations` and `editor.tokenColorCustomizations`
+overrides (orange chrome, green text, stock syntax) — see `../colors`. Material
+Icon Theme with Angular pack.
 
 **Git**: Smart commit enabled, autofetch on, no parent folder repo detection.
 GitHub authentication disabled (uses CLI auth instead).
