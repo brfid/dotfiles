@@ -1,11 +1,12 @@
-# iterm2
+# ghostty
 
 2026 Dark/Light terminal colors matching the VS Code roles (`../colors`).
-Accent colors (foreground, cursor, selection, link, badge) are orange/green;
-ANSI 0–15 stays GitHub-derived for readability.
+Accent colors (foreground, cursor, selection) are orange; ANSI 0–15 stays
+GitHub-derived for readability.
 
-Applied by hand or via LLM — no preset file is tracked. New-window defaults:
-Monaco 15, 214x55.
+Font: Monaco 15. Window default: 214×55.
+
+macOS appearance auto-switch via `theme = dark:2026-dark,light:2026-light`.
 
 ## Palette
 
@@ -13,14 +14,10 @@ Monaco 15, 214x55.
 |-----|------|-------|
 | Background | `#191A1B` | `#FAFAFD` |
 | Foreground | `#D4753A` | `#D4753A` |
-| Bold | `#FFFFFF` | `#8A3A00` |
 | Cursor | `#FD7E14` | `#202020` |
 | Cursor text | `#191A1B` | `#FAFAFD` |
 | Selection | `#FD7E14` | `#E58200` |
 | Selected text | `#FFFFFF` | `#FFFFFF` |
-| Link | `#E89556` | `#8A3A00` |
-| Badge | `#FD7E14AA` | `#E58200AA` |
-| Cursor guide | `#FD7E1433` | `#E5820033` |
 | ANSI 0 black | `#191A1B` | `#202020` |
 | ANSI 1 red | `#ff7b72` | `#cf222e` |
 | ANSI 2 green | `#2EA82E` | `#116329` |
@@ -38,16 +35,16 @@ Monaco 15, 214x55.
 | ANSI 14 br cyan | `#a5d6ff` | `#3192aa` |
 | ANSI 15 br white | `#ededed` | `#FFFFFF` |
 
-## Applying
+## Live paths
 
-iTerm rewrites its plist from memory on quit, so edit only while it's closed:
+- `~/.config/ghostty/config`
+- `~/.config/ghostty/themes/2026-dark`
+- `~/.config/ghostty/themes/2026-light`
 
-1. Quit iTerm2.
-2. Patch `~/Library/Preferences/com.googlecode.iterm2.plist` (back it up first).
-3. Reopen.
+## Notes
 
-Plist mechanics: each color is a dict of sRGB float components (`Red/Green/Blue/Alpha
-Component`, 0–1), not hex. Profiles live under `New Bookmarks`. For appearance
-auto-switching, set `Use Separate Colors for Light and Dark Mode = true` and
-write each color under both `"<Key> (Dark)"` and `"<Key> (Light)"`; the bare key
-is the fallback when that flag is off.
+- `eza --icons` glyphs require a Nerd Font. Monaco has none, matching the
+  existing iTerm2 setup. Add a second `font-family = "Symbols Nerd Font Mono"`
+  line in `config` if you install one.
+- The `t()` shell helper's iTerm2 `-CC` control-mode path is inert under
+  Ghostty; plain tmux attach runs instead. No config change needed.
