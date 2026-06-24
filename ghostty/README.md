@@ -41,6 +41,26 @@ macOS appearance auto-switch via `theme = dark:2026-dark,light:2026-light`.
 - `~/.config/ghostty/themes/2026-dark`
 - `~/.config/ghostty/themes/2026-light`
 
+## terminfo (sudo nano / vi "unknown terminal type")
+
+Ghostty sets `TERM=xterm-ghostty`, but macOS's `/usr/share/terminfo` is
+SIP-protected and ships no such entry, so `sudo nano /etc/hosts` (and any
+program run as root) fails with `'xterm-ghostty': unknown terminal type`.
+
+Fix — compile the entry from the app bundle into the per-user terminfo dirs
+(your user, then root so `sudo`-launched programs resolve it):
+
+```
+src=/Applications/Ghostty.app/Contents/Resources/terminfo
+TERMINFO=$src infocmp -x xterm-ghostty > /tmp/ghostty.terminfo
+tic -x -o ~/.terminfo /tmp/ghostty.terminfo
+sudo tic -x -o /var/root/.terminfo /tmp/ghostty.terminfo
+```
+
+The per-user dirs are the only writable target — `/usr/share/terminfo` is
+SIP-protected even for root. The entries survive Ghostty app updates; re-run
+after a user reset. Stopgap without installing: `TERM=xterm-256color sudo nano ...`.
+
 ## Notes
 
 - `eza --icons` glyphs require a Nerd Font. Monaco has none, matching the
