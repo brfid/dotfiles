@@ -102,6 +102,8 @@ Disable plugins that add unwanted surface area or duplicate this setup:
 
 ## Language Tooling
 
+### LSP servers
+
 Configure `nvim-lspconfig` for:
 
 - `jsonls`
@@ -111,6 +113,28 @@ Configure `nvim-lspconfig` for:
 These LSP servers are auto-installed by mason-lspconfig; do not duplicate them
 in Mason's `ensure_installed`.
 
+### TypeScript / JavaScript
+
+Enable the LazyVim blessed extras via `lua/plugins/typescript.lua`:
+
+```lua
+return {
+  { import = "lazyvim.plugins.extras.lang.typescript" },
+  { import = "lazyvim.plugins.extras.formatting.prettier" },
+  { import = "lazyvim.plugins.extras.linting.eslint" },
+}
+```
+
+- `lang.typescript` — vtsls LSP + ts/tsx/js treesitter parsers
+- `formatting.prettier` — prettier formatter for JS/TS/JSON/YAML/Markdown/HTML/CSS
+- `linting.eslint` — eslint LSP diagnostics + auto-format on save (project-scoped;
+  only activates when the project has an eslint config)
+
+LSP servers `vtsls`, `prettier`, and `vscode-eslint-language-server` are installed
+manually into Mason (registry auto-refresh is off — see Maintenance section).
+
+### Mason non-LSP tools
+
 Configure `mason.nvim` `ensure_installed` for non-LSP tools only:
 
 - `shellcheck`
@@ -119,10 +143,11 @@ Configure `mason.nvim` `ensure_installed` for non-LSP tools only:
 - `black`
 - `flake8`
 
-Configure Python formatting and linting:
+### Formatting and linting
 
-- `conform.nvim` uses `black` for Python.
+- `conform.nvim` uses `black` for Python, `prettier` for JS/TS/JSON/YAML/Markdown.
 - `nvim-lint` uses `flake8` for Python.
+- eslint integrates via the LSP server (not nvim-lint).
 
 Do not run `mypy` globally by default. Add it only for projects that actually
 use typed Python and benefit from project-specific type checking.
@@ -195,6 +220,16 @@ Keep these local autocmd behaviors:
   scheme changes, and once during startup.
 
 `autoread` and `checktime` on focus are LazyVim defaults; do not duplicate them.
+
+## Maintenance
+
+Mason registry auto-refresh is disabled (`registry_cache.refresh = false` in
+`lua/plugins/mason.lua`). This prevents automatic network calls to
+`api.mason-registry.dev` on startup. Run `:MasonUpdate` manually when you want
+to pick up new versions of shellcheck, shfmt, stylua, black, or flake8.
+
+**Review periodically:** open nvim, run `:Mason`, check for outdated tools,
+run `:MasonUpdate` if needed. Also run `:Lazy update` to update plugins.
 
 ## Local Verification
 
