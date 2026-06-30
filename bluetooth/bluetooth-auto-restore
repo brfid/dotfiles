@@ -95,6 +95,20 @@ restore_from_backup() {
     return 0
 }
 
+connect_device() {
+    local mac="$1"
+    local name="$2"
+
+    bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes" && return 0
+
+    log_msg "Connecting: $mac ($name)"
+    if timeout 12s bluetoothctl connect "$mac" >/dev/null 2>&1; then
+        log_msg "Connected: $mac ($name)"
+    else
+        log_msg "Connect failed: $mac ($name)"
+    fi
+}
+
 main() {
     log_msg "=== bluetooth-auto-restore started ==="
 
@@ -116,6 +130,7 @@ main() {
     fi
 
     local any_missing=0
+    local -A seen=()
 
     while IFS= read -r line || [ -n "$line" ]; do
         line="${line%%#*}"
@@ -126,6 +141,12 @@ main() {
         local mac name
         mac=$(echo "$line" | awk '{print $1}')
         name=$(echo "$line" | awk '{$1=""; print $0}' | xargs)
+
+        if [ -n "${seen[$mac]+x}" ]; then
+            log_msg "Skipping duplicate config entry: $mac ($name)"
+            continue
+        fi
+        seen[$mac]=1
 
         if ! is_paired "$mac"; then
             log_msg "Missing: $mac ($name)"
@@ -140,8 +161,7 @@ main() {
             fi
         else
             log_msg "OK: $mac ($name)"
-            bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes" \
-                || bluetoothctl --timeout 10 connect "$mac" 2>/dev/null || true
+            connect_device "$mac" "$name"
         fi
     done < "$CONFIG"
 

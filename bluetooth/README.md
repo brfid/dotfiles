@@ -49,6 +49,12 @@ has no record of the device, it notifies the desktop user to re-pair manually
 via the GUI. Auto-scanning and auto-pairing are a fallback only; the backup
 restore path is reliable, the scan path is not.
 
+Connection attempts for already-paired devices are best-effort, deduplicated by
+MAC, capped with a hard timeout, and keep `bluetoothctl` event chatter out of
+the journal. If a paired device still fails with BlueZ authentication or
+`Host is down` errors, re-pair the device; restoring the saved `info` file will
+not repair a stale device-side bond.
+
 Install the script to `/usr/local/bin/bluetooth-auto-restore`.
 
 Config file format (`/etc/bluetooth-auto-restore.conf`):
